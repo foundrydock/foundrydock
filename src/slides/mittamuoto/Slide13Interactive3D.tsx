@@ -128,12 +128,12 @@ export default function Slide13Interactive3D() {
         <div className="absolute top-16 left-20 z-10">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-12 h-[2px] bg-white/30" />
-            <span className="type-caption text-white/50 tracking-widest uppercase">
+            <span className="type-caption text-white/60 tracking-widest uppercase">
               Interaktiivinen demo
             </span>
           </div>
           <h2 className="type-h1 text-white">Teollisuuden osat 3D:nä</h2>
-          <p className="type-body-lg text-white/50 mt-3 max-w-[500px]">
+          <p className="type-body-lg text-white/60 mt-3 max-w-[500px]">
             Mittamuodon kautta voi tilata monimutkaisia teollisuusosia — 3D-tulostettuna tai koneistettuna.
           </p>
         </div>
@@ -156,8 +156,8 @@ export default function Slide13Interactive3D() {
         {/* Interaction hint */}
         <div className="absolute bottom-16 left-1/2 -translate-x-1/2 text-center z-10">
           <div className="flex items-center gap-3 px-6 py-3 rounded-full bg-white/10 backdrop-blur-sm border border-white/10">
-            <MousePointerClick className="w-5 h-5 text-white/60" />
-            <span className="type-caption text-white/60">Tartu ja pyöritä</span>
+            <MousePointerClick className="w-5 h-5 text-white/70" />
+            <span className="type-caption text-white/70">Tartu ja pyöritä</span>
           </div>
         </div>
 
@@ -171,7 +171,7 @@ export default function Slide13Interactive3D() {
           ].map((s) => (
             <div key={s.label} className="text-right">
               <span className="type-h3 text-white font-semibold">{s.value}</span>
-              <p className="type-caption text-white/40">{s.label}</p>
+              <p className="type-caption text-white/60">{s.label}</p>
             </div>
           ))}
         </div>

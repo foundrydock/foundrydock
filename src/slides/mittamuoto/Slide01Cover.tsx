@@ -20,28 +20,28 @@ export default function Slide01Cover() {
           </h1>
 
           {/* Subtitle */}
-          <p className="type-h2 text-white/70 max-w-[1100px] leading-relaxed font-light">
+          <p className="type-h2 text-white/80 max-w-[1100px] leading-relaxed font-light">
             3D-tulosteiden ja suunnitelmien kilpailutus- ja tilausalusta
           </p>
 
           {/* Key value prop */}
           <div className="flex items-center gap-8 pt-8">
-            <div className="flex items-center gap-3 text-white/60">
+            <div className="flex items-center gap-3 text-white/70">
               <div className="w-3 h-3 rounded-full bg-slide-accent" />
               <span className="type-body">B2B Marketplace</span>
             </div>
-            <div className="flex items-center gap-3 text-white/60">
+            <div className="flex items-center gap-3 text-white/70">
               <div className="w-3 h-3 rounded-full bg-slide-accent" />
               <span className="type-body">3D-tulostus & suunnittelu</span>
             </div>
-            <div className="flex items-center gap-3 text-white/60">
+            <div className="flex items-center gap-3 text-white/70">
               <div className="w-3 h-3 rounded-full bg-slide-accent" />
               <span className="type-body">Suomi & Pohjoismaat</span>
             </div>
           </div>
 
           {/* Contact */}
-          <div className="pt-4 text-white/40">
+          <div className="pt-4 text-white/60">
             <span className="type-caption">mittamuoto.com · info@mittamuoto.com · +358 40 322 4419</span>
           </div>
         </div>

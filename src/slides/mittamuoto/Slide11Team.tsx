@@ -33,7 +33,7 @@ export default function Slide11Team() {
         <div className="mb-16">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-12 h-[2px] bg-slide-accent" />
-            <span className="type-caption text-slide-gray-400 tracking-widest uppercase">
+            <span className="type-caption text-slide-gray-600 tracking-widest uppercase">
               Tiimi
             </span>
           </div>
@@ -62,7 +62,7 @@ export default function Slide11Team() {
               </span>
 
               {/* Description */}
-              <p className="type-body text-slide-gray-500">
+              <p className="type-body text-slide-gray-600">
                 {member.description}
               </p>
             </div>

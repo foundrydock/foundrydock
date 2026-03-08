@@ -20,15 +20,15 @@ export default function Slide04Market() {
               {/* TAM */}
               <div className="absolute inset-0 rounded-full border-2 border-slide-gray-200 bg-slide-gray-100/50 flex items-start justify-center pt-12">
                 <div className="text-center">
-                  <span className="type-metric text-slide-gray-400">$44.5B</span>
-                  <p className="type-caption text-slide-gray-400">TAM — Globaali 3D-tulostusmarkkina 2028</p>
+                  <span className="type-metric text-slide-gray-600">$44.5B</span>
+                  <p className="type-caption text-slide-gray-600">TAM — Globaali 3D-tulostusmarkkina 2028</p>
                 </div>
               </div>
               {/* SAM */}
               <div className="absolute top-[100px] left-[100px] right-[100px] bottom-[100px] rounded-full border-2 border-slide-accent/30 bg-slide-accent/5 flex items-start justify-center pt-10">
                 <div className="text-center">
                   <span className="type-metric text-slide-accent">€850M</span>
-                  <p className="type-caption text-slide-gray-500">SAM — Pohjoismaat + B2B palvelut</p>
+                  <p className="type-caption text-slide-gray-600">SAM — Pohjoismaat + B2B palvelut</p>
                 </div>
               </div>
               {/* SOM */}
@@ -56,7 +56,7 @@ export default function Slide04Market() {
                 </div>
                 <div>
                   <span className="type-body font-semibold text-slide-gray-900">{item.label}</span>
-                  <p className="type-caption text-slide-gray-500">{item.desc}</p>
+                  <p className="type-caption text-slide-gray-600">{item.desc}</p>
                 </div>
               </div>
             ))}

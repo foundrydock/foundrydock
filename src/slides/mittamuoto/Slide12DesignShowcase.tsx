@@ -20,7 +20,7 @@ export default function Slide12DesignShowcase() {
               Suunnitelmasta tuotantoon
             </h2>
 
-            <p className="type-body-lg text-white/60 leading-relaxed">
+            <p className="type-body-lg text-white/70 leading-relaxed">
               Mittamuoto yhdistää 3D-suunnittelun ja valmistuksen. Tilaaja lataa CAD-mallin, 
               palveluntarjoajat kilpailuttavat tuotannon — kaikki yhdellä alustalla.
             </p>
@@ -33,8 +33,8 @@ export default function Slide12DesignShowcase() {
                 'Teollisuuden vaatimukset täyttävä tuotanto',
               ].map((item) => (
                 <div key={item} className="flex items-center gap-4">
-                  <div className="w-2 h-2 rounded-full bg-white/40 shrink-0" />
-                  <span className="type-body text-white/70">{item}</span>
+                  <div className="w-2 h-2 rounded-full bg-white/60 shrink-0" />
+                  <span className="type-body text-white/80">{item}</span>
                 </div>
               ))}
             </div>
