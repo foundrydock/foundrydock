@@ -41,6 +41,7 @@ export function Toolbar({
 
       {/* Right section */}
       <div className="flex items-center justify-end flex-shrink-0 px-4 gap-1">
+        <EditModeToggle />
         <LanguageSwitcher />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
