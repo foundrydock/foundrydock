@@ -62,7 +62,7 @@ export default function Slide11Team() {
               </span>
 
               {/* Description */}
-              <p className="type-body text-slide-gray-500">
+              <p className="type-body text-slide-gray-600">
                 {member.description}
               </p>
             </div>

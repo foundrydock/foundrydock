@@ -171,7 +171,7 @@ export default function Slide13Interactive3D() {
           ].map((s) => (
             <div key={s.label} className="text-right">
               <span className="type-h3 text-white font-semibold">{s.value}</span>
-              <p className="type-caption text-white/40">{s.label}</p>
+              <p className="type-caption text-white/60">{s.label}</p>
             </div>
           ))}
         </div>

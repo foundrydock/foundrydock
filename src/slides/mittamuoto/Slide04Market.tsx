@@ -56,7 +56,7 @@ export default function Slide04Market() {
                 </div>
                 <div>
                   <span className="type-body font-semibold text-slide-gray-900">{item.label}</span>
-                  <p className="type-caption text-slide-gray-500">{item.desc}</p>
+                  <p className="type-caption text-slide-gray-600">{item.desc}</p>
                 </div>
               </div>
             ))}

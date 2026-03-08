@@ -74,7 +74,7 @@ export default function Slide09Roadmap() {
                       ? 'bg-slide-accent border-slide-accent' 
                       : 'bg-white border-slide-gray-300'
                   }`} />
-                  <span className={`type-label mb-1 ${phase.active ? 'text-slide-accent' : 'text-slide-gray-400'}`}>
+                  <span className={`type-label mb-1 ${phase.active ? 'text-slide-accent' : 'text-slide-gray-600'}`}>
                     {phase.phase}
                   </span>
                   <h3 className="type-h3 text-slide-gray-900 mb-4">{phase.title}</h3>

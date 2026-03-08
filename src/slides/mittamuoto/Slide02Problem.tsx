@@ -44,7 +44,7 @@ export default function Slide02Problem() {
               <div className="slide-divider mb-6" />
               <span className="type-label text-slide-accent mb-2">{item.number}</span>
               <h3 className="type-h3 text-slide-gray-900 mb-3">{item.title}</h3>
-              <p className="type-body text-slide-gray-500 leading-relaxed">{item.desc}</p>
+              <p className="type-body text-slide-gray-600 leading-relaxed">{item.desc}</p>
             </div>
           ))}
         </div>

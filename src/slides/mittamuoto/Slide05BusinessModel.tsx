@@ -50,7 +50,7 @@ export default function Slide05BusinessModel() {
               <span className="type-label text-slide-gray-600 mb-2">Tulovirta 4</span>
               <span className="type-metric text-slide-gray-900">B2B</span>
               <h3 className="type-h3 text-slide-gray-900 mt-2 mb-4">Yritystilit</h3>
-              <p className="type-body text-slide-gray-500 leading-relaxed">
+              <p className="type-body text-slide-gray-600 leading-relaxed">
                 Räätälöidyt yrityssopimukset, API-integraatiot,
                 volyymiperusteinen hinnoittelu.
               </p>

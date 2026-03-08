@@ -41,7 +41,7 @@ export default function Slide01Cover() {
           </div>
 
           {/* Contact */}
-          <div className="pt-4 text-white/40">
+          <div className="pt-4 text-white/60">
             <span className="type-caption">mittamuoto.com · info@mittamuoto.com · +358 40 322 4419</span>
           </div>
         </div>

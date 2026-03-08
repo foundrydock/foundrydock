@@ -73,7 +73,7 @@ export default function Slide06Product() {
           ].map((s) => (
             <div key={s.label}>
               <span className="type-h2 text-slide-accent">{s.value}</span>
-              <p className="type-caption text-white/40">{s.label}</p>
+              <p className="type-caption text-white/70">{s.label}</p>
             </div>
           ))}
         </div>

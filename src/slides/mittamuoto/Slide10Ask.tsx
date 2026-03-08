@@ -40,7 +40,7 @@ export default function Slide10Ask() {
               <p className="type-body text-white/70 mt-1">info@mittamuoto.com · +358 40 322 4419</p>
             </div>
             <div>
-              <p className="type-body text-white/50">mittamuoto.com</p>
+              <p className="type-body text-white/70">mittamuoto.com</p>
             </div>
           </div>
         </div>

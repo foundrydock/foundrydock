@@ -34,7 +34,7 @@ export default function Slide12DesignShowcase() {
               ].map((item) => (
                 <div key={item} className="flex items-center gap-4">
                   <div className="w-2 h-2 rounded-full bg-white/60 shrink-0" />
-                  <span className="type-body text-white/70">{item}</span>
+                  <span className="type-body text-white/80">{item}</span>
                 </div>
               ))}
             </div>

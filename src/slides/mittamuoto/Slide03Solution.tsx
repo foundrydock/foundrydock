@@ -12,7 +12,7 @@ export default function Slide03Solution() {
           <h2 className="type-h1 mt-4 text-slide-gray-900">
             Yksi alusta, koko arvoketju
           </h2>
-          <p className="type-body-lg text-slide-gray-500 mt-4 max-w-[1000px]">
+          <p className="type-body-lg text-slide-gray-600 mt-4 max-w-[1000px]">
             Mittamuoto yhdistää tilaajat ja valmistajat yhdelle alustalle — kilpailutus, tilaus, maksu ja toimitus samasta paikasta.
           </p>
         </div>

@@ -28,7 +28,7 @@ export default function Slide07Traction() {
             <div key={m.label} className="slide-metric-card p-8 text-center">
               <span className="type-display text-slide-accent">{m.value}</span>
               <p className="type-body font-semibold text-slide-gray-900 mt-2">{m.label}</p>
-              <p className="type-caption text-slide-gray-400 mt-1">{m.note}</p>
+              <p className="type-caption text-slide-gray-600 mt-1">{m.note}</p>
             </div>
           ))}
         </div>
