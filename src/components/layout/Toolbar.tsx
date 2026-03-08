@@ -45,6 +45,8 @@ export function Toolbar({
   className,
   deckManager,
 }: ToolbarProps) {
+  const isEditor = getAccessRole() === 'editor';
+
   return (
     <div className={cn('h-12 border-b bg-background flex items-center', className)}>
       {/* Left section - Logo + Deck Switcher */}
