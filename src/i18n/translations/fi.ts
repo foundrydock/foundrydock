@@ -114,7 +114,7 @@ export const fi: Record<string, string> = {
   'traction.m1.note': 'Lisää luku',
   'traction.m2.note': 'Lisää luku',
   'traction.m3.note': 'Lisää luku',
-  'traction.m4.note': 'Lähde: mittamuoto.com',
+  'traction.m4.note': 'Asiakaspalaute',
   'traction.milestones': 'Saavutetut virstanpylväät',
   'traction.ms1': 'Täysin toimiva alusta julkaistu',
   'traction.ms2': 'Stripe-maksuintegraatio tuotannossa',

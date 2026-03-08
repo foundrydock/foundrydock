@@ -37,9 +37,6 @@ export default function Slide10Ask() {
               <p className="type-body-lg text-white">{t('ask.cta')}</p>
               <p className="type-body text-white/70 mt-1"><a href="mailto:jani@measureshape.com" className="underline hover:text-white">jani@measureshape.com</a> · +358 40 322 4419</p>
             </div>
-            <div>
-              <p className="type-body text-white/70">mittamuoto.com</p>
-            </div>
           </div>
         </div>
       </div>
