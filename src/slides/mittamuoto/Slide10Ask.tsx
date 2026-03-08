@@ -13,7 +13,7 @@ export default function Slide10Ask() {
             Pre-Seed: €___k
           </h2>
 
-          <p className="type-h2 text-white/60 font-light mb-16 max-w-[1000px]">
+          <p className="type-h2 text-white/70 font-light mb-16 max-w-[1000px]">
             Täydennä summa ja ehdot oman suunnitelmasi mukaan
           </p>
 
