@@ -102,6 +102,21 @@ export function Toolbar({
   );
 }
 
+function EditModeToggle() {
+  const { editMode, setEditMode } = useLanguage();
+  return (
+    <Button
+      variant={editMode ? 'default' : 'ghost'}
+      size="icon"
+      onClick={() => setEditMode(!editMode)}
+      title={editMode ? 'Lopeta muokkaus' : 'Muokkaa tekstejä'}
+      className={cn(editMode && 'bg-slide-accent text-white hover:bg-slide-accent/90')}
+    >
+      {editMode ? <PencilOff className="h-4 w-4" /> : <Pencil className="h-4 w-4" />}
+    </Button>
+  );
+}
+
 function LanguageSwitcher() {
   const { language, setLanguage } = useLanguage();
   const languages: { code: Language; label: string }[] = [
