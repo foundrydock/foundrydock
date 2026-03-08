@@ -33,7 +33,7 @@ export default function Index() {
   
   // Derive slides from showcaseSlides with deterministic IDs (for presenter notes persistence)
   const slides = React.useMemo<SlideData[]>(() => 
-    showcaseSlides.map((s) => ({
+    mittamuotoSlides.map((s) => ({
       id: `slide-${s.name.toLowerCase().replace(/\s+/g, '-')}`,
       component: s.component,
       name: s.name,
