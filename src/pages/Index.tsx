@@ -9,7 +9,7 @@ import { PresenterView } from '@/components/slides/PresenterView';
 import { PresenterNotesPanel } from '@/components/slides/PresenterNotesPanel';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { showcaseSlides } from '@/slides/showcase';
+import { mittamuotoSlides } from '@/slides/mittamuoto';
 
 interface SlideData {
   id: string;
@@ -33,7 +33,7 @@ export default function Index() {
   
   // Derive slides from showcaseSlides with deterministic IDs (for presenter notes persistence)
   const slides = React.useMemo<SlideData[]>(() => 
-    showcaseSlides.map((s) => ({
+    mittamuotoSlides.map((s) => ({
       id: `slide-${s.name.toLowerCase().replace(/\s+/g, '-')}`,
       component: s.component,
       name: s.name,
@@ -89,7 +89,7 @@ export default function Index() {
   }, [slides.length, isPresentationMode, isPresenterView]);
 
 
-  const ActiveSlideComponent = slides[activeSlideIndex]?.component || showcaseSlides[0].component;
+  const ActiveSlideComponent = slides[activeSlideIndex]?.component || mittamuotoSlides[0].component;
 
   return (
     <div className="h-screen flex flex-col bg-background">
