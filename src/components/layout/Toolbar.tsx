@@ -74,6 +74,15 @@ export function Toolbar({
                 <span className="ml-auto text-xs text-muted-foreground">⇧V</span>
               </DropdownMenuItem>
             )}
+            {onPrintPDF && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={onPrintPDF}>
+                  <Printer className="h-4 w-4 mr-2" />
+                  Tulosta PDF
+                </DropdownMenuItem>
+              </>
+            )}
             {onToggleDarkMode && (
               <>
                 <DropdownMenuSeparator />
