@@ -1,5 +1,12 @@
 import React from 'react';
 import { MSSlideLayout } from '@/components/slides/MSSlideLayout';
+import { Check, X, Minus } from 'lucide-react';
+
+function CellIcon({ value }: { value: 'yes' | 'no' | 'partial' }) {
+  if (value === 'yes') return <Check className="w-6 h-6 text-slide-gray-900 mx-auto" strokeWidth={2.5} />;
+  if (value === 'partial') return <Minus className="w-6 h-6 text-slide-gray-400 mx-auto" strokeWidth={2.5} />;
+  return <X className="w-6 h-6 text-slide-gray-300 mx-auto" strokeWidth={2} />;
+}
 
 export default function Slide08Competition() {
   return (
@@ -26,22 +33,22 @@ export default function Slide08Competition() {
               </tr>
             </thead>
             <tbody>
-              {[
-                { feature: 'Kilpailutus (useita tarjouksia)', m: '✅', c: '❌', h: '❌', p: '❌' },
-                { feature: 'Suomalainen / pohjoismainen', m: '✅', c: '❌', h: '❌', p: '✅' },
-                { feature: 'Escrow-maksusuoja', m: '✅', c: '❌', h: '❌', p: '❌' },
-                { feature: 'Arvostelujärjestelmä', m: '✅', c: '❌', h: '✅', p: '❌' },
-                { feature: 'Posti-integraatio (FI)', m: '✅', c: '❌', h: '❌', p: '❌' },
-                { feature: 'B2B + yritystilaus', m: '✅', c: '⚠️', h: '✅', p: '✅' },
-                { feature: 'Visualisointipalvelut', m: '✅', c: '❌', h: '❌', p: '❌' },
-                { feature: 'Y-tunnuslaskutus', m: '✅', c: '❌', h: '❌', p: '✅' },
-              ].map((row) => (
+              {([
+                { feature: 'Kilpailutus (useita tarjouksia)', m: 'yes', c: 'no', h: 'no', p: 'no' },
+                { feature: 'Suomalainen / pohjoismainen', m: 'yes', c: 'no', h: 'no', p: 'yes' },
+                { feature: 'Escrow-maksusuoja', m: 'yes', c: 'no', h: 'no', p: 'no' },
+                { feature: 'Arvostelujärjestelmä', m: 'yes', c: 'no', h: 'yes', p: 'no' },
+                { feature: 'Posti-integraatio (FI)', m: 'yes', c: 'no', h: 'no', p: 'no' },
+                { feature: 'B2B + yritystilaus', m: 'yes', c: 'partial', h: 'yes', p: 'yes' },
+                { feature: 'Visualisointipalvelut', m: 'yes', c: 'no', h: 'no', p: 'no' },
+                { feature: 'Y-tunnuslaskutus', m: 'yes', c: 'no', h: 'no', p: 'yes' },
+              ] as const).map((row) => (
                 <tr key={row.feature} className="border-b border-slide-gray-100">
                   <td className="type-body text-slide-gray-700 py-4">{row.feature}</td>
-                  <td className="type-body text-center py-4 bg-slide-accent/5 text-[28px]">{row.m}</td>
-                  <td className="type-body text-center py-4 text-[28px]">{row.c}</td>
-                  <td className="type-body text-center py-4 text-[28px]">{row.h}</td>
-                  <td className="type-body text-center py-4 text-[28px]">{row.p}</td>
+                  <td className="py-4 bg-slide-accent/5"><CellIcon value={row.m} /></td>
+                  <td className="py-4"><CellIcon value={row.c} /></td>
+                  <td className="py-4"><CellIcon value={row.h} /></td>
+                  <td className="py-4"><CellIcon value={row.p} /></td>
                 </tr>
               ))}
             </tbody>
