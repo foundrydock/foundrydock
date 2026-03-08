@@ -7,14 +7,14 @@ export default function Slide10Ask() {
       <div className="flex flex-col justify-center h-full px-20 py-16">
         <div className="max-w-[1400px]">
           {/* Header */}
-          <span className="type-caption text-slide-accent-light tracking-widest uppercase">09 — Rahoituskierros</span>
+          <span className="type-caption text-slide-accent-light tracking-widest uppercase">12 — Rahoituskierros</span>
           
           <h2 className="type-display text-white mt-6 mb-8">
-            Pre-Seed: €___k
+            Pre-Seed: €500k
           </h2>
 
           <p className="type-h2 text-white/70 font-light mb-16 max-w-[1000px]">
-            Täydennä summa ja ehdot oman suunnitelmasi mukaan
+            Rakennetaan Pohjoismaiden johtava 3D-tulostusmarketplace yhdessä
           </p>
 
           {/* Use of funds */}
