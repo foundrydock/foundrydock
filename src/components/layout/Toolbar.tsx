@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { Grid3X3, FileText, MoreVertical, Play, Monitor, Moon, Sun } from 'lucide-react';
+import { Grid3X3, FileText, MoreVertical, Play, Monitor, Moon, Sun, Printer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
@@ -12,6 +12,7 @@ interface ToolbarProps {
   onToggleDarkMode?: () => void;
   onStartPresentation?: () => void;
   onStartPresenterView?: () => void;
+  onPrintPDF?: () => void;
   className?: string;
 }
 
@@ -24,6 +25,7 @@ export function Toolbar({
   onToggleDarkMode,
   onStartPresentation,
   onStartPresenterView,
+  onPrintPDF,
   className
 }: ToolbarProps) {
   return (
@@ -71,6 +73,15 @@ export function Toolbar({
                 Presenter View
                 <span className="ml-auto text-xs text-muted-foreground">⇧V</span>
               </DropdownMenuItem>
+            )}
+            {onPrintPDF && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={onPrintPDF}>
+                  <Printer className="h-4 w-4 mr-2" />
+                  Tulosta PDF
+                </DropdownMenuItem>
+              </>
             )}
             {onToggleDarkMode && (
               <>
