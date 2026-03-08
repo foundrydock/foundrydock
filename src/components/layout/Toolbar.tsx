@@ -39,8 +39,9 @@ export function Toolbar({
       {/* Spacer */}
       <div className="flex-1" />
 
-      {/* Right section - All options in menu */}
-      <div className="flex items-center justify-end flex-shrink-0 px-4">
+      {/* Right section */}
+      <div className="flex items-center justify-end flex-shrink-0 px-4 gap-1">
+        <LanguageSwitcher />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon">
