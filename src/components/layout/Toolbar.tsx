@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils';
-import { Grid3X3, FileText, MoreVertical, Play, Monitor, Moon, Sun, Printer } from 'lucide-react';
+import { Grid3X3, FileText, MoreVertical, Play, Monitor, Moon, Sun, Printer, Globe } from 'lucide-react';
+import { useLanguage, Language } from '@/i18n/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
@@ -38,8 +39,9 @@ export function Toolbar({
       {/* Spacer */}
       <div className="flex-1" />
 
-      {/* Right section - All options in menu */}
-      <div className="flex items-center justify-end flex-shrink-0 px-4">
+      {/* Right section */}
+      <div className="flex items-center justify-end flex-shrink-0 px-4 gap-1">
+        <LanguageSwitcher />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon">
@@ -95,6 +97,33 @@ export function Toolbar({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+    </div>
+  );
+}
+
+function LanguageSwitcher() {
+  const { language, setLanguage } = useLanguage();
+  const languages: { code: Language; label: string }[] = [
+    { code: 'fi', label: 'FI' },
+    { code: 'en', label: 'EN' },
+  ];
+
+  return (
+    <div className="flex items-center gap-0.5 bg-muted rounded-md p-0.5">
+      {languages.map((lang) => (
+        <button
+          key={lang.code}
+          onClick={() => setLanguage(lang.code)}
+          className={cn(
+            'px-2 py-1 text-xs font-medium rounded transition-colors',
+            language === lang.code
+              ? 'bg-background text-foreground shadow-sm'
+              : 'text-muted-foreground hover:text-foreground'
+          )}
+        >
+          {lang.label}
+        </button>
+      ))}
     </div>
   );
 }

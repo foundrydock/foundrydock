@@ -1,54 +1,37 @@
 import React from 'react';
 import { MSSlideLayout } from '@/components/slides/MSSlideLayout';
 import { Target, ShieldCheck, Package, Star } from 'lucide-react';
+import { useLanguage } from '@/i18n/LanguageContext';
 
 export default function Slide03Solution() {
+  const { t } = useLanguage();
+
+  const pillars = [
+    { icon: Target, key: 'pillar1' },
+    { icon: ShieldCheck, key: 'pillar2' },
+    { icon: Package, key: 'pillar3' },
+    { icon: Star, key: 'pillar4' },
+  ];
+
   return (
     <MSSlideLayout variant="default">
       <div className="flex flex-col h-full px-20 py-16">
-        {/* Header */}
         <div className="mb-12">
-          <span className="type-caption text-slide-accent tracking-widest uppercase">02 — Ratkaisu</span>
-          <h2 className="type-h1 mt-4 text-slide-gray-900">
-            Yksi alusta, koko arvoketju
-          </h2>
-          <p className="type-body-lg text-slide-gray-600 mt-4 max-w-[1000px]">
-            Mittamuoto yhdistää tilaajat ja valmistajat yhdelle alustalle — kilpailutus, tilaus, maksu ja toimitus samasta paikasta.
-          </p>
+          <span className="type-caption text-slide-accent tracking-widest uppercase">{t('solution.section')}</span>
+          <h2 className="type-h1 mt-4 text-slide-gray-900">{t('solution.title')}</h2>
+          <p className="type-body-lg text-slide-gray-600 mt-4 max-w-[1000px]">{t('solution.subtitle')}</p>
         </div>
 
-        {/* Solution pillars */}
         <div className="flex-1 grid grid-cols-4 gap-8">
-          {[
-            {
-              icon: Target,
-              title: 'Kilpailutus',
-              points: ['Tilaus julkaistaan verkostolle', 'Useita tarjouksia nopeasti', 'Vertaile hintaa, aikaa, materiaaleja'],
-            },
-            {
-              icon: ShieldCheck,
-              title: 'Turvallinen maksu',
-              points: ['Stripe-escrow -malli', 'Raha vapautuu hyväksynnän jälkeen', 'Luottokortit ja laskutus'],
-            },
-            {
-              icon: Package,
-              title: 'Logistiikka',
-              points: ['Posti-integraatio', 'Automaattinen lähetyksen luonti', 'Seurantakoodit asiakkaalle'],
-            },
-            {
-              icon: Star,
-              title: 'Laatu & luottamus',
-              points: ['Kaksisuuntaiset arvostelut', 'Palveluntarjoajaprofiilit', 'Tilaushistoria ja portfolio'],
-            },
-          ].map((pillar) => (
-            <div key={pillar.title} className="slide-card p-8 flex flex-col">
+          {pillars.map((pillar) => (
+            <div key={pillar.key} className="slide-card p-8 flex flex-col">
               <pillar.icon className="w-12 h-12 text-slide-gray-900 mb-4" strokeWidth={1.5} />
-              <h3 className="type-h3 text-slide-gray-900 mb-6">{pillar.title}</h3>
+              <h3 className="type-h3 text-slide-gray-900 mb-6">{t(`solution.${pillar.key}.title`)}</h3>
               <ul className="space-y-3 flex-1">
-                {pillar.points.map((point) => (
-                  <li key={point} className="flex items-start gap-3">
+                {['p1', 'p2', 'p3'].map((p) => (
+                  <li key={p} className="flex items-start gap-3">
                     <div className="w-2 h-2 rounded-full bg-slide-accent mt-3 shrink-0" />
-                    <span className="type-body text-slide-gray-600">{point}</span>
+                    <span className="type-body text-slide-gray-600">{t(`solution.${pillar.key}.${p}`)}</span>
                   </li>
                 ))}
               </ul>

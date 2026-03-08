@@ -7,24 +7,27 @@ import Index from "./pages/Index";
 import AudienceWindow from "./pages/AudienceWindow";
 import NotFound from "./pages/NotFound";
 import PasswordGate from "./components/PasswordGate";
+import { LanguageProvider } from "./i18n/LanguageContext";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <PasswordGate>
-        <BrowserRouter>
-          <Routes>
+    <LanguageProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <PasswordGate>
+          <BrowserRouter>
+            <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/audience" element={<AudienceWindow />} />
             <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </PasswordGate>
-    </TooltipProvider>
+            </Routes>
+          </BrowserRouter>
+        </PasswordGate>
+      </TooltipProvider>
+    </LanguageProvider>
   </QueryClientProvider>
 );
 
