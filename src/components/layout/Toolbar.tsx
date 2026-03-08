@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils';
 import { Grid3X3, FileText, MoreVertical, Play, Monitor, Moon, Sun, Printer, Pencil, PencilOff } from 'lucide-react';
+import { getAccessRole } from '@/components/PasswordGate';
 import { useLanguage, Language } from '@/i18n/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
