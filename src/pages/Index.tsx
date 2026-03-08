@@ -89,7 +89,7 @@ export default function Index() {
   }, [slides.length, isPresentationMode, isPresenterView]);
 
 
-  const ActiveSlideComponent = slides[activeSlideIndex]?.component || showcaseSlides[0].component;
+  const ActiveSlideComponent = slides[activeSlideIndex]?.component || mittamuotoSlides[0].component;
 
   return (
     <div className="h-screen flex flex-col bg-background">
