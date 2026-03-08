@@ -42,7 +42,7 @@ export default function Slide01Cover() {
 
           {/* Contact */}
           <div className="pt-4 text-white/60">
-            <span className="type-caption">mittamuoto.com · info@mittamuoto.com · +358 40 322 4419</span>
+            <span className="type-caption">mittamuoto.com · jani@measureshape.com · +358 40 322 4419</span>
           </div>
         </div>
       </div>
