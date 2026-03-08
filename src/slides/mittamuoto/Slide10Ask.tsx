@@ -37,7 +37,7 @@ export default function Slide10Ask() {
           <div className="flex items-center gap-12 pt-8 border-t border-white/10">
             <div>
               <p className="type-body-lg text-white">Keskustellaan</p>
-              <p className="type-body text-white/50 mt-1">info@mittamuoto.com · +358 40 322 4419</p>
+              <p className="type-body text-white/70 mt-1">info@mittamuoto.com · +358 40 322 4419</p>
             </div>
             <div>
               <p className="type-body text-white/50">mittamuoto.com</p>
