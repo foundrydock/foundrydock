@@ -1,7 +1,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import logoDark from '@/assets/mittamuoto-logo-dark.jpg';
-import logoLight from '@/assets/mittamuoto-logo-light.jpg';
+import logoDark from '@/assets/mittamuoto-logo-dark.png';
+import logoLight from '@/assets/mittamuoto-logo-light.png';
 
 interface MSSlideLayoutProps {
   children: React.ReactNode;
@@ -9,10 +9,6 @@ interface MSSlideLayoutProps {
   className?: string;
 }
 
-/**
- * Slide Layout Component
- * Mittamuoto brand — Black & White
- */
 export function MSSlideLayout({ children, variant = 'default', className }: MSSlideLayoutProps) {
   const isDark = variant === 'dark' || variant === 'title';
   
@@ -46,6 +42,6 @@ export function MSSlideLayout({ children, variant = 'default', className }: MSSl
   );
 }
 
-// Legacy exports for backwards compatibility
+// Legacy exports
 export function LogoMark() { return null; }
 export const MSLogo = LogoMark;
