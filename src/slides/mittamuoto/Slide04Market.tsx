@@ -20,8 +20,8 @@ export default function Slide04Market() {
               {/* TAM */}
               <div className="absolute inset-0 rounded-full border-2 border-slide-gray-200 bg-slide-gray-100/50 flex items-start justify-center pt-12">
                 <div className="text-center">
-                  <span className="type-metric text-slide-gray-400">$44.5B</span>
-                  <p className="type-caption text-slide-gray-400">TAM — Globaali 3D-tulostusmarkkina 2028</p>
+                  <span className="type-metric text-slide-gray-600">$44.5B</span>
+                  <p className="type-caption text-slide-gray-600">TAM — Globaali 3D-tulostusmarkkina 2028</p>
                 </div>
               </div>
               {/* SAM */}
