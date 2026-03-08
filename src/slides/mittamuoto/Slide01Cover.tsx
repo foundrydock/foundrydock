@@ -30,7 +30,7 @@ export default function Slide01Cover() {
               <div className="w-3 h-3 rounded-full bg-slide-accent" />
               <span className="type-body">B2B Marketplace</span>
             </div>
-            <div className="flex items-center gap-3 text-white/60">
+            <div className="flex items-center gap-3 text-white/70">
               <div className="w-3 h-3 rounded-full bg-slide-accent" />
               <span className="type-body">3D-tulostus & suunnittelu</span>
             </div>
