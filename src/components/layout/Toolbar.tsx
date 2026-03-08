@@ -25,6 +25,7 @@ export function Toolbar({
   onToggleDarkMode,
   onStartPresentation,
   onStartPresenterView,
+  onPrintPDF,
   className
 }: ToolbarProps) {
   return (
