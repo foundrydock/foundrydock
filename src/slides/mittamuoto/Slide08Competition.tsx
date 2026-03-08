@@ -14,9 +14,9 @@ export default function Slide08Competition() {
       <div className="flex flex-col h-full px-20 py-16">
         {/* Header */}
         <div className="mb-10">
-          <span className="type-caption text-slide-accent tracking-widest uppercase">07 — Kilpailukenttä</span>
+          <span className="type-caption text-slide-accent tracking-widest uppercase">09 — Kilpailukenttä</span>
           <h2 className="type-h1 mt-4 text-slide-gray-900">
-            Pohjoismaisessa markkinassa ei ole vastaaavaa
+            Pohjoismaisessa markkinassa ei ole vastaavaa
           </h2>
         </div>
 

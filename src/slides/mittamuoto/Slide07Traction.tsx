@@ -8,7 +8,7 @@ export default function Slide07Traction() {
       <div className="flex flex-col h-full px-20 py-16">
         {/* Header */}
         <div className="mb-12">
-          <span className="type-caption text-slide-accent tracking-widest uppercase">06 — Traktio</span>
+          <span className="type-caption text-slide-accent tracking-widest uppercase">08 — Traktio</span>
           <h2 className="type-h1 mt-4 text-slide-gray-900">
             Tilanne nyt
           </h2>

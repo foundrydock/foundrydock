@@ -7,7 +7,7 @@ export default function Slide06Product() {
       <div className="flex flex-col h-full px-20 py-16">
         {/* Header */}
         <div className="mb-10">
-          <span className="type-caption text-slide-accent-light tracking-widest uppercase">05 — Tuote</span>
+          <span className="type-caption text-slide-accent-light tracking-widest uppercase">06 — Tuote</span>
           <h2 className="type-h1 mt-4 text-white">
             Valmis tuote, oikeat käyttäjät
           </h2>

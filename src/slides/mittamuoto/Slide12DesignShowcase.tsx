@@ -12,7 +12,7 @@ export default function Slide12DesignShowcase() {
             <div className="flex items-center gap-3">
               <div className="w-12 h-[2px] bg-slide-accent-light" />
               <span className="type-caption text-slide-accent-light tracking-widest uppercase">
-                3D-suunnittelu
+                05 — 3D-suunnittelu
               </span>
             </div>
 
