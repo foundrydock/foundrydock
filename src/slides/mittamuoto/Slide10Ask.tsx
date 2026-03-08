@@ -1,42 +1,40 @@
 import React from 'react';
 import { MSSlideLayout } from '@/components/slides/MSSlideLayout';
+import { useLanguage } from '@/i18n/LanguageContext';
 
 export default function Slide10Ask() {
+  const { t } = useLanguage();
+
+  const funds = [
+    { pct: '40%', key: 'f1' },
+    { pct: '30%', key: 'f2' },
+    { pct: '20%', key: 'f3' },
+    { pct: '10%', key: 'f4' },
+  ];
+
   return (
     <MSSlideLayout variant="dark">
       <div className="flex flex-col justify-center h-full px-20 py-16">
         <div className="max-w-[1400px]">
-          {/* Header */}
-          <span className="type-caption text-slide-accent-light tracking-widest uppercase">12 — Rahoituskierros</span>
+          <span className="type-caption text-slide-accent-light tracking-widest uppercase">{t('ask.section')}</span>
           
-          <h2 className="type-display text-white mt-6 mb-8">
-            Seed: €500k
-          </h2>
+          <h2 className="type-display text-white mt-6 mb-8">{t('ask.title')}</h2>
 
-          <p className="type-h2 text-white/70 font-light mb-16 max-w-[1000px]">
-            Rakennetaan Pohjoismaiden johtava 3D-tulostusmarketplace yhdessä
-          </p>
+          <p className="type-h2 text-white/70 font-light mb-16 max-w-[1000px]">{t('ask.subtitle')}</p>
 
-          {/* Use of funds */}
           <div className="grid grid-cols-4 gap-8 mb-16">
-            {[
-              { pct: '40%', label: 'Tuotekehitys', desc: 'AI-ominaisuudet, instant quote, API' },
-              { pct: '30%', label: 'Kasvu & myynti', desc: 'B2B-myynti, markkinointi, SEO' },
-              { pct: '20%', label: 'Tiimi', desc: 'Ensimmäiset avainrekrytoinnit' },
-              { pct: '10%', label: 'Operaatiot', desc: 'Infra, juridiikka, vakuutukset' },
-            ].map((item) => (
-              <div key={item.label} className="border-t-2 border-slide-accent pt-6">
+            {funds.map((item) => (
+              <div key={item.key} className="border-t-2 border-slide-accent pt-6">
                 <span className="type-metric text-slide-accent">{item.pct}</span>
-                <h3 className="type-h3 text-white mt-2">{item.label}</h3>
-                <p className="type-body text-white/70 mt-2">{item.desc}</p>
+                <h3 className="type-h3 text-white mt-2">{t(`ask.${item.key}.label`)}</h3>
+                <p className="type-body text-white/70 mt-2">{t(`ask.${item.key}.desc`)}</p>
               </div>
             ))}
           </div>
 
-          {/* Contact */}
           <div className="flex items-center gap-12 pt-8 border-t border-white/10">
             <div>
-              <p className="type-body-lg text-white">Keskustellaan</p>
+              <p className="type-body-lg text-white">{t('ask.cta')}</p>
               <p className="type-body text-white/70 mt-1"><a href="mailto:jani@measureshape.com" className="underline hover:text-white">jani@measureshape.com</a> · +358 40 322 4419</p>
             </div>
             <div>
