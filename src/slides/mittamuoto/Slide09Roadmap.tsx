@@ -1,10 +1,8 @@
 import React from 'react';
 import { MSSlideLayout } from '@/components/slides/MSSlideLayout';
-import { useLanguage } from '@/i18n/LanguageContext';
+import { T } from '@/components/slides/EditableText';
 
 export default function Slide09Roadmap() {
-  const { t } = useLanguage();
-
   const phases = [
     { phase: 'Q1-Q2 2026', key: 'p1', active: true },
     { phase: 'Q3-Q4 2026', key: 'p2', active: false },
@@ -16,8 +14,8 @@ export default function Slide09Roadmap() {
     <MSSlideLayout variant="default">
       <div className="flex flex-col h-full px-20 py-16">
         <div className="mb-12">
-          <span className="type-caption text-slide-accent tracking-widest uppercase">{t('roadmap.section')}</span>
-          <h2 className="type-h1 mt-4 text-slide-gray-900">{t('roadmap.title')}</h2>
+          <T k="roadmap.section" className="type-caption text-slide-accent tracking-widest uppercase" />
+          <T k="roadmap.title" as="h2" className="type-h1 mt-4 text-slide-gray-900" />
         </div>
 
         <div className="flex-1 flex flex-col justify-center">
@@ -34,12 +32,12 @@ export default function Slide09Roadmap() {
                   <span className={`type-label mb-1 ${p.active ? 'text-slide-accent' : 'text-slide-gray-600'}`}>
                     {p.phase}
                   </span>
-                  <h3 className="type-h3 text-slide-gray-900 mb-4">{t(`roadmap.${p.key}.title`)}</h3>
+                  <T k={`roadmap.${p.key}.title`} as="h3" className="type-h3 text-slide-gray-900 mb-4" />
                   <ul className="space-y-2">
                     {['i1', 'i2', 'i3', 'i4'].map((i) => (
                       <li key={i} className="flex items-start gap-2">
                         <div className="w-1.5 h-1.5 rounded-full bg-slide-gray-400 mt-3 shrink-0" />
-                        <span className="type-caption text-slide-gray-600">{t(`roadmap.${p.key}.${i}`)}</span>
+                        <T k={`roadmap.${p.key}.${i}`} className="type-caption text-slide-gray-600" />
                       </li>
                     ))}
                   </ul>
