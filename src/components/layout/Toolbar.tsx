@@ -52,7 +52,7 @@ export function Toolbar({
       {/* Left section - Logo + Deck Switcher */}
       <div className="flex items-center px-4 gap-3">
         <span className="text-sm font-medium tracking-tight text-foreground">SlideForge</span>
-        {deckManager && (
+        {isEditor && deckManager && (
           <DeckSwitcher
             decks={deckManager.decks}
             activeDeck={deckManager.activeDeck}
@@ -69,7 +69,7 @@ export function Toolbar({
 
       {/* Right section */}
       <div className="flex items-center justify-end flex-shrink-0 px-4 gap-1">
-        <EditModeToggle />
+        {isEditor && <EditModeToggle />}
         <LanguageSwitcher />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
