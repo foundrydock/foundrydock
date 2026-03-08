@@ -20,7 +20,7 @@ export default function Slide01Cover() {
           </h1>
 
           {/* Subtitle */}
-          <p className="type-h2 text-white/70 max-w-[1100px] leading-relaxed font-light">
+          <p className="type-h2 text-white/80 max-w-[1100px] leading-relaxed font-light">
             3D-tulosteiden ja suunnitelmien kilpailutus- ja tilausalusta
           </p>
 
