@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { Grid3X3, FileText, MoreVertical, Play, Monitor, Moon, Sun, Printer, Globe } from 'lucide-react';
+import { Grid3X3, FileText, MoreVertical, Play, Monitor, Moon, Sun, Printer, Globe, Pencil, PencilOff } from 'lucide-react';
 import { useLanguage, Language } from '@/i18n/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -41,6 +41,7 @@ export function Toolbar({
 
       {/* Right section */}
       <div className="flex items-center justify-end flex-shrink-0 px-4 gap-1">
+        <EditModeToggle />
         <LanguageSwitcher />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -98,6 +99,21 @@ export function Toolbar({
         </DropdownMenu>
       </div>
     </div>
+  );
+}
+
+function EditModeToggle() {
+  const { editMode, setEditMode } = useLanguage();
+  return (
+    <Button
+      variant={editMode ? 'default' : 'ghost'}
+      size="icon"
+      onClick={() => setEditMode(!editMode)}
+      title={editMode ? 'Lopeta muokkaus' : 'Muokkaa tekstejä'}
+      className={cn(editMode && 'bg-slide-accent text-white hover:bg-slide-accent/90')}
+    >
+      {editMode ? <PencilOff className="h-4 w-4" /> : <Pencil className="h-4 w-4" />}
+    </Button>
   );
 }
 

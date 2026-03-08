@@ -1,11 +1,9 @@
 import React from 'react';
 import { MSSlideLayout } from '@/components/slides/MSSlideLayout';
 import designImage from '@/assets/3d-design-industrial.jpg';
-import { useLanguage } from '@/i18n/LanguageContext';
+import { T } from '@/components/slides/EditableText';
 
 export default function Slide12DesignShowcase() {
-  const { t } = useLanguage();
-
   return (
     <MSSlideLayout variant="dark">
       <div className="flex h-full">
@@ -13,18 +11,18 @@ export default function Slide12DesignShowcase() {
           <div className="space-y-8">
             <div className="flex items-center gap-3">
               <div className="w-12 h-[2px] bg-slide-accent-light" />
-              <span className="type-caption text-slide-accent-light tracking-widest uppercase">{t('design.section')}</span>
+              <T k="design.section" className="type-caption text-slide-accent-light tracking-widest uppercase" />
             </div>
 
-            <h2 className="type-h1 text-white leading-tight">{t('design.title')}</h2>
+            <T k="design.title" as="h2" className="type-h1 text-white leading-tight" />
 
-            <p className="type-body-lg text-white/70 leading-relaxed">{t('design.desc')}</p>
+            <T k="design.desc" as="p" className="type-body-lg text-white/70 leading-relaxed" />
 
             <div className="space-y-5 pt-4">
               {['design.f1', 'design.f2', 'design.f3', 'design.f4'].map((key) => (
                 <div key={key} className="flex items-center gap-4">
                   <div className="w-2 h-2 rounded-full bg-white/60 shrink-0" />
-                  <span className="type-body text-white/80">{t(key)}</span>
+                  <T k={key} className="type-body text-white/80" />
                 </div>
               ))}
             </div>

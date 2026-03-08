@@ -4,7 +4,7 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Environment } from '@react-three/drei';
 import * as THREE from 'three';
 import { MousePointerClick } from 'lucide-react';
-import { useLanguage } from '@/i18n/LanguageContext';
+import { T } from '@/components/slides/EditableText';
 
 function GearAssembly() {
   const groupRef = useRef<THREE.Group>(null);
@@ -83,18 +83,16 @@ function Scene() {
 }
 
 export default function Slide13Interactive3D() {
-  const { t } = useLanguage();
-
   return (
     <MSSlideLayout variant="dark">
       <div className="relative h-full w-full overflow-hidden">
         <div className="absolute top-16 left-20 z-10">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-12 h-[2px] bg-white/30" />
-            <span className="type-caption text-white/60 tracking-widest uppercase">{t('3d.section')}</span>
+            <T k="3d.section" className="type-caption text-white/60 tracking-widest uppercase" />
           </div>
-          <h2 className="type-h1 text-white">{t('3d.title')}</h2>
-          <p className="type-body-lg text-white/60 mt-3 max-w-[500px]">{t('3d.desc')}</p>
+          <T k="3d.title" as="h2" className="type-h1 text-white" />
+          <T k="3d.desc" as="p" className="type-body-lg text-white/60 mt-3 max-w-[500px]" />
         </div>
 
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -108,7 +106,7 @@ export default function Slide13Interactive3D() {
         <div className="absolute bottom-16 left-1/2 -translate-x-1/2 text-center z-10">
           <div className="flex items-center gap-3 px-6 py-3 rounded-full bg-white/10 backdrop-blur-sm border border-white/10">
             <MousePointerClick className="w-5 h-5 text-white/70" />
-            <span className="type-caption text-white/70">{t('3d.hint')}</span>
+            <T k="3d.hint" className="type-caption text-white/70" />
           </div>
         </div>
 
@@ -121,7 +119,7 @@ export default function Slide13Interactive3D() {
           ].map((s) => (
             <div key={s.key} className="text-right">
               <span className="type-h3 text-white font-semibold">{s.value}</span>
-              <p className="type-caption text-white/60">{t(s.key)}</p>
+              <T k={s.key} as="p" className="type-caption text-white/60" />
             </div>
           ))}
         </div>

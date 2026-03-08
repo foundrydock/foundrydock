@@ -1,33 +1,26 @@
 import React from 'react';
 import { MSSlideLayout } from '@/components/slides/MSSlideLayout';
-import { useLanguage } from '@/i18n/LanguageContext';
+import { T } from '@/components/slides/EditableText';
 
 export default function Slide01Cover() {
-  const { t } = useLanguage();
   return (
     <MSSlideLayout variant="dark">
       <div className="flex flex-col justify-center h-full px-20 py-16">
         <div className="space-y-12">
           <div className="flex items-center gap-3">
             <div className="w-12 h-[2px] bg-slide-accent" />
-            <span className="type-caption text-slide-accent-light tracking-widest uppercase">
-              {t('cover.tagline')}
-            </span>
+            <T k="cover.tagline" className="type-caption text-slide-accent-light tracking-widest uppercase" />
           </div>
 
-          <h1 className="type-display leading-none tracking-tight">
-            {t('cover.title')}
-          </h1>
+          <T k="cover.title" as="h1" className="type-display leading-none tracking-tight" />
 
-          <p className="type-h2 text-white/80 max-w-[1100px] leading-relaxed font-light">
-            {t('cover.subtitle')}
-          </p>
+          <T k="cover.subtitle" as="p" className="type-h2 text-white/80 max-w-[1100px] leading-relaxed font-light" />
 
           <div className="flex items-center gap-8 pt-8">
             {['cover.prop1', 'cover.prop2', 'cover.prop3'].map((key) => (
               <div key={key} className="flex items-center gap-3 text-white/70">
                 <div className="w-3 h-3 rounded-full bg-slide-accent" />
-                <span className="type-body">{t(key)}</span>
+                <T k={key} className="type-body" />
               </div>
             ))}
           </div>
