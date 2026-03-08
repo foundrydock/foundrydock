@@ -23,10 +23,11 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/audience" element={<AudienceWindow />} />
             <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </PasswordGate>
-    </TooltipProvider>
+            </Routes>
+          </BrowserRouter>
+        </PasswordGate>
+      </TooltipProvider>
+    </LanguageProvider>
   </QueryClientProvider>
 );
 

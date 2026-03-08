@@ -100,3 +100,30 @@ export function Toolbar({
     </div>
   );
 }
+
+function LanguageSwitcher() {
+  const { language, setLanguage } = useLanguage();
+  const languages: { code: Language; label: string }[] = [
+    { code: 'fi', label: 'FI' },
+    { code: 'en', label: 'EN' },
+  ];
+
+  return (
+    <div className="flex items-center gap-0.5 bg-muted rounded-md p-0.5">
+      {languages.map((lang) => (
+        <button
+          key={lang.code}
+          onClick={() => setLanguage(lang.code)}
+          className={cn(
+            'px-2 py-1 text-xs font-medium rounded transition-colors',
+            language === lang.code
+              ? 'bg-background text-foreground shadow-sm'
+              : 'text-muted-foreground hover:text-foreground'
+          )}
+        >
+          {lang.label}
+        </button>
+      ))}
+    </div>
+  );
+}
