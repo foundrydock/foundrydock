@@ -28,7 +28,7 @@ export default function Slide10Ask() {
               <div key={item.label} className="border-t-2 border-slide-accent pt-6">
                 <span className="type-metric text-slide-accent">{item.pct}</span>
                 <h3 className="type-h3 text-white mt-2">{item.label}</h3>
-                <p className="type-body text-white/50 mt-2">{item.desc}</p>
+                <p className="type-body text-white/70 mt-2">{item.desc}</p>
               </div>
             ))}
           </div>
