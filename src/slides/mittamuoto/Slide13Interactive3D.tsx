@@ -133,7 +133,7 @@ export default function Slide13Interactive3D() {
             </span>
           </div>
           <h2 className="type-h1 text-white">Teollisuuden osat 3D:nä</h2>
-          <p className="type-body-lg text-white/50 mt-3 max-w-[500px]">
+          <p className="type-body-lg text-white/60 mt-3 max-w-[500px]">
             Mittamuodon kautta voi tilata monimutkaisia teollisuusosia — 3D-tulostettuna tai koneistettuna.
           </p>
         </div>
