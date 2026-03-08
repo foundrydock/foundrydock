@@ -40,7 +40,7 @@ export default function Slide05BusinessModel() {
               <span className="type-label text-slide-gray-600 mb-2">Tulovirta 3</span>
               <span className="type-metric text-slide-gray-900">Shop</span>
               <h3 className="type-h3 text-slide-gray-900 mt-2 mb-4">Verkkokauppa</h3>
-              <p className="type-body text-slide-gray-500 leading-relaxed">
+              <p className="type-body text-slide-gray-600 leading-relaxed">
                 Valmistuotteiden myynti — 3D-tulostetut esineet ja tarvikkeet.
                 Suora D2C-kanava.
               </p>
