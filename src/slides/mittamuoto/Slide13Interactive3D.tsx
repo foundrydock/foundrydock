@@ -140,7 +140,7 @@ export default function Slide13Interactive3D() {
 
         {/* 3D Canvas */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="pointer-events-auto" style={{ width: 900, height: 700 }}>
+          <div className="pointer-events-auto" style={{ width: 1100, height: 850 }}>
             <Canvas
               camera={{ position: [0, 1, 5], fov: 45 }}
               gl={{ antialias: true, alpha: true }}
