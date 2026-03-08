@@ -265,10 +265,6 @@
 
 /* === Slide Font Scaling (1.25x scale, 20px floor) ===
    Applied only within slide content, not app UI */
-.slide-content {
-  /* Scale up all text proportionally for 1920x1080 projection */
-}
-
 .slide-content .text-xs { font-size: 20px !important; line-height: 1.5 !important; }
 .slide-content .text-sm { font-size: 20px !important; line-height: 1.5 !important; }
 .slide-content .text-base { font-size: 20px !important; line-height: 1.6 !important; }
@@ -282,6 +278,30 @@
 .slide-content .text-7xl { font-size: 88px !important; line-height: 1.05 !important; }
 .slide-content .text-8xl { font-size: 112px !important; line-height: 1 !important; }
 .slide-content .text-9xl { font-size: 144px !important; line-height: 1 !important; }
+
+/* === Mobile: Boost all slide typography for readability === */
+@media (max-width: 768px) {
+  .slide-content .type-display { font-size: 112px !important; }
+  .slide-content .type-h1 { font-size: 72px !important; }
+  .slide-content .type-h2 { font-size: 48px !important; }
+  .slide-content .type-h3 { font-size: 40px !important; }
+  .slide-content .type-body-lg { font-size: 36px !important; }
+  .slide-content .type-body { font-size: 32px !important; }
+  .slide-content .type-caption { font-size: 28px !important; }
+  .slide-content .type-label { font-size: 26px !important; }
+  .slide-content .type-metric { font-size: 64px !important; }
+
+  .slide-content .text-xs,
+  .slide-content .text-sm { font-size: 28px !important; }
+  .slide-content .text-base { font-size: 30px !important; }
+  .slide-content .text-lg { font-size: 34px !important; }
+  .slide-content .text-xl { font-size: 38px !important; }
+  .slide-content .text-2xl { font-size: 44px !important; }
+  .slide-content .text-3xl { font-size: 52px !important; }
+  .slide-content .text-4xl { font-size: 64px !important; }
+  .slide-content .text-5xl { font-size: 80px !important; }
+  .slide-content .text-6xl { font-size: 100px !important; }
+}
 
 /* Grid overlay */
 .grid-overlay {
