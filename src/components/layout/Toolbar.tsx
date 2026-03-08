@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils';
 import { Grid3X3, FileText, MoreVertical, Play, Monitor, Moon, Sun, Printer, Pencil, PencilOff } from 'lucide-react';
+import { getAccessRole } from '@/components/PasswordGate';
 import { useLanguage, Language } from '@/i18n/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -44,12 +45,14 @@ export function Toolbar({
   className,
   deckManager,
 }: ToolbarProps) {
+  const isEditor = getAccessRole() === 'editor';
+
   return (
     <div className={cn('h-12 border-b bg-background flex items-center', className)}>
       {/* Left section - Logo + Deck Switcher */}
       <div className="flex items-center px-4 gap-3">
         <span className="text-sm font-medium tracking-tight text-foreground">SlideForge</span>
-        {deckManager && (
+        {isEditor && deckManager && (
           <DeckSwitcher
             decks={deckManager.decks}
             activeDeck={deckManager.activeDeck}
@@ -66,7 +69,7 @@ export function Toolbar({
 
       {/* Right section */}
       <div className="flex items-center justify-end flex-shrink-0 px-4 gap-1">
-        <EditModeToggle />
+        {isEditor && <EditModeToggle />}
         <LanguageSwitcher />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
