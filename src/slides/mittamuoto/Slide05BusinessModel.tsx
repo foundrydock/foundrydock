@@ -20,7 +20,7 @@ export default function Slide05BusinessModel() {
               <span className="type-label text-slide-accent mb-2">Päätulovirta</span>
               <span className="type-metric text-slide-gray-900">10-15%</span>
               <h3 className="type-h3 text-slide-gray-900 mt-2 mb-4">Transaktiokomissio</h3>
-              <p className="type-body text-slide-gray-500 leading-relaxed">
+              <p className="type-body text-slide-gray-600 leading-relaxed">
                 Jokaisesta toteutuneesta tilauksesta. Asiakas maksaa, maksu vapautetaan
                 palveluntarjoajalle miinus komissio.
               </p>
