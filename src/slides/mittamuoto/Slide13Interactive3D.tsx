@@ -128,7 +128,7 @@ export default function Slide13Interactive3D() {
         <div className="absolute top-16 left-20 z-10">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-12 h-[2px] bg-white/30" />
-            <span className="type-caption text-white/50 tracking-widest uppercase">
+            <span className="type-caption text-white/60 tracking-widest uppercase">
               Interaktiivinen demo
             </span>
           </div>
