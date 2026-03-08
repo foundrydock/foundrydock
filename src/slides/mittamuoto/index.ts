@@ -9,6 +9,8 @@ import Slide08Competition from './Slide08Competition';
 import Slide09Roadmap from './Slide09Roadmap';
 import Slide10Ask from './Slide10Ask';
 import Slide11Team from './Slide11Team';
+import Slide12DesignShowcase from './Slide12DesignShowcase';
+import Slide13Interactive3D from './Slide13Interactive3D';
 
 export const mittamuotoSlides = [
   { component: Slide01Cover, name: 'Kansilehti', template: 'title' },
@@ -16,7 +18,9 @@ export const mittamuotoSlides = [
   { component: Slide03Solution, name: 'Ratkaisu', template: 'three-up' },
   { component: Slide04Market, name: 'Markkina', template: 'data-viz' },
   { component: Slide05BusinessModel, name: 'Liiketoimintamalli', template: 'three-up' },
+  { component: Slide12DesignShowcase, name: '3D-suunnittelu', template: 'data-viz' },
   { component: Slide06Product, name: 'Tuote', template: 'three-up' },
+  { component: Slide13Interactive3D, name: '3D-demo', template: 'data-viz' },
   { component: Slide07Traction, name: 'Traktio', template: 'data-viz' },
   { component: Slide08Competition, name: 'Kilpailu', template: 'comparison' },
   { component: Slide09Roadmap, name: 'Tiekartta', template: 'timeline' },
