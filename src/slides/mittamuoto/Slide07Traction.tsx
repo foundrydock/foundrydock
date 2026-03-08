@@ -12,7 +12,7 @@ export default function Slide07Traction() {
           <h2 className="type-h1 mt-4 text-slide-gray-900">
             Tilanne nyt
           </h2>
-          <p className="type-body-lg text-slide-gray-500 mt-3">
+          <p className="type-body-lg text-slide-gray-600 mt-3">
             Päivitä nämä luvut omilla metriikoillasi
           </p>
         </div>
