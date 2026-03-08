@@ -114,7 +114,7 @@ export const en: Record<string, string> = {
   'traction.m1.note': 'Add number',
   'traction.m2.note': 'Add number',
   'traction.m3.note': 'Add number',
-  'traction.m4.note': 'Source: mittamuoto.com',
+  'traction.m4.note': 'Customer feedback',
   'traction.milestones': 'Milestones achieved',
   'traction.ms1': 'Fully functional platform launched',
   'traction.ms2': 'Stripe payment integration in production',

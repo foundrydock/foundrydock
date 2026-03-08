@@ -33,7 +33,7 @@ export default function Slide01Cover() {
           </div>
 
           <div className="pt-4 text-white/60">
-            <span className="type-caption">mittamuoto.com · <a href="mailto:jani@measureshape.com" className="underline hover:text-white">jani@measureshape.com</a> · +358 40 322 4419</span>
+            <span className="type-caption"><a href="mailto:jani@measureshape.com" className="underline hover:text-white">jani@measureshape.com</a> · +358 40 322 4419</span>
           </div>
         </div>
       </div>
