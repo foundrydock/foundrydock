@@ -156,8 +156,8 @@ export default function Slide13Interactive3D() {
         {/* Interaction hint */}
         <div className="absolute bottom-16 left-1/2 -translate-x-1/2 text-center z-10">
           <div className="flex items-center gap-3 px-6 py-3 rounded-full bg-white/10 backdrop-blur-sm border border-white/10">
-            <MousePointerClick className="w-5 h-5 text-white/60" />
-            <span className="type-caption text-white/60">Tartu ja pyöritä</span>
+            <MousePointerClick className="w-5 h-5 text-white/70" />
+            <span className="type-caption text-white/70">Tartu ja pyöritä</span>
           </div>
         </div>
 
