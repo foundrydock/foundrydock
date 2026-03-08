@@ -14,7 +14,7 @@ export default function Slide10Ask() {
           </h2>
 
           <p className="type-h2 text-white/70 font-light mb-16 max-w-[1000px]">
-            Täydennä summa ja ehdot oman suunnitelmasi mukaan
+            Rakennetaan Pohjoismaiden johtava 3D-tulostusmarketplace yhdessä
           </p>
 
           {/* Use of funds */}
