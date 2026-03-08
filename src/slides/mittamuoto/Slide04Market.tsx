@@ -28,7 +28,7 @@ export default function Slide04Market() {
               <div className="absolute top-[100px] left-[100px] right-[100px] bottom-[100px] rounded-full border-2 border-slide-accent/30 bg-slide-accent/5 flex items-start justify-center pt-10">
                 <div className="text-center">
                   <span className="type-metric text-slide-accent">€850M</span>
-                  <p className="type-caption text-slide-gray-500">SAM — Pohjoismaat + B2B palvelut</p>
+                  <p className="type-caption text-slide-gray-600">SAM — Pohjoismaat + B2B palvelut</p>
                 </div>
               </div>
               {/* SOM */}
