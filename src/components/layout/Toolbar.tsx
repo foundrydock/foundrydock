@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { Grid3X3, FileText, MoreVertical, Play, Monitor, Moon, Sun } from 'lucide-react';
+import { Grid3X3, FileText, MoreVertical, Play, Monitor, Moon, Sun, Printer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
@@ -12,6 +12,7 @@ interface ToolbarProps {
   onToggleDarkMode?: () => void;
   onStartPresentation?: () => void;
   onStartPresenterView?: () => void;
+  onPrintPDF?: () => void;
   className?: string;
 }
 
