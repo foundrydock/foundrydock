@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import logoLight from '@/assets/mittamuoto-logo-light.png';
 
 const SITE_PASSWORD = 'mittamuoto2024';
 
