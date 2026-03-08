@@ -9,7 +9,11 @@ import { PresenterView } from '@/components/slides/PresenterView';
 import { PresenterNotesPanel } from '@/components/slides/PresenterNotesPanel';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useLanguage } from '@/i18n/LanguageContext';
+import { useDeckManager } from '@/hooks/useDeckManager';
 import { mittamuotoSlides } from '@/slides/mittamuoto';
+import { showcaseSlides } from '@/slides/showcase';
+import { demoSlides } from '@/slides/demo';
 
 interface SlideData {
   id: string;
@@ -19,8 +23,18 @@ interface SlideData {
   description?: string;
 }
 
+const templateMap: Record<string, typeof mittamuotoSlides> = {
+  mittamuoto: mittamuotoSlides,
+  showcase: showcaseSlides,
+  demo: demoSlides,
+};
+
 export default function Index() {
   const isMobile = useIsMobile();
+  const { setOverridesKey } = useLanguage();
+  const deckManager = useDeckManager();
+  const { activeDeck, activeDeckId } = deckManager;
+
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
   const [showGrid, setShowGrid] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
@@ -32,21 +46,30 @@ export default function Index() {
   const [sidebarWidth, setSidebarWidth] = useState(256);
   const [isResizing, setIsResizing] = useState(false);
 
-  // Hide sidebar on mobile
+  // Sync overrides key with active deck
+  useEffect(() => {
+    setOverridesKey(deckManager.getOverridesKey(activeDeckId));
+  }, [activeDeckId, deckManager, setOverridesKey]);
+
+  // Reset slide index on deck switch
+  useEffect(() => {
+    setActiveSlideIndex(0);
+  }, [activeDeckId]);
+
   useEffect(() => {
     if (isMobile) setShowSidebar(false);
   }, [isMobile]);
 
-  const slides = React.useMemo<SlideData[]>(() => 
-    mittamuotoSlides.map((s) => ({
+  const slides = React.useMemo<SlideData[]>(() => {
+    const templateSlides = templateMap[activeDeck.sourceTemplate] || mittamuotoSlides;
+    return templateSlides.map((s) => ({
       id: `slide-${s.name.toLowerCase().replace(/\s+/g, '-')}`,
       component: s.component,
       name: s.name,
       isWIP: false,
       description: undefined,
-    })),
-    []
-  );
+    }));
+  }, [activeDeck.sourceTemplate]);
 
   const currentSlideId = slides[activeSlideIndex]?.id ?? null;
 
@@ -54,7 +77,6 @@ export default function Index() {
     document.documentElement.classList.toggle('dark', isDarkMode);
   }, [isDarkMode]);
 
-  // Touch swipe for mobile
   const touchStartRef = React.useRef<{ x: number; y: number } | null>(null);
   
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
@@ -66,8 +88,6 @@ export default function Index() {
     const dx = e.changedTouches[0].clientX - touchStartRef.current.x;
     const dy = e.changedTouches[0].clientY - touchStartRef.current.y;
     touchStartRef.current = null;
-    
-    // Only horizontal swipes (ignore vertical scroll)
     if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
       if (dx < 0) {
         setActiveSlideIndex(prev => Math.min(slides.length - 1, prev + 1));
@@ -77,15 +97,14 @@ export default function Index() {
     }
   }, [slides.length]);
 
-  // Print PDF handler
   const handlePrintPDF = useCallback(() => {
     window.print();
   }, []);
 
-  // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      if ((e.target as HTMLElement)?.contentEditable === 'true') return;
       if (isPresentationMode || isPresenterView) return;
 
       if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
@@ -122,7 +141,7 @@ export default function Index() {
     <>
       {/* Print-only: render all slides for PDF export */}
       <div className="print-slides">
-        {slides.map((slide, i) => (
+        {slides.map((slide) => (
           <div key={slide.id} className="print-slide-page">
             <slide.component />
           </div>
@@ -130,7 +149,6 @@ export default function Index() {
       </div>
 
       <div className="h-screen flex flex-col bg-background print:hidden">
-        {/* Toolbar */}
         <Toolbar
           showGrid={showGrid}
           onToggleGrid={() => {
@@ -145,10 +163,10 @@ export default function Index() {
           onStartPresentation={() => setIsPresentationMode(true)}
           onStartPresenterView={() => setIsPresenterView(true)}
           onPrintPDF={handlePrintPDF}
+          deckManager={deckManager}
         />
 
         <div className="flex-1 flex overflow-hidden relative">
-          {/* Left Sidebar - hidden on mobile */}
           {!isMobile && (
             <>
               <div 
@@ -175,7 +193,6 @@ export default function Index() {
                 </div>
               </div>
 
-              {/* Sidebar Toggle */}
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -202,7 +219,6 @@ export default function Index() {
             </>
           )}
 
-          {/* Main Canvas Area */}
           <div 
             className="flex-1 flex flex-col overflow-hidden"
             onTouchStart={handleTouchStart}
@@ -231,7 +247,6 @@ export default function Index() {
               )}
             </div>
 
-            {/* Presenter Notes Panel - Bottom (hidden on mobile) */}
             {showNotes && !isMobile && (
               <PresenterNotesPanel
                 slideId={currentSlideId}
@@ -242,7 +257,6 @@ export default function Index() {
           </div>
         </div>
 
-        {/* Presentation Mode */}
         {isPresentationMode && (
           <PresentationMode
             slides={slides.map(slide => ({
@@ -257,7 +271,6 @@ export default function Index() {
           />
         )}
 
-        {/* Presenter View */}
         {isPresenterView && (
           <PresenterView
             slides={slides.map(slide => ({

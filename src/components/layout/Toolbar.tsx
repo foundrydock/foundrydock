@@ -1,8 +1,21 @@
 import { cn } from '@/lib/utils';
-import { Grid3X3, FileText, MoreVertical, Play, Monitor, Moon, Sun, Printer, Globe, Pencil, PencilOff } from 'lucide-react';
+import { Grid3X3, FileText, MoreVertical, Play, Monitor, Moon, Sun, Printer, Pencil, PencilOff } from 'lucide-react';
 import { useLanguage, Language } from '@/i18n/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { DeckSwitcher } from '@/components/layout/DeckSwitcher';
+import type { DeckInfo } from '@/hooks/useDeckManager';
+
+interface DeckManagerApi {
+  decks: DeckInfo[];
+  activeDeck: DeckInfo;
+  activeDeckId: string;
+  setActiveDeckId: (id: string) => void;
+  cloneDeck: (sourceId: string, name: string) => DeckInfo | null;
+  createDeck: (name: string, template: string) => DeckInfo;
+  renameDeck: (id: string, name: string) => void;
+  deleteDeck: (id: string) => void;
+}
 
 interface ToolbarProps {
   showGrid: boolean;
@@ -15,6 +28,7 @@ interface ToolbarProps {
   onStartPresenterView?: () => void;
   onPrintPDF?: () => void;
   className?: string;
+  deckManager?: DeckManagerApi;
 }
 
 export function Toolbar({
@@ -27,16 +41,27 @@ export function Toolbar({
   onStartPresentation,
   onStartPresenterView,
   onPrintPDF,
-  className
+  className,
+  deckManager,
 }: ToolbarProps) {
   return (
     <div className={cn('h-12 border-b bg-background flex items-center', className)}>
-      {/* Left section - Logo */}
-      <div className="flex items-center px-4">
-        <span className="text-sm font-medium tracking-tight text-foreground">Lovable Slides</span>
+      {/* Left section - Logo + Deck Switcher */}
+      <div className="flex items-center px-4 gap-3">
+        <span className="text-sm font-medium tracking-tight text-foreground">SlideForge</span>
+        {deckManager && (
+          <DeckSwitcher
+            decks={deckManager.decks}
+            activeDeck={deckManager.activeDeck}
+            onSelectDeck={deckManager.setActiveDeckId}
+            onCloneDeck={deckManager.cloneDeck}
+            onCreateDeck={deckManager.createDeck}
+            onRenameDeck={deckManager.renameDeck}
+            onDeleteDeck={deckManager.deleteDeck}
+          />
+        )}
       </div>
 
-      {/* Spacer */}
       <div className="flex-1" />
 
       {/* Right section */}
@@ -52,13 +77,13 @@ export function Toolbar({
           <DropdownMenuContent align="end" className="z-[70]">
             <DropdownMenuItem onClick={onToggleGrid}>
               <Grid3X3 className="h-4 w-4 mr-2" />
-              {showGrid ? 'Hide Grid' : 'Show Grid'}
+              {showGrid ? 'Piilota ruudukko' : 'Näytä ruudukko'}
               <span className="ml-auto text-xs text-muted-foreground">⇧G</span>
             </DropdownMenuItem>
             {onToggleNotes && (
               <DropdownMenuItem onClick={onToggleNotes}>
                 <FileText className="h-4 w-4 mr-2" />
-                {showNotes ? 'Hide Notes' : 'Show Notes'}
+                {showNotes ? 'Piilota muistiinpanot' : 'Näytä muistiinpanot'}
                 <span className="ml-auto text-xs text-muted-foreground">⇧N</span>
               </DropdownMenuItem>
             )}
@@ -66,14 +91,14 @@ export function Toolbar({
             {onStartPresentation && (
               <DropdownMenuItem onClick={onStartPresentation}>
                 <Play className="h-4 w-4 mr-2" />
-                Present
+                Esitä
                 <span className="ml-auto text-xs text-muted-foreground">⇧P</span>
               </DropdownMenuItem>
             )}
             {onStartPresenterView && (
               <DropdownMenuItem onClick={onStartPresenterView}>
                 <Monitor className="h-4 w-4 mr-2" />
-                Presenter View
+                Esittäjänäkymä
                 <span className="ml-auto text-xs text-muted-foreground">⇧V</span>
               </DropdownMenuItem>
             )}
@@ -91,7 +116,7 @@ export function Toolbar({
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={onToggleDarkMode}>
                   {isDarkMode ? <Sun className="h-4 w-4 mr-2" /> : <Moon className="h-4 w-4 mr-2" />}
-                  {isDarkMode ? 'Light Mode' : 'Dark Mode'}
+                  {isDarkMode ? 'Vaalea tila' : 'Tumma tila'}
                 </DropdownMenuItem>
               </>
             )}
