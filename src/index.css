@@ -373,3 +373,46 @@
 .animate-collapse {
   animation: collapseIn 0.2s ease-out forwards;
 }
+
+/* === Print / PDF Export Styles === */
+.print-slides {
+  display: none;
+}
+
+@media print {
+  /* Hide the app UI */
+  .print\\:hidden {
+    display: none !important;
+  }
+
+  /* Show print slides */
+  .print-slides {
+    display: block !important;
+  }
+
+  .print-slide-page {
+    width: 100vw;
+    height: 100vh;
+    page-break-after: always;
+    page-break-inside: avoid;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .print-slide-page:last-child {
+    page-break-after: auto;
+  }
+
+  /* Reset margins for clean PDF */
+  @page {
+    size: landscape;
+    margin: 0;
+  }
+
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
