@@ -1,5 +1,6 @@
 import React from 'react';
 import { MSSlideLayout } from '@/components/slides/MSSlideLayout';
+import { Target, ShieldCheck, Package, Star } from 'lucide-react';
 
 export default function Slide03Solution() {
   return (
@@ -20,28 +21,28 @@ export default function Slide03Solution() {
         <div className="flex-1 grid grid-cols-4 gap-8">
           {[
             {
-              icon: '🎯',
+              icon: Target,
               title: 'Kilpailutus',
               points: ['Tilaus julkaistaan verkostolle', 'Useita tarjouksia nopeasti', 'Vertaile hintaa, aikaa, materiaaleja'],
             },
             {
-              icon: '🛡️',
+              icon: ShieldCheck,
               title: 'Turvallinen maksu',
               points: ['Stripe-escrow -malli', 'Raha vapautuu hyväksynnän jälkeen', 'Luottokortit ja laskutus'],
             },
             {
-              icon: '📦',
+              icon: Package,
               title: 'Logistiikka',
               points: ['Posti-integraatio', 'Automaattinen lähetyksen luonti', 'Seurantakoodit asiakkaalle'],
             },
             {
-              icon: '⭐',
+              icon: Star,
               title: 'Laatu & luottamus',
               points: ['Kaksisuuntaiset arvostelut', 'Palveluntarjoajaprofiilit', 'Tilaushistoria ja portfolio'],
             },
           ].map((pillar) => (
             <div key={pillar.title} className="slide-card p-8 flex flex-col">
-              <span className="text-[48px] mb-4">{pillar.icon}</span>
+              <pillar.icon className="w-12 h-12 text-slide-gray-900 mb-4" strokeWidth={1.5} />
               <h3 className="type-h3 text-slide-gray-900 mb-6">{pillar.title}</h3>
               <ul className="space-y-3 flex-1">
                 {pillar.points.map((point) => (

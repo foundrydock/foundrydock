@@ -1,5 +1,6 @@
 import React from 'react';
 import { MSSlideLayout } from '@/components/slides/MSSlideLayout';
+import { Check } from 'lucide-react';
 
 export default function Slide07Traction() {
   return (
@@ -37,16 +38,17 @@ export default function Slide07Traction() {
           <h3 className="type-h3 text-slide-gray-900 mb-8">Saavutetut virstanpylväät</h3>
           <div className="grid grid-cols-2 gap-x-16 gap-y-6">
             {[
-              '✅ Täysin toimiva alusta julkaistu',
-              '✅ Stripe-maksuintegraatio tuotannossa',
-              '✅ Posti-toimitusintegraatio',
-              '✅ Palveluntarjoajien CRM & kampanjatyökalut',
-              '✅ Verkkokauppa (Shop) lanseerattu',
-              '✅ Admin-hallintapaneeli',
-              '✅ Tietoturvaskannaus & hardening tehty',
-              '✅ Jira-integraatio tiketöintiin',
+              'Täysin toimiva alusta julkaistu',
+              'Stripe-maksuintegraatio tuotannossa',
+              'Posti-toimitusintegraatio',
+              'Palveluntarjoajien CRM & kampanjatyökalut',
+              'Verkkokauppa (Shop) lanseerattu',
+              'Admin-hallintapaneeli',
+              'Tietoturvaskannaus & hardening tehty',
+              'Jira-integraatio tiketöintiin',
             ].map((item) => (
               <div key={item} className="flex items-center gap-3">
+                <Check className="w-6 h-6 text-slide-gray-900 shrink-0" strokeWidth={2} />
                 <span className="type-body text-slide-gray-700">{item}</span>
               </div>
             ))}
