@@ -1,23 +1,36 @@
 import React, { useState } from 'react';
 import logoLight from '@/assets/mittamuoto-logo-light.png';
 
-const SITE_PASSWORD = 'mittamuoto2024';
+export type AccessRole = 'editor' | 'viewer';
+
+const PASSWORDS: Record<string, AccessRole> = {
+  'mittamuoto2024': 'editor',
+  'mittamuoto2026': 'viewer',
+};
 
 interface PasswordGateProps {
   children: React.ReactNode;
 }
 
+export function getAccessRole(): AccessRole | null {
+  const role = sessionStorage.getItem('deck_access_role');
+  if (role === 'editor' || role === 'viewer') return role;
+  return null;
+}
+
 export default function PasswordGate({ children }: PasswordGateProps) {
   const [authenticated, setAuthenticated] = useState(() => {
-    return sessionStorage.getItem('deck_authenticated') === 'true';
+    return getAccessRole() !== null;
   });
   const [password, setPassword] = useState('');
   const [error, setError] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === SITE_PASSWORD) {
+    const role = PASSWORDS[password];
+    if (role) {
       sessionStorage.setItem('deck_authenticated', 'true');
+      sessionStorage.setItem('deck_access_role', role);
       setAuthenticated(true);
       setError(false);
     } else {
