@@ -39,8 +39,8 @@ function GearAssembly() {
       })}
 
       {/* Hub */}
-      <mesh position={[0, 0, 0]}>
-        <cylinderGeometry args={[0.5, 0.5, 0.3, 32]} rotation={[Math.PI / 2, 0, 0]} />
+      <mesh position={[0, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
+        <cylinderGeometry args={[0.5, 0.5, 0.3, 32]} />
         <meshStandardMaterial color="#c8c8c8" roughness={0.2} metalness={0.95} />
       </mesh>
 
