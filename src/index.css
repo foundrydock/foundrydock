@@ -12,15 +12,15 @@
      * Clean, accessible, enterprise-grade tokens
      */
     
-    /* === Brand Colors (Slide Deck) === */
-    /* Primary - Deep blue for authority and trust */
-    --slide-primary: 215 100% 20%;      /* #003366 - Deep Navy */
-    --slide-primary-light: 215 85% 35%; /* #1a5490 */
+    /* === Brand Colors (Mittamuoto) === */
+    /* Primary - Dark teal for authority and trust */
+    --slide-primary: 195 80% 15%;       /* Deep teal-navy */
+    --slide-primary-light: 195 60% 30%; /* Medium teal */
     
-    /* Accent - Vibrant blue for highlights */
-    --slide-accent: 207 90% 54%;        /* #2196F3 - Bright Blue */
-    --slide-accent-light: 207 90% 70%;  /* Lighter accent */
-    --slide-accent-muted: 207 40% 90%;  /* Very light accent bg */
+    /* Accent - Mittamuoto teal/turquoise */
+    --slide-accent: 174 72% 46%;        /* #1EB8A0 - Teal */
+    --slide-accent-light: 174 60% 65%;  /* Lighter teal */
+    --slide-accent-muted: 174 40% 92%;  /* Very light teal bg */
     
     /* Semantic */
     --slide-success: 145 63% 42%;       /* #27AE60 - Green */

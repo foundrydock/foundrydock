@@ -61,7 +61,7 @@ export function LogoMark({ variant = 'dark', className }: LogoMarkProps) {
       className={cn('h-5 w-auto', className)}
       fill={color}
     >
-      {/* Clean wordmark placeholder */}
+      {/* Mittamuoto wordmark */}
       <text
         x="0"
         y="17"
@@ -70,7 +70,7 @@ export function LogoMark({ variant = 'dark', className }: LogoMarkProps) {
         fontWeight="600"
         letterSpacing="0.05em"
       >
-        SLIDEFORGE
+        MITTAMUOTO
       </text>
     </svg>
   );
