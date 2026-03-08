@@ -20,7 +20,7 @@ export default function Slide12DesignShowcase() {
               Suunnitelmasta tuotantoon
             </h2>
 
-            <p className="type-body-lg text-white/60 leading-relaxed">
+            <p className="type-body-lg text-white/70 leading-relaxed">
               Mittamuoto yhdistää 3D-suunnittelun ja valmistuksen. Tilaaja lataa CAD-mallin, 
               palveluntarjoajat kilpailuttavat tuotannon — kaikki yhdellä alustalla.
             </p>
