@@ -10,7 +10,7 @@ export default function Slide10Ask() {
           <span className="type-caption text-slide-accent-light tracking-widest uppercase">12 — Rahoituskierros</span>
           
           <h2 className="type-display text-white mt-6 mb-8">
-            Pre-Seed: €500k
+            Seed: €500k
           </h2>
 
           <p className="type-h2 text-white/70 font-light mb-16 max-w-[1000px]">

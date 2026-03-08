@@ -10,7 +10,7 @@ export default function Slide01Cover() {
           <div className="flex items-center gap-3">
             <div className="w-12 h-[2px] bg-slide-accent" />
             <span className="type-caption text-slide-accent-light tracking-widest uppercase">
-              Pre-Seed Rahoituskierros
+              Seed Rahoituskierros
             </span>
           </div>
 
