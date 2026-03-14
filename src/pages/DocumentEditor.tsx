@@ -32,6 +32,7 @@ export default function DocumentEditor() {
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState<Json>({});
+  const [contentReady, setContentReady] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState<'saved' | 'unsaved' | 'saving'>('saved');
   const [shareOpen, setShareOpen] = useState(false);
@@ -58,7 +59,8 @@ export default function DocumentEditor() {
   useEffect(() => {
     if (doc) {
       setTitle(doc.title);
-      setContent(doc.content);
+      setContent(doc.content ?? { type: 'doc', content: [{ type: 'paragraph' }] });
+      setContentReady(true);
     }
   }, [doc]);
 
@@ -193,9 +195,9 @@ export default function DocumentEditor() {
         </div>
       </div>
 
-      {/* Editor – mountataan vasta kun doc on ladattu oikealla sisällöllä */}
+      {/* Editor – mountataan vasta kun content on alustettu doc.content:sta */}
       <div className="flex-1 overflow-hidden">
-        {doc && (
+        {contentReady && (
           <RichEditor
             key={docId}
             content={content}

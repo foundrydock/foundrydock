@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useCompany } from '@/auth/CompanyContext';
@@ -68,15 +68,16 @@ export default function BrandGuide() {
     toast.success(`Logo (${variant === 'light' ? 'vaalea' : 'tumma'} tausta) ladattu`);
   }
 
-  function LogoPreview({ path, label }: { path: string | null | undefined; label: string }) {
+  function LogoPreview({ path, label, dark = false }: { path: string | null | undefined; label: string; dark?: boolean }) {
     const [url, setUrl] = useState<string | null>(null);
-    useState(() => {
-      if (path) supabase.storage.from('assets').createSignedUrl(path, 3600).then(({ data }) => {
+    useEffect(() => {
+      if (!path) { setUrl(null); return; }
+      supabase.storage.from('assets').createSignedUrl(path, 3600).then(({ data }) => {
         if (data?.signedUrl) setUrl(data.signedUrl);
       });
-    });
+    }, [path]);
     return (
-      <div className="aspect-video bg-neutral-800 rounded-xl flex items-center justify-center overflow-hidden">
+      <div className={`aspect-video rounded-xl flex items-center justify-center overflow-hidden ${dark ? 'bg-neutral-950 border border-neutral-800' : 'bg-neutral-800'}`}>
         {url ? (
           <img src={url} alt={label} className="max-w-full max-h-full object-contain p-4" />
         ) : (
@@ -143,13 +144,7 @@ export default function BrandGuide() {
             </div>
             <div>
               <Label className="text-neutral-400 text-xs mb-2 block">Tumman taustan logo</Label>
-              <div className="aspect-video bg-neutral-950 border border-neutral-800 rounded-xl flex items-center justify-center overflow-hidden">
-                {settings?.logo_dark_path ? (
-                  <LogoPreview path={settings.logo_dark_path} label="Tumma tausta" />
-                ) : (
-                  <div className="text-center"><ImageIcon size={24} className="text-neutral-700 mx-auto mb-1" /><span className="text-neutral-600 text-xs">Tumma tausta</span></div>
-                )}
-              </div>
+              <LogoPreview path={settings?.logo_dark_path} label="Tumma tausta" dark={true} />
               {isCompanyAdmin && (
                 <>
                   <input ref={logoDarkRef} type="file" accept="image/*" className="hidden"
