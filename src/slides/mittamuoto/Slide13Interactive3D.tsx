@@ -150,8 +150,6 @@ export default function Slide13Interactive3D() {
     </MSSlideLayout>
   );
 }
-
-            <T k="3d.section" className="type-caption text-white/60 tracking-widest uppercase" />
           </div>
           <T k="3d.title" as="h2" className="type-h1 text-white" />
           <T k="3d.desc" as="p" className="type-body-lg text-white/60 mt-3 max-w-[500px]" />
