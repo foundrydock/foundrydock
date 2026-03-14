@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import { StarterKit } from '@tiptap/starter-kit';
 import { TextAlign } from '@tiptap/extension-text-align';
@@ -46,6 +47,13 @@ export default function RichEditor({ content, onChange, readOnly = false, brandC
       onChange?.(editor.getJSON() as Json);
     },
   });
+
+  // Päivitä editoitavuus kun readOnly-prop muuttuu (esim. yritys latautuu jälkijunassa)
+  useEffect(() => {
+    if (editor) {
+      editor.setEditable(!readOnly);
+    }
+  }, [editor, readOnly]);
 
   if (!editor) return null;
 

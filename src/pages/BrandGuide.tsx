@@ -60,12 +60,23 @@ export default function BrandGuide() {
     setUploadingLogo(variant);
     const ext = file.name.split('.').pop();
     const path = `${activeCompany.id}/brand/logo-${variant}-${Date.now()}.${ext}`;
-    const { error } = await supabase.storage.from('assets').upload(path, file, { contentType: file.type, upsert: true });
-    if (error) { toast.error('Logo-lataus epäonnistui'); setUploadingLogo(null); return; }
-    if (variant === 'light') update({ logo_light_path: path });
-    else update({ logo_dark_path: path });
+    const { error: uploadError } = await supabase.storage.from('assets').upload(path, file, { contentType: file.type, upsert: true });
+    if (uploadError) { toast.error('Logo-lataus epäonnistui'); setUploadingLogo(null); return; }
+
+    const field = variant === 'light' ? { logo_light_path: path } : { logo_dark_path: path };
+    update(field);
+
+    // Persist immediately to Supabase so it survives page refresh
+    const currentSettings = { ...brand, ...localSettings } as BrandSettings;
+    const { error: saveError } = await supabase
+      .from('brand_settings')
+      .upsert({ ...currentSettings, ...field, company_id: activeCompany.id, updated_at: new Date().toISOString() });
+    if (saveError) toast.error('Logon tallennus epäonnistui');
+    else {
+      qc.invalidateQueries({ queryKey: ['brand', activeCompany.id] });
+      toast.success(`Logo (${variant === 'light' ? 'vaalea' : 'tumma'} tausta) ladattu`);
+    }
     setUploadingLogo(null);
-    toast.success(`Logo (${variant === 'light' ? 'vaalea' : 'tumma'} tausta) ladattu`);
   }
 
   function LogoPreview({ path, label, dark = false }: { path: string | null | undefined; label: string; dark?: boolean }) {
