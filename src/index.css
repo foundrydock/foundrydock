@@ -400,13 +400,16 @@
 }
 
 @media print {
-  /* Hide everything except print slides */
-  body > * {
+  /* Hide the app UI, show only print slides */
+  .print\\:hidden,
+  #root > *:not(.print-slides) {
     display: none !important;
   }
   
   .print-slides {
     display: block !important;
+    position: static !important;
+    width: 100% !important;
   }
 
   .print-slide-page {
