@@ -1,126 +1,71 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useMemo } from 'react';
 import { MSSlideLayout } from '@/components/slides/MSSlideLayout';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Environment } from '@react-three/drei';
 import * as THREE from 'three';
 import { MousePointerClick } from 'lucide-react';
 import { T } from '@/components/slides/EditableText';
 
-function createGearShape(outerRadius: number, innerRadius: number, teeth: number, toothDepth: number) {
-  const shape = new THREE.Shape();
-  const anglePerTooth = (Math.PI * 2) / teeth;
+/**
+ * Precision-machined flanged coupling – a single high-quality part
+ * built from lathe-style profiles (LatheGeometry).
+ */
+function PrecisionPart() {
+  const bodyGeo = useMemo(() => {
+    const pts = [
+      new THREE.Vector2(0, -0.8),
+      new THREE.Vector2(1.6, -0.8),
+      new THREE.Vector2(1.6, -0.6),
+      new THREE.Vector2(1.0, -0.6),
+      new THREE.Vector2(1.0, -0.5),
+      new THREE.Vector2(1.8, -0.5),
+      new THREE.Vector2(1.8, -0.2),
+      new THREE.Vector2(1.0, -0.2),
+      new THREE.Vector2(1.0, 0.6),
+      new THREE.Vector2(0.85, 0.6),
+      new THREE.Vector2(0.85, 0.75),
+      new THREE.Vector2(0.7, 0.75),
+      new THREE.Vector2(0.7, 0.8),
+      new THREE.Vector2(0, 0.8),
+    ];
+    return new THREE.LatheGeometry(pts, 64);
+  }, []);
 
-  for (let i = 0; i < teeth; i++) {
-    const a0 = i * anglePerTooth;
-    const a1 = a0 + anglePerTooth * 0.15;
-    const a2 = a0 + anglePerTooth * 0.35;
-    const a3 = a0 + anglePerTooth * 0.65;
-    const a4 = a0 + anglePerTooth * 0.85;
+  const boreGeo = useMemo(() => {
+    const pts = [
+      new THREE.Vector2(0, -0.85),
+      new THREE.Vector2(0.45, -0.85),
+      new THREE.Vector2(0.45, 0.85),
+      new THREE.Vector2(0, 0.85),
+    ];
+    return new THREE.LatheGeometry(pts, 64);
+  }, []);
 
-    const r1 = outerRadius - toothDepth;
-    const r2 = outerRadius;
-
-    if (i === 0) {
-      shape.moveTo(Math.cos(a0) * r1, Math.sin(a0) * r1);
+  const boltHoles = useMemo(() => {
+    const holes: THREE.Vector3[] = [];
+    for (let i = 0; i < 6; i++) {
+      const a = (i / 6) * Math.PI * 2;
+      holes.push(new THREE.Vector3(Math.cos(a) * 1.4, -0.35, Math.sin(a) * 1.4));
     }
-    shape.lineTo(Math.cos(a1) * r1, Math.sin(a1) * r1);
-    shape.lineTo(Math.cos(a2) * r2, Math.sin(a2) * r2);
-    shape.lineTo(Math.cos(a3) * r2, Math.sin(a3) * r2);
-    shape.lineTo(Math.cos(a4) * r1, Math.sin(a4) * r1);
-  }
-  shape.closePath();
-
-  // Center hole
-  const hole = new THREE.Path();
-  const holeSegments = 32;
-  for (let i = 0; i <= holeSegments; i++) {
-    const angle = (i / holeSegments) * Math.PI * 2;
-    const x = Math.cos(angle) * innerRadius;
-    const y = Math.sin(angle) * innerRadius;
-    if (i === 0) hole.moveTo(x, y);
-    else hole.lineTo(x, y);
-  }
-  shape.holes.push(hole);
-
-  return shape;
-}
-
-function MechanicalAssembly() {
-  const groupRef = useRef<THREE.Group>(null);
-  const gear1Ref = useRef<THREE.Mesh>(null);
-  const gear2Ref = useRef<THREE.Mesh>(null);
-
-  const gearGeo1 = useMemo(() => {
-    const shape = createGearShape(1.8, 0.4, 16, 0.35);
-    const extrudeSettings = { depth: 0.4, bevelEnabled: true, bevelThickness: 0.05, bevelSize: 0.03, bevelSegments: 2 };
-    return new THREE.ExtrudeGeometry(shape, extrudeSettings);
+    return holes;
   }, []);
-
-  const gearGeo2 = useMemo(() => {
-    const shape = createGearShape(1.1, 0.25, 10, 0.25);
-    const extrudeSettings = { depth: 0.3, bevelEnabled: true, bevelThickness: 0.04, bevelSize: 0.02, bevelSegments: 2 };
-    return new THREE.ExtrudeGeometry(shape, extrudeSettings);
-  }, []);
-
-  const bracketGeo = useMemo(() => {
-    const shape = new THREE.Shape();
-    shape.moveTo(-0.3, -2.5);
-    shape.lineTo(0.3, -2.5);
-    shape.lineTo(0.3, 2.5);
-    shape.lineTo(-0.3, 2.5);
-    shape.closePath();
-    return new THREE.ExtrudeGeometry(shape, { depth: 0.15, bevelEnabled: true, bevelThickness: 0.02, bevelSize: 0.02 });
-  }, []);
-
-  useFrame((_, delta) => {
-    if (gear1Ref.current) gear1Ref.current.rotation.z += delta * 0.3;
-    if (gear2Ref.current) gear2Ref.current.rotation.z -= delta * 0.3 * (16 / 10);
-  });
-
-  const metalMat = { color: '#8899aa', roughness: 0.25, metalness: 0.9 };
-  const darkMetal = { color: '#556677', roughness: 0.3, metalness: 0.95 };
-  const accentMat = { color: '#3b82f6', roughness: 0.4, metalness: 0.7 };
 
   return (
-    <group ref={groupRef}>
-      {/* Main gear */}
-      <mesh ref={gear1Ref} position={[0, 0, 0]} geometry={gearGeo1}>
-        <meshStandardMaterial {...metalMat} />
+    <group rotation={[Math.PI / 2 + 0.3, 0, 0.2]}>
+      <mesh geometry={bodyGeo}>
+        <meshStandardMaterial color="#b0b8c4" roughness={0.18} metalness={0.95} />
       </mesh>
-
-      {/* Secondary gear meshed with main */}
-      <mesh ref={gear2Ref} position={[2.55, 1.2, 0.05]} geometry={gearGeo2}>
-        <meshStandardMaterial {...accentMat} />
+      <mesh geometry={boreGeo}>
+        <meshStandardMaterial color="#556070" roughness={0.18} metalness={0.95} side={THREE.BackSide} />
       </mesh>
-
-      {/* Axle 1 */}
-      <mesh position={[0, 0, 0.2]}>
-        <cylinderGeometry args={[0.15, 0.15, 0.8, 16]} />
-        <meshStandardMaterial {...darkMetal} />
+      <mesh position={[0, -0.5, 0]}>
+        <torusGeometry args={[1.0, 0.025, 8, 64]} />
+        <meshStandardMaterial color="#8090a0" roughness={0.15} metalness={0.95} />
       </mesh>
-
-      {/* Axle 2 */}
-      <mesh position={[2.55, 1.2, 0.2]}>
-        <cylinderGeometry args={[0.1, 0.1, 0.6, 16]} />
-        <meshStandardMaterial {...darkMetal} />
-      </mesh>
-
-      {/* Support bracket */}
-      <mesh position={[1.3, -0.3, -0.3]} rotation={[0, 0, Math.PI / 6]} geometry={bracketGeo}>
-        <meshStandardMaterial color="#445566" roughness={0.35} metalness={0.85} />
-      </mesh>
-
-      {/* Base plate */}
-      <mesh position={[1, -2.2, -0.1]}>
-        <boxGeometry args={[5, 0.2, 1.2]} />
-        <meshStandardMaterial {...darkMetal} />
-      </mesh>
-
-      {/* Decorative bolts */}
-      {[[0, 0], [2.55, 1.2]].map(([x, y], i) => (
-        <mesh key={i} position={[x, y, 0.45]}>
-          <cylinderGeometry args={[0.2, 0.2, 0.1, 6]} />
-          <meshStandardMaterial color="#667788" roughness={0.2} metalness={0.95} />
+      {boltHoles.map((pos, i) => (
+        <mesh key={i} position={pos} rotation={[Math.PI / 2, 0, 0]}>
+          <cylinderGeometry args={[0.08, 0.08, 0.35, 16]} />
+          <meshStandardMaterial color="#3a4555" roughness={0.3} metalness={0.9} />
         </mesh>
       ))}
     </group>
@@ -130,17 +75,16 @@ function MechanicalAssembly() {
 function Scene() {
   return (
     <>
-      <ambientLight intensity={0.4} />
-      <directionalLight position={[10, 10, 8]} intensity={1.2} color="#ffffff" />
-      <directionalLight position={[-5, -3, -5]} intensity={0.3} color="#aaccff" />
-      <pointLight position={[3, 3, 5]} intensity={0.5} color="#3b82f6" />
-      <MechanicalAssembly />
+      <ambientLight intensity={0.35} />
+      <directionalLight position={[8, 12, 10]} intensity={1.4} />
+      <directionalLight position={[-4, -2, -6]} intensity={0.2} color="#aabbdd" />
+      <PrecisionPart />
       <Environment preset="studio" />
       <OrbitControls
         enableZoom={false}
         enablePan={false}
         autoRotate
-        autoRotateSpeed={0.8}
+        autoRotateSpeed={0.6}
       />
     </>
   );
@@ -160,9 +104,9 @@ export default function Slide13Interactive3D() {
         </div>
 
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="pointer-events-auto" style={{ width: 1100, height: 850 }}>
+          <div className="pointer-events-auto" style={{ width: 1000, height: 800 }}>
             <Canvas
-              camera={{ position: [0, 0, 7], fov: 45 }}
+              camera={{ position: [0, 0, 5], fov: 40 }}
               gl={{ antialias: true, alpha: true }}
               dpr={1}
               style={{ background: 'transparent' }}
