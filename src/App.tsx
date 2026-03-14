@@ -70,7 +70,14 @@ function AppRoutes() {
       <Route path="/library/:folderId" element={<ProtectedLayout><LibraryFolder /></ProtectedLayout>} />
       <Route path="/pitchdecks" element={<ProtectedLayout><Pitchdecks /></ProtectedLayout>} />
       <Route path="/documents" element={<ProtectedLayout><Documents /></ProtectedLayout>} />
-      <Route path="/documents/:docId" element={<ProtectedLayout><DocumentEditor /></ProtectedLayout>} />
+      {/* DocumentEditor: full-screen, oma layout kuten PitchdeckEditor */}
+      <Route path="/documents/:docId" element={
+        <RequireAuth>
+          <CompanyProvider>
+            <DocumentEditor />
+          </CompanyProvider>
+        </RequireAuth>
+      } />
       <Route path="/board" element={<ProtectedLayout><BoardMeetings /></ProtectedLayout>} />
       <Route path="/board/:meetingId" element={<ProtectedLayout><BoardMeetingDetail /></ProtectedLayout>} />
       <Route path="/brand" element={<ProtectedLayout><BrandGuide /></ProtectedLayout>} />

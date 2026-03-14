@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/auth/AuthContext';
+import { useCompany } from '@/auth/CompanyContext';
 import { Tables } from '@/integrations/supabase/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -29,18 +30,18 @@ const TEMPLATES = [
 
 export default function Pitchdecks() {
   const { user } = useAuth();
+  const { activeCompany } = useCompany();
   const qc = useQueryClient();
   const [newOpen, setNewOpen] = useState(false);
   const [renameTarget, setRenameTarget] = useState<Pitchdeck | null>(null);
   const [shareTarget, setShareTarget] = useState<{ id: string; name: string } | null>(null);
 
   const { data: decks, isLoading } = useQuery({
-    queryKey: ['pitchdecks'],
+    queryKey: ['pitchdecks', activeCompany?.id],
     queryFn: async () => {
-      const { data } = await supabase
-        .from('pitchdecks')
-        .select('*')
-        .order('updated_at', { ascending: false });
+      let q = supabase.from('pitchdecks').select('*').order('updated_at', { ascending: false });
+      if (activeCompany?.id) q = q.eq('company_id', activeCompany.id);
+      const { data } = await q;
       return (data ?? []) as Pitchdeck[];
     },
   });
@@ -122,7 +123,8 @@ export default function Pitchdecks() {
       <NewDeckDialog
         open={newOpen}
         onClose={() => setNewOpen(false)}
-        onCreated={(id) => { setNewOpen(false); qc.invalidateQueries({ queryKey: ['pitchdecks'] }); }}
+        onCreated={(id) => { setNewOpen(false); qc.invalidateQueries({ queryKey: ['pitchdecks', activeCompany?.id] }); }}
+        companyId={activeCompany?.id ?? null}
       />
 
       {renameTarget && (
@@ -223,10 +225,11 @@ function DeckCard({
   );
 }
 
-function NewDeckDialog({ open, onClose, onCreated }: {
+function NewDeckDialog({ open, onClose, onCreated, companyId }: {
   open: boolean;
   onClose: () => void;
   onCreated: (id: string) => void;
+  companyId: string | null;
 }) {
   const { user } = useAuth();
   const [name, setName] = useState('');
@@ -242,6 +245,7 @@ function NewDeckDialog({ open, onClose, onCreated }: {
       template,
       overrides_key: overridesKey,
       created_by: user?.id,
+      ...(companyId ? { company_id: companyId } : {}),
     }).select().single();
 
     if (!error && data) onCreated(data.id);

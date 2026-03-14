@@ -113,7 +113,7 @@ export default function DocumentEditor() {
   );
 
   return (
-    <div className="flex flex-col h-screen bg-neutral-900">
+    <div className="flex flex-col min-h-screen h-screen bg-neutral-900 overflow-hidden">
       {/* Top bar */}
       <div className="flex items-center gap-3 px-5 py-3 border-b border-neutral-800 bg-neutral-950 print:hidden">
         <Link to="/documents" className="text-neutral-500 hover:text-white transition-colors shrink-0">
