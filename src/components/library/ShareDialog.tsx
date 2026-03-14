@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
+import { TablesInsert } from '@/integrations/supabase/types';
 import { useAuth } from '@/auth/AuthContext';
 import { Copy, Check, Link2, Lock, Globe } from 'lucide-react';
 import { toast } from 'sonner';
