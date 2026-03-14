@@ -1,127 +1,48 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { MSSlideLayout } from '@/components/slides/MSSlideLayout';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Environment } from '@react-three/drei';
-import * as THREE from 'three';
-import { MousePointerClick } from 'lucide-react';
+import designImage from '@/assets/3d-design-industrial.jpg';
 import { T } from '@/components/slides/EditableText';
-
-function GearAssembly() {
-  const groupRef = useRef<THREE.Group>(null);
-  useFrame(() => { if (groupRef.current) groupRef.current.rotation.y += 0.003; });
-
-  return (
-    <group ref={groupRef}>
-      <mesh position={[0, 0, 0]}>
-        <torusGeometry args={[1.2, 0.15, 16, 48]} />
-        <meshStandardMaterial color="#e0e0e0" roughness={0.3} metalness={0.9} />
-      </mesh>
-      {Array.from({ length: 24 }).map((_, i) => {
-        const angle = (i / 24) * Math.PI * 2;
-        return (
-          <mesh key={i} position={[Math.cos(angle) * 1.35, Math.sin(angle) * 1.35, 0]} rotation={[0, 0, angle]}>
-            <boxGeometry args={[0.15, 0.25, 0.15]} />
-            <meshStandardMaterial color="#d0d0d0" roughness={0.3} metalness={0.9} />
-          </mesh>
-        );
-      })}
-      <mesh position={[0, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <cylinderGeometry args={[0.5, 0.5, 0.3, 32]} />
-        <meshStandardMaterial color="#c8c8c8" roughness={0.2} metalness={0.95} />
-      </mesh>
-      <mesh position={[0, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <cylinderGeometry args={[0.12, 0.12, 1.2, 16]} />
-        <meshStandardMaterial color="#b0b0b0" roughness={0.2} metalness={0.95} />
-      </mesh>
-      <mesh position={[0, -1.8, 0]}>
-        <boxGeometry args={[2.2, 0.2, 0.8]} />
-        <meshStandardMaterial color="#d5d5d5" roughness={0.35} metalness={0.85} />
-      </mesh>
-      {[-0.8, 0.8].map((x) => (
-        <mesh key={x} position={[x, -1.1, 0]}>
-          <boxGeometry args={[0.15, 1.2, 0.6]} />
-          <meshStandardMaterial color="#c8c8c8" roughness={0.35} metalness={0.85} />
-        </mesh>
-      ))}
-      {[[-0.8, -1.85], [0.8, -1.85], [-0.8, -1.85], [0.8, -1.85]].map(([x, y], i) => (
-        <mesh key={i} position={[x, y, i < 2 ? 0.25 : -0.25]}>
-          <cylinderGeometry args={[0.06, 0.06, 0.15, 8]} />
-          <meshStandardMaterial color="#999" roughness={0.4} metalness={0.9} />
-        </mesh>
-      ))}
-      <group position={[2.0, 0.8, 0]} rotation={[0, 0, Math.PI / 24]}>
-        <mesh>
-          <torusGeometry args={[0.5, 0.1, 12, 32]} />
-          <meshStandardMaterial color="#e0e0e0" roughness={0.3} metalness={0.9} />
-        </mesh>
-        {Array.from({ length: 16 }).map((_, i) => {
-          const angle = (i / 16) * Math.PI * 2;
-          return (
-            <mesh key={i} position={[Math.cos(angle) * 0.6, Math.sin(angle) * 0.6, 0]} rotation={[0, 0, angle]}>
-              <boxGeometry args={[0.08, 0.15, 0.1]} />
-              <meshStandardMaterial color="#d0d0d0" roughness={0.3} metalness={0.9} />
-            </mesh>
-          );
-        })}
-      </group>
-    </group>
-  );
-}
-
-function Scene() {
-  return (
-    <>
-      <ambientLight intensity={0.5} />
-      <directionalLight position={[10, 10, 5]} intensity={1.2} color="#ffffff" />
-      <directionalLight position={[-5, -5, -5]} intensity={0.3} color="#ffffff" />
-      <pointLight position={[0, 5, 0]} intensity={0.4} />
-      <GearAssembly />
-      <Environment preset="studio" />
-      <OrbitControls enableZoom={false} enablePan={false} minPolarAngle={Math.PI / 4} maxPolarAngle={Math.PI / 1.5} autoRotate autoRotateSpeed={0.5} />
-    </>
-  );
-}
 
 export default function Slide13Interactive3D() {
   return (
     <MSSlideLayout variant="dark">
-      <div className="relative h-full w-full overflow-hidden">
-        <div className="absolute top-16 left-20 z-10">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-[2px] bg-white/30" />
-            <T k="3d.section" className="type-caption text-white/60 tracking-widest uppercase" />
-          </div>
-          <T k="3d.title" as="h2" className="type-h1 text-white" />
-          <T k="3d.desc" as="p" className="type-body-lg text-white/60 mt-3 max-w-[500px]" />
-        </div>
-
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="pointer-events-auto" style={{ width: 1100, height: 850 }}>
-            <Canvas camera={{ position: [0, 1, 5], fov: 45 }} gl={{ antialias: true, alpha: true }} dpr={1} style={{ background: 'transparent' }} resize={{ scroll: false, offsetSize: true }}>
-              <Scene />
-            </Canvas>
-          </div>
-        </div>
-
-        <div className="absolute bottom-16 left-1/2 -translate-x-1/2 text-center z-10">
-          <div className="flex items-center gap-3 px-6 py-3 rounded-full bg-white/10 backdrop-blur-sm border border-white/10">
-            <MousePointerClick className="w-5 h-5 text-white/70" />
-            <T k="3d.hint" className="type-caption text-white/70" />
-          </div>
-        </div>
-
-        <div className="absolute top-1/2 right-20 -translate-y-1/2 z-10 space-y-10">
-          {[
-            { value: 'FDM', key: '3d.fdm' },
-            { value: 'SLA', key: '3d.sla' },
-            { value: 'CNC', key: '3d.cnc' },
-            { value: 'SLS', key: '3d.sls' },
-          ].map((s) => (
-            <div key={s.key} className="text-right">
-              <span className="type-h3 text-white font-semibold">{s.value}</span>
-              <T k={s.key} as="p" className="type-caption text-white/60" />
+      <div className="flex h-full">
+        {/* Left content */}
+        <div className="w-[45%] flex flex-col justify-center px-20 py-16">
+          <div className="space-y-8">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-[2px] bg-white/30" />
+              <T k="3d.section" className="type-caption text-white/60 tracking-widest uppercase" />
             </div>
-          ))}
+
+            <T k="3d.title" as="h2" className="type-h1 text-white leading-tight" />
+
+            <T k="3d.desc" as="p" className="type-body-lg text-white/60 leading-relaxed" />
+
+            <div className="space-y-6 pt-4">
+              {[
+                { value: 'FDM', key: '3d.fdm' },
+                { value: 'SLA', key: '3d.sla' },
+                { value: 'CNC', key: '3d.cnc' },
+                { value: 'SLS', key: '3d.sls' },
+              ].map((s) => (
+                <div key={s.key} className="flex items-center gap-4">
+                  <span className="type-h3 text-white font-semibold w-16">{s.value}</span>
+                  <T k={s.key} className="type-body text-white/70" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Right image */}
+        <div className="w-[55%] relative">
+          <img
+            src={designImage}
+            alt="3D CAD technical design"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-slide-primary via-transparent to-transparent" />
         </div>
       </div>
     </MSSlideLayout>
