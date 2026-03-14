@@ -2,6 +2,7 @@ import React from 'react';
 import { MSSlideLayout } from '@/components/slides/MSSlideLayout';
 import designImage from '@/assets/3d-design-industrial.jpg';
 import { T } from '@/components/slides/EditableText';
+import { EditableImage } from '@/components/slides/EditableImage';
 
 export default function Slide12DesignShowcase() {
   return (
