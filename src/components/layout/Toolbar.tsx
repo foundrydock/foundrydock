@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils';
 import { Grid3X3, FileText, MoreVertical, Play, Monitor, Moon, Sun, Printer, Pencil, PencilOff, Palette, ListOrdered } from 'lucide-react';
-import { getAccessRole } from '@/components/PasswordGate';
 import { useLanguage, Language } from '@/i18n/LanguageContext';
+import { useAuth } from '@/auth/AuthContext';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { DeckSwitcher } from '@/components/layout/DeckSwitcher';
@@ -53,7 +53,7 @@ export function Toolbar({
   showStyleEditor,
   showSlideOrder,
 }: ToolbarProps) {
-  const isEditor = getAccessRole() === 'editor';
+  const { isAdmin: isEditor } = useAuth();
 
   return (
     <div className={cn('h-12 border-b bg-background flex items-center', className)}>

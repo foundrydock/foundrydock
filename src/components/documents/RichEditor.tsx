@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import { StarterKit } from '@tiptap/starter-kit';
 import { TextAlign } from '@tiptap/extension-text-align';
@@ -26,6 +26,10 @@ interface RichEditorProps {
 }
 
 export default function RichEditor({ content, onChange, readOnly = false, brandColors }: RichEditorProps) {
+  // Use ref to always have latest onChange callback available to TipTap
+  const onChangeRef = useRef(onChange);
+  useEffect(() => { onChangeRef.current = onChange; }, [onChange]);
+
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -44,7 +48,7 @@ export default function RichEditor({ content, onChange, readOnly = false, brandC
       : { type: 'doc', content: [{ type: 'paragraph' }] },
     editable: !readOnly,
     onUpdate: ({ editor }) => {
-      onChange?.(editor.getJSON() as Json);
+      onChangeRef.current?.(editor.getJSON() as Json);
     },
   });
 

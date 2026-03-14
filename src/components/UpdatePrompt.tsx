@@ -12,27 +12,26 @@ async function getDeployVersion(): Promise<string | null> {
       headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate', 'Pragma': 'no-cache' },
     });
 
-    // 1. Kokeile ETag tai Last-Modified headerista
-    const etag = res.headers.get('etag');
-    const lastMod = res.headers.get('last-modified');
-    if (etag) return etag;
-    if (lastMod) return lastMod;
-
-    // 2. Fallback: parsitaan JS-tiedoston hash HTML:stä
+    // 1. Parsitaan JS-tiedoston hash HTML:stä (luotettavin tapa)
     const html = await res.text();
-    // Kokeillaan eri muotoja
     const patterns = [
       /\/assets\/index-([A-Za-z0-9_-]+)\.js/,
       /src="[^"]*\/index-([A-Za-z0-9_-]+)\.js"/,
-      /<script[^>]+src="([^"]*\.js)"/,
+      /src="([^"]*\.js)"/,
     ];
     for (const p of patterns) {
       const m = html.match(p);
       if (m?.[1]) return m[1];
     }
 
-    // 3. Viimeinen fallback: koko HTML:n pituus + sisällön alku
-    return `${res.status}-${html.length}-${html.slice(100, 200)}`;
+    // 2. ETag tai Last-Modified headerista
+    const etag = res.headers.get('etag');
+    if (etag) return etag;
+    const lastMod = res.headers.get('last-modified');
+    if (lastMod) return lastMod;
+
+    // 3. Viimeinen fallback: HTML-sisällön hash
+    return `len-${html.length}`;
   } catch {
     return null;
   }
