@@ -25,6 +25,7 @@ import ShareView from "./pages/ShareView";
 import AudienceWindow from "./pages/AudienceWindow";
 import NotFound from "./pages/NotFound";
 import AppLayout from "./components/layout/AppLayout";
+import UpdatePrompt from "./components/UpdatePrompt";
 
 const queryClient = new QueryClient();
 
@@ -112,6 +113,7 @@ const App = () => (
         <BrowserRouter>
           <AppRoutes />
         </BrowserRouter>
+        <UpdatePrompt />
       </TooltipProvider>
     </AuthProvider>
   </QueryClientProvider>
