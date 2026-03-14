@@ -44,8 +44,6 @@ export default function Index() {
   const isEditor = isAdmin;
   const { deckId: urlDeckId } = useParams<{ deckId: string }>();
 
-  useStyleOverrides();
-
   // Lataa deck Supabasesta URL-parametrin perusteella
   const { data: supabaseDeck } = useQuery({
     queryKey: ['pitchdeck-edit', urlDeckId],
@@ -59,6 +57,26 @@ export default function Index() {
     },
     enabled: !!urlDeckId,
   });
+
+  // Supabase-tallennusfunktiot (debounced)
+  const saveTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const saveToDB = useCallback((fields: Record<string, unknown>) => {
+    if (!urlDeckId) return;
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(async () => {
+      await supabase.from('pitchdecks').update(fields).eq('id', urlDeckId);
+    }, 500);
+  }, [urlDeckId]);
+
+  const handleSaveSlideOrder = useCallback((order: string[], hidden: string[]) => {
+    saveToDB({ slide_order: order, hidden_slides: hidden });
+  }, [saveToDB]);
+
+  const handleSaveStyleOverrides = useCallback((styles: unknown) => {
+    saveToDB({ style_overrides: styles });
+  }, [saveToDB]);
+
+  useStyleOverrides(supabaseDeck?.style_overrides);
 
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
   const [showGrid, setShowGrid] = useState(false);
@@ -106,7 +124,13 @@ export default function Index() {
 
   const defaultSlideIds = React.useMemo(() => allSlides.map(s => s.id), [allSlides]);
 
-  const { slideOrder, hiddenSlides, reorder, toggleVisibility } = useSlideOrder(overridesKey, defaultSlideIds);
+  const { slideOrder, hiddenSlides, reorder, toggleVisibility } = useSlideOrder(
+    overridesKey,
+    defaultSlideIds,
+    supabaseDeck?.slide_order ?? undefined,
+    supabaseDeck?.hidden_slides ?? undefined,
+    urlDeckId ? handleSaveSlideOrder : undefined,
+  );
 
   // Ordered and filtered slides
   const slides = React.useMemo<SlideData[]>(() => {
@@ -218,7 +242,14 @@ export default function Index() {
         />
 
         {/* Editor panels */}
-        {isEditor && <StyleEditor open={showStyleEditor} onClose={() => setShowStyleEditor(false)} />}
+        {isEditor && (
+          <StyleEditor
+            open={showStyleEditor}
+            onClose={() => setShowStyleEditor(false)}
+            supabaseStyles={supabaseDeck?.style_overrides}
+            onSave={urlDeckId ? handleSaveStyleOverrides : undefined}
+          />
+        )}
         {isEditor && (
           <SlideOrderEditor
             open={showSlideOrder}

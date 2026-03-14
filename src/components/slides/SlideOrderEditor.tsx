@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { GripVertical, Eye, EyeOff, ArrowUp, ArrowDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
@@ -100,51 +100,79 @@ export function SlideOrderEditor({
 }
 
 // Hook to manage slide order and visibility per deck
-const ORDER_PREFIX = 'slide-order-';
-const HIDDEN_PREFIX = 'slide-hidden-';
+// Supports Supabase as primary storage, localStorage as fallback
+export function useSlideOrder(
+  deckOverridesKey: string,
+  defaultSlideIds: string[],
+  supabaseOrder?: string[] | null,
+  supabaseHidden?: string[] | null,
+  onSave?: (order: string[], hidden: string[]) => void,
+) {
+  const onSaveRef = useRef(onSave);
+  useEffect(() => { onSaveRef.current = onSave; });
 
-export function useSlideOrder(deckOverridesKey: string, defaultSlideIds: string[]) {
-  const orderKey = `${ORDER_PREFIX}${deckOverridesKey}`;
-  const hiddenKey = `${HIDDEN_PREFIX}${deckOverridesKey}`;
+  const [slideOrder, setSlideOrder] = useState<string[]>(defaultSlideIds);
+  const [hiddenSlides, setHiddenSlides] = useState<Set<string>>(new Set());
+  const initializedRef = useRef(false);
 
-  const [slideOrder, setSlideOrder] = useState<string[]>(() => {
-    try {
-      const raw = localStorage.getItem(orderKey);
-      const saved = raw ? JSON.parse(raw) : null;
-      // Ensure all slides are present
-      if (saved && Array.isArray(saved)) {
-        const missing = defaultSlideIds.filter(id => !saved.includes(id));
-        return [...saved, ...missing];
+  // Initialize from Supabase data when it loads, or from localStorage as fallback
+  useEffect(() => {
+    if (supabaseOrder !== undefined) {
+      // Supabase data available (even if null/empty)
+      if (!initializedRef.current || supabaseOrder !== null) {
+        initializedRef.current = true;
+        if (Array.isArray(supabaseOrder) && supabaseOrder.length > 0) {
+          const missing = defaultSlideIds.filter(id => !supabaseOrder.includes(id));
+          setSlideOrder([...supabaseOrder, ...missing]);
+        } else {
+          setSlideOrder(defaultSlideIds);
+        }
+        if (Array.isArray(supabaseHidden)) {
+          setHiddenSlides(new Set(supabaseHidden));
+        } else {
+          setHiddenSlides(new Set());
+        }
       }
-      return defaultSlideIds;
-    } catch {
-      return defaultSlideIds;
+    } else {
+      // Fallback: localStorage
+      try {
+        const raw = localStorage.getItem(`slide-order-${deckOverridesKey}`);
+        const saved = raw ? JSON.parse(raw) : null;
+        if (saved && Array.isArray(saved)) {
+          const missing = defaultSlideIds.filter(id => !saved.includes(id));
+          setSlideOrder([...saved, ...missing]);
+        } else {
+          setSlideOrder(defaultSlideIds);
+        }
+      } catch { setSlideOrder(defaultSlideIds); }
+      try {
+        const raw = localStorage.getItem(`slide-hidden-${deckOverridesKey}`);
+        setHiddenSlides(raw ? new Set(JSON.parse(raw)) : new Set());
+      } catch { setHiddenSlides(new Set()); }
     }
-  });
-
-  const [hiddenSlides, setHiddenSlides] = useState<Set<string>>(() => {
-    try {
-      const raw = localStorage.getItem(hiddenKey);
-      return raw ? new Set(JSON.parse(raw)) : new Set();
-    } catch {
-      return new Set();
-    }
-  });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deckOverridesKey, supabaseOrder, supabaseHidden]);
 
   const reorder = useCallback((newOrder: string[]) => {
     setSlideOrder(newOrder);
-    localStorage.setItem(orderKey, JSON.stringify(newOrder));
-  }, [orderKey]);
+    setHiddenSlides(prev => {
+      onSaveRef.current?.(newOrder, [...prev]);
+      return prev;
+    });
+  }, []);
 
   const toggleVisibility = useCallback((slideId: string) => {
     setHiddenSlides(prev => {
       const next = new Set(prev);
       if (next.has(slideId)) next.delete(slideId);
       else next.add(slideId);
-      localStorage.setItem(hiddenKey, JSON.stringify([...next]));
+      setSlideOrder(order => {
+        onSaveRef.current?.(order, [...next]);
+        return order;
+      });
       return next;
     });
-  }, [hiddenKey]);
+  }, []);
 
   return { slideOrder, hiddenSlides, reorder, toggleVisibility };
 }

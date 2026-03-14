@@ -1,4 +1,5 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
+import type { Json } from '@/integrations/supabase/types';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { Palette, RotateCcw, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -50,36 +51,67 @@ function applyStyles(styles: StyleOverrides) {
   else root.style.removeProperty('--slide-primary');
 }
 
-export function useStyleOverrides() {
+export function useStyleOverrides(supabaseStyles?: Json | null) {
   const { overridesKey } = useLanguage();
 
   useEffect(() => {
-    const styles = loadStyles(overridesKey);
-    applyStyles(styles);
-  }, [overridesKey]);
+    if (supabaseStyles && typeof supabaseStyles === 'object' && !Array.isArray(supabaseStyles)) {
+      const styles = { ...DEFAULT_STYLES, ...(supabaseStyles as Partial<StyleOverrides>) };
+      applyStyles(styles);
+    } else {
+      const styles = loadStyles(overridesKey);
+      applyStyles(styles);
+    }
+  }, [overridesKey, supabaseStyles]);
 }
 
 interface StyleEditorProps {
   open: boolean;
   onClose: () => void;
+  supabaseStyles?: Json | null;
+  onSave?: (styles: Json) => void;
 }
 
-export function StyleEditor({ open, onClose }: StyleEditorProps) {
+export function StyleEditor({ open, onClose, supabaseStyles, onSave }: StyleEditorProps) {
   const { overridesKey } = useLanguage();
-  const [styles, setStyles] = useState<StyleOverrides>(() => loadStyles(overridesKey));
+  const onSaveRef = useRef(onSave);
+  useEffect(() => { onSaveRef.current = onSave; });
 
+  const [styles, setStyles] = useState<StyleOverrides>(() => {
+    if (supabaseStyles && typeof supabaseStyles === 'object' && !Array.isArray(supabaseStyles)) {
+      return { ...DEFAULT_STYLES, ...(supabaseStyles as Partial<StyleOverrides>) };
+    }
+    return loadStyles(overridesKey);
+  });
+
+  // Sync when Supabase data loads
   useEffect(() => {
-    setStyles(loadStyles(overridesKey));
+    if (supabaseStyles && typeof supabaseStyles === 'object' && !Array.isArray(supabaseStyles)) {
+      const next = { ...DEFAULT_STYLES, ...(supabaseStyles as Partial<StyleOverrides>) };
+      setStyles(next);
+      applyStyles(next);
+    } else if (supabaseStyles === null) {
+      setStyles(DEFAULT_STYLES);
+      applyStyles(DEFAULT_STYLES);
+    }
+  }, [supabaseStyles]);
+
+  const persist = useCallback((next: StyleOverrides) => {
+    if (onSaveRef.current) {
+      onSaveRef.current(next as unknown as Json);
+    } else {
+      saveStyles(overridesKey, next);
+    }
+    applyStyles(next);
   }, [overridesKey]);
 
   const updateStyle = useCallback((key: keyof StyleOverrides, value: string) => {
     setStyles(prev => {
       const next = { ...prev, [key]: value };
-      saveStyles(overridesKey, next);
-      applyStyles(next);
+      persist(next);
       return next;
     });
-  }, [overridesKey]);
+  }, [persist]);
 
   const applyPreset = useCallback((preset: typeof PRESET_THEMES[0]) => {
     const next: StyleOverrides = {
@@ -88,15 +120,13 @@ export function StyleEditor({ open, onClose }: StyleEditorProps) {
       slidePrimary: preset.primary,
     };
     setStyles(next);
-    saveStyles(overridesKey, next);
-    applyStyles(next);
-  }, [overridesKey]);
+    persist(next);
+  }, [persist]);
 
   const resetStyles = useCallback(() => {
     setStyles(DEFAULT_STYLES);
-    saveStyles(overridesKey, DEFAULT_STYLES);
-    applyStyles(DEFAULT_STYLES);
-  }, [overridesKey]);
+    persist(DEFAULT_STYLES);
+  }, [persist]);
 
   if (!open) return null;
 
