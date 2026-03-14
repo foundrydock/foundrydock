@@ -193,14 +193,17 @@ export default function DocumentEditor() {
         </div>
       </div>
 
-      {/* Editor */}
+      {/* Editor – mountataan vasta kun doc on ladattu oikealla sisällöllä */}
       <div className="flex-1 overflow-hidden">
-        <RichEditor
-          content={content}
-          onChange={isCompanyAdmin ? handleContentChange : undefined}
-          readOnly={!isCompanyAdmin}
-          brandColors={brand ? { primary: brand.primary_color, accent: brand.accent_color } : undefined}
-        />
+        {doc && (
+          <RichEditor
+            key={docId}
+            content={content}
+            onChange={isCompanyAdmin ? handleContentChange : undefined}
+            readOnly={!isCompanyAdmin}
+            brandColors={brand ? { primary: brand.primary_color, accent: brand.accent_color } : undefined}
+          />
+        )}
       </div>
 
       {doc && (

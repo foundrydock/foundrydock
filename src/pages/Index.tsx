@@ -1,4 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Toolbar } from '@/components/layout/Toolbar';
@@ -39,8 +42,23 @@ export default function Index() {
   const { activeDeck, activeDeckId } = deckManager;
   const { isAdmin } = useAuth();
   const isEditor = isAdmin;
+  const { deckId: urlDeckId } = useParams<{ deckId: string }>();
 
   useStyleOverrides();
+
+  // Lataa deck Supabasesta URL-parametrin perusteella
+  const { data: supabaseDeck } = useQuery({
+    queryKey: ['pitchdeck-edit', urlDeckId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('pitchdecks')
+        .select('*')
+        .eq('id', urlDeckId!)
+        .single();
+      return data;
+    },
+    enabled: !!urlDeckId,
+  });
 
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
   const [showGrid, setShowGrid] = useState(false);
@@ -55,23 +73,28 @@ export default function Index() {
   const [showStyleEditor, setShowStyleEditor] = useState(false);
   const [showSlideOrder, setShowSlideOrder] = useState(false);
 
-  // Sync overrides key with active deck
+  // Aseta overrides key Supabase-deckistä tai localStoragesta
   useEffect(() => {
-    setOverridesKey(deckManager.getOverridesKey(activeDeckId));
-  }, [activeDeckId, deckManager, setOverridesKey]);
+    if (supabaseDeck?.overrides_key) {
+      setOverridesKey(supabaseDeck.overrides_key);
+    } else {
+      setOverridesKey(deckManager.getOverridesKey(activeDeckId));
+    }
+  }, [supabaseDeck, activeDeckId, deckManager, setOverridesKey]);
 
   // Reset slide index on deck switch
   useEffect(() => {
     setActiveSlideIndex(0);
-  }, [activeDeckId]);
+  }, [urlDeckId, activeDeckId]);
 
   useEffect(() => {
     if (isMobile) setShowSidebar(false);
   }, [isMobile]);
 
-  // All slides from template
+  // All slides from template – Supabase-deck ylikirjoittaa localStoragen
+  const activeTemplate = supabaseDeck?.template ?? activeDeck.sourceTemplate;
   const allSlides = React.useMemo<SlideData[]>(() => {
-    const templateSlides = templateMap[activeDeck.sourceTemplate] || mittamuotoSlides;
+    const templateSlides = templateMap[activeTemplate] || mittamuotoSlides;
     return templateSlides.map((s) => ({
       id: `slide-${s.name.toLowerCase().replace(/\s+/g, '-')}`,
       component: s.component,
@@ -79,7 +102,7 @@ export default function Index() {
       isWIP: false,
       description: undefined,
     }));
-  }, [activeDeck.sourceTemplate]);
+  }, [activeTemplate]);
 
   const defaultSlideIds = React.useMemo(() => allSlides.map(s => s.id), [allSlides]);
 
