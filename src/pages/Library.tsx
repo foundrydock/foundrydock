@@ -176,7 +176,7 @@ function FolderFormDialog({ open, folder, onClose, onSaved }: FolderFormDialogPr
   const { user } = useAuth();
   const [name, setName] = useState(folder?.name ?? '');
   const [description, setDescription] = useState(folder?.description ?? '');
-  const [access, setAccess] = useState<'public' | 'link' | 'private'>(folder?.access_level ?? 'private');
+  const [access, setAccess] = useState<'public' | 'link' | 'private'>((folder?.access_level as 'public' | 'link' | 'private') ?? 'private');
   const [saving, setSaving] = useState(false);
 
   async function save() {

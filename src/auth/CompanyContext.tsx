@@ -77,7 +77,7 @@ export function CompanyProvider({ children }: { children: ReactNode }) {
 
   const activeCompany = companies.find(c => c.id === activeCompanyId) ?? companies[0] ?? null;
   const membership = memberships.find(m => m.company_id === activeCompany?.id);
-  const memberRole = isGlobalAdmin ? 'admin' : (membership?.role ?? null);
+  const memberRole: 'admin' | 'viewer' | null = isGlobalAdmin ? 'admin' : ((membership?.role as 'admin' | 'viewer') ?? null);
 
   return (
     <CompanyContext.Provider value={{

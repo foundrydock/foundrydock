@@ -30,7 +30,7 @@ export default function ShareDialog({ open, onClose, target }: ShareDialogProps)
   async function handleCreate() {
     setCreating(true);
     try {
-      const payload: Record<string, unknown> = {
+      const payload: Record<string, unknown> & { title: string } = {
         title,
         created_by: user?.id,
         is_active: true,
