@@ -31,11 +31,11 @@ export function usePresenterNotes(slideId: string | null) {
 
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('presenter_notes')
+      const { data, error } = await (supabase
+        .from('presenter_notes' as any)
         .select('*')
         .eq('slide_id', slideId)
-        .maybeSingle();
+        .maybeSingle() as any);
 
       if (error) throw error;
 
@@ -64,7 +64,6 @@ export function usePresenterNotes(slideId: string | null) {
 
   useEffect(() => {
     fetchNote();
-    // Clear debounce on slide change
     return () => {
       if (debounceRef.current) {
         clearTimeout(debounceRef.current);
@@ -80,23 +79,21 @@ export function usePresenterNotes(slideId: string | null) {
 
     try {
       if (noteIdRef.current) {
-        // Update existing note
-        const { error } = await supabase
-          .from('presenter_notes')
-          .update({ content: contentToSave })
-          .eq('id', noteIdRef.current);
+        const { error } = await (supabase
+          .from('presenter_notes' as any)
+          .update({ content: contentToSave } as any)
+          .eq('id', noteIdRef.current) as any);
 
         if (error) throw error;
       } else {
-        // Create new note
-        const { data, error } = await supabase
-          .from('presenter_notes')
+        const { data, error } = await (supabase
+          .from('presenter_notes' as any)
           .insert({
             slide_id: slideId,
             content: contentToSave,
-          })
+          } as any)
           .select()
-          .single();
+          .single() as any);
 
         if (error) throw error;
         
@@ -124,16 +121,13 @@ export function usePresenterNotes(slideId: string | null) {
   }, [slideId]);
 
   const updateContent = useCallback((newContent: string) => {
-    // Optimistic update
     setContent(newContent);
     pendingContentRef.current = newContent;
 
-    // Clear existing debounce
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
     }
 
-    // Debounce the save
     debounceRef.current = setTimeout(() => {
       if (pendingContentRef.current !== null) {
         persistNote(pendingContentRef.current);
@@ -146,10 +140,10 @@ export function usePresenterNotes(slideId: string | null) {
     if (!noteIdRef.current) return false;
 
     try {
-      const { error } = await supabase
-        .from('presenter_notes')
+      const { error } = await (supabase
+        .from('presenter_notes' as any)
         .delete()
-        .eq('id', noteIdRef.current);
+        .eq('id', noteIdRef.current) as any);
 
       if (error) throw error;
 
