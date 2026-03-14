@@ -53,7 +53,7 @@ export function Toolbar({
   showStyleEditor,
   showSlideOrder,
 }: ToolbarProps) {
-  const isEditor = getAccessRole() === 'editor';
+  const { isAdmin: isEditor } = useAuth();
 
   return (
     <div className={cn('h-12 border-b bg-background flex items-center', className)}>
