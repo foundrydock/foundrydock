@@ -36,14 +36,16 @@ export function CompanyProvider({ children }: { children: ReactNode }) {
 
     if (isGlobalAdmin) {
       // Global admins see all companies
-      const { data } = await supabase.from('companies').select('*').order('name');
+      const { data, error } = await supabase.from('companies').select('*').order('name');
+      console.debug('[CompanyContext] admin query – data:', data?.length, '| error:', error?.message);
       setCompanies(data ?? []);
     } else {
-      // Others see only their companies
-      const { data: memberData } = await supabase
+      // Others see only their companies via membership
+      const { data: memberData, error: memErr } = await supabase
         .from('company_members')
         .select('*, companies(*)')
         .eq('user_id', user.id);
+      console.debug('[CompanyContext] member query – data:', memberData?.length, '| error:', memErr?.message);
       const comps = (memberData ?? []).map((m: any) => m.companies).filter(Boolean);
       setCompanies(comps);
     }
