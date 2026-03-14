@@ -151,13 +151,6 @@ export default function Slide13Interactive3D() {
   );
 }
 
-export default function Slide13Interactive3D() {
-  return (
-    <MSSlideLayout variant="dark">
-      <div className="relative h-full w-full overflow-hidden">
-        <div className="absolute top-16 left-20 z-10">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-[2px] bg-white/30" />
             <T k="3d.section" className="type-caption text-white/60 tracking-widest uppercase" />
           </div>
           <T k="3d.title" as="h2" className="type-h1 text-white" />
