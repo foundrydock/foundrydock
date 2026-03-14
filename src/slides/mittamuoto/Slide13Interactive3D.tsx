@@ -1,40 +1,128 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { MSSlideLayout } from '@/components/slides/MSSlideLayout';
-import { Canvas, useLoader } from '@react-three/fiber';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Environment } from '@react-three/drei';
 import * as THREE from 'three';
 import { MousePointerClick } from 'lucide-react';
 import { T } from '@/components/slides/EditableText';
-import designImage from '@/assets/3d-design-industrial.jpg';
 
-function ImagePanel() {
-  const texture = useLoader(THREE.TextureLoader, designImage);
+function createGearShape(outerRadius: number, innerRadius: number, teeth: number, toothDepth: number) {
+  const shape = new THREE.Shape();
+  const anglePerTooth = (Math.PI * 2) / teeth;
 
-  const aspect = useMemo(() => {
-    if (texture.image) return texture.image.width / texture.image.height;
-    return 16 / 9;
-  }, [texture]);
+  for (let i = 0; i < teeth; i++) {
+    const a0 = i * anglePerTooth;
+    const a1 = a0 + anglePerTooth * 0.15;
+    const a2 = a0 + anglePerTooth * 0.35;
+    const a3 = a0 + anglePerTooth * 0.65;
+    const a4 = a0 + anglePerTooth * 0.85;
 
-  const width = 4;
-  const height = width / aspect;
+    const r1 = outerRadius - toothDepth;
+    const r2 = outerRadius;
+
+    if (i === 0) {
+      shape.moveTo(Math.cos(a0) * r1, Math.sin(a0) * r1);
+    }
+    shape.lineTo(Math.cos(a1) * r1, Math.sin(a1) * r1);
+    shape.lineTo(Math.cos(a2) * r2, Math.sin(a2) * r2);
+    shape.lineTo(Math.cos(a3) * r2, Math.sin(a3) * r2);
+    shape.lineTo(Math.cos(a4) * r1, Math.sin(a4) * r1);
+  }
+  shape.closePath();
+
+  // Center hole
+  const hole = new THREE.Path();
+  const holeSegments = 32;
+  for (let i = 0; i <= holeSegments; i++) {
+    const angle = (i / holeSegments) * Math.PI * 2;
+    const x = Math.cos(angle) * innerRadius;
+    const y = Math.sin(angle) * innerRadius;
+    if (i === 0) hole.moveTo(x, y);
+    else hole.lineTo(x, y);
+  }
+  shape.holes.push(hole);
+
+  return shape;
+}
+
+function MechanicalAssembly() {
+  const groupRef = useRef<THREE.Group>(null);
+  const gear1Ref = useRef<THREE.Mesh>(null);
+  const gear2Ref = useRef<THREE.Mesh>(null);
+
+  const gearGeo1 = useMemo(() => {
+    const shape = createGearShape(1.8, 0.4, 16, 0.35);
+    const extrudeSettings = { depth: 0.4, bevelEnabled: true, bevelThickness: 0.05, bevelSize: 0.03, bevelSegments: 2 };
+    return new THREE.ExtrudeGeometry(shape, extrudeSettings);
+  }, []);
+
+  const gearGeo2 = useMemo(() => {
+    const shape = createGearShape(1.1, 0.25, 10, 0.25);
+    const extrudeSettings = { depth: 0.3, bevelEnabled: true, bevelThickness: 0.04, bevelSize: 0.02, bevelSegments: 2 };
+    return new THREE.ExtrudeGeometry(shape, extrudeSettings);
+  }, []);
+
+  const bracketGeo = useMemo(() => {
+    const shape = new THREE.Shape();
+    shape.moveTo(-0.3, -2.5);
+    shape.lineTo(0.3, -2.5);
+    shape.lineTo(0.3, 2.5);
+    shape.lineTo(-0.3, 2.5);
+    shape.closePath();
+    return new THREE.ExtrudeGeometry(shape, { depth: 0.15, bevelEnabled: true, bevelThickness: 0.02, bevelSize: 0.02 });
+  }, []);
+
+  useFrame((_, delta) => {
+    if (gear1Ref.current) gear1Ref.current.rotation.z += delta * 0.3;
+    if (gear2Ref.current) gear2Ref.current.rotation.z -= delta * 0.3 * (16 / 10);
+  });
+
+  const metalMat = { color: '#8899aa', roughness: 0.25, metalness: 0.9 };
+  const darkMetal = { color: '#556677', roughness: 0.3, metalness: 0.95 };
+  const accentMat = { color: '#3b82f6', roughness: 0.4, metalness: 0.7 };
 
   return (
-    <group>
-      {/* Main image panel */}
-      <mesh>
-        <planeGeometry args={[width, height]} />
-        <meshStandardMaterial map={texture} side={THREE.DoubleSide} roughness={0.3} metalness={0.1} />
+    <group ref={groupRef}>
+      {/* Main gear */}
+      <mesh ref={gear1Ref} position={[0, 0, 0]} geometry={gearGeo1}>
+        <meshStandardMaterial {...metalMat} />
       </mesh>
-      {/* Subtle frame */}
-      <mesh position={[0, 0, -0.02]}>
-        <planeGeometry args={[width + 0.08, height + 0.08]} />
-        <meshStandardMaterial color="#333333" roughness={0.5} metalness={0.8} side={THREE.DoubleSide} />
+
+      {/* Secondary gear meshed with main */}
+      <mesh ref={gear2Ref} position={[2.55, 1.2, 0.05]} geometry={gearGeo2}>
+        <meshStandardMaterial {...accentMat} />
       </mesh>
-      {/* Depth/thickness */}
-      <mesh position={[0, 0, -0.03]}>
-        <boxGeometry args={[width + 0.08, height + 0.08, 0.04]} />
-        <meshStandardMaterial color="#222222" roughness={0.5} metalness={0.8} />
+
+      {/* Axle 1 */}
+      <mesh position={[0, 0, 0.2]}>
+        <cylinderGeometry args={[0.15, 0.15, 0.8, 16]} />
+        <meshStandardMaterial {...darkMetal} />
       </mesh>
+
+      {/* Axle 2 */}
+      <mesh position={[2.55, 1.2, 0.2]}>
+        <cylinderGeometry args={[0.1, 0.1, 0.6, 16]} />
+        <meshStandardMaterial {...darkMetal} />
+      </mesh>
+
+      {/* Support bracket */}
+      <mesh position={[1.3, -0.3, -0.3]} rotation={[0, 0, Math.PI / 6]} geometry={bracketGeo}>
+        <meshStandardMaterial color="#445566" roughness={0.35} metalness={0.85} />
+      </mesh>
+
+      {/* Base plate */}
+      <mesh position={[1, -2.2, -0.1]}>
+        <boxGeometry args={[5, 0.2, 1.2]} />
+        <meshStandardMaterial {...darkMetal} />
+      </mesh>
+
+      {/* Decorative bolts */}
+      {[[0, 0], [2.55, 1.2]].map(([x, y], i) => (
+        <mesh key={i} position={[x, y, 0.45]}>
+          <cylinderGeometry args={[0.2, 0.2, 0.1, 6]} />
+          <meshStandardMaterial color="#667788" roughness={0.2} metalness={0.95} />
+        </mesh>
+      ))}
     </group>
   );
 }
@@ -42,18 +130,17 @@ function ImagePanel() {
 function Scene() {
   return (
     <>
-      <ambientLight intensity={0.6} />
-      <directionalLight position={[10, 10, 5]} intensity={1.0} color="#ffffff" />
-      <directionalLight position={[-5, -5, -5]} intensity={0.3} color="#ffffff" />
-      <ImagePanel />
+      <ambientLight intensity={0.4} />
+      <directionalLight position={[10, 10, 8]} intensity={1.2} color="#ffffff" />
+      <directionalLight position={[-5, -3, -5]} intensity={0.3} color="#aaccff" />
+      <pointLight position={[3, 3, 5]} intensity={0.5} color="#3b82f6" />
+      <MechanicalAssembly />
       <Environment preset="studio" />
       <OrbitControls
         enableZoom={false}
         enablePan={false}
-        minPolarAngle={Math.PI / 4}
-        maxPolarAngle={Math.PI / 1.5}
         autoRotate
-        autoRotateSpeed={0.5}
+        autoRotateSpeed={0.8}
       />
     </>
   );
@@ -75,7 +162,7 @@ export default function Slide13Interactive3D() {
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <div className="pointer-events-auto" style={{ width: 1100, height: 850 }}>
             <Canvas
-              camera={{ position: [0, 0, 4], fov: 45 }}
+              camera={{ position: [0, 0, 7], fov: 45 }}
               gl={{ antialias: true, alpha: true }}
               dpr={1}
               style={{ background: 'transparent' }}
