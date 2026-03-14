@@ -412,6 +412,10 @@
     width: 100% !important;
   }
 
+  .print-slides {
+    counter-reset: slide-page;
+  }
+
   .print-slide-page {
     width: 100vw;
     height: 100vh;
@@ -421,6 +425,17 @@
     break-inside: avoid;
     overflow: hidden;
     position: relative;
+    counter-increment: slide-page;
+  }
+
+  .print-slide-page::after {
+    content: counter(slide-page);
+    position: absolute;
+    bottom: 12px;
+    right: 24px;
+    font-size: 10px;
+    color: #9CA3AF;
+    font-family: 'IBM Plex Sans', sans-serif;
   }
 
   .print-slide-page > * {

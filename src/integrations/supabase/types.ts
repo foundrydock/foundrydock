@@ -7,11 +7,349 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "14.4"
   }
   public: {
     Tables: {
+      asset_folders: {
+        Row: {
+          access_level: string
+          company_id: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          icon: string | null
+          id: string
+          name: string
+          parent_id: string | null
+          slug: string
+          sort_order: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          access_level?: string
+          company_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name: string
+          parent_id?: string | null
+          slug: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          access_level?: string
+          company_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name?: string
+          parent_id?: string | null
+          slug?: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "asset_folders_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "asset_folders_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "asset_folders_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "asset_folders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      assets: {
+        Row: {
+          company_id: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          file_name: string
+          file_path: string
+          file_size: number | null
+          file_type: string
+          folder_id: string | null
+          id: string
+          metadata: Json | null
+          mime_type: string | null
+          name: string
+          tags: string[] | null
+          thumbnail_url: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          company_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          file_name: string
+          file_path: string
+          file_size?: number | null
+          file_type: string
+          folder_id?: string | null
+          id?: string
+          metadata?: Json | null
+          mime_type?: string | null
+          name: string
+          tags?: string[] | null
+          thumbnail_url?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          company_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          file_name?: string
+          file_path?: string
+          file_size?: number | null
+          file_type?: string
+          folder_id?: string | null
+          id?: string
+          metadata?: Json | null
+          mime_type?: string | null
+          name?: string
+          tags?: string[] | null
+          thumbnail_url?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assets_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assets_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assets_folder_id_fkey"
+            columns: ["folder_id"]
+            isOneToOne: false
+            referencedRelation: "asset_folders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      board_meetings: {
+        Row: {
+          agenda: Json | null
+          attendees: Json | null
+          company_id: string | null
+          created_at: string | null
+          created_by: string | null
+          id: string
+          location: string | null
+          meeting_date: string
+          status: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          agenda?: Json | null
+          attendees?: Json | null
+          company_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          location?: string | null
+          meeting_date: string
+          status?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          agenda?: Json | null
+          attendees?: Json | null
+          company_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          location?: string | null
+          meeting_date?: string
+          status?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "board_meetings_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "board_meetings_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      brand_settings: {
+        Row: {
+          accent_color: string | null
+          company_id: string | null
+          font_body: string | null
+          font_heading: string | null
+          guidelines_content: Json | null
+          id: string
+          logo_dark_path: string | null
+          logo_light_path: string | null
+          primary_color: string | null
+          secondary_color: string | null
+          tagline: string | null
+          updated_at: string | null
+          website: string | null
+        }
+        Insert: {
+          accent_color?: string | null
+          company_id?: string | null
+          font_body?: string | null
+          font_heading?: string | null
+          guidelines_content?: Json | null
+          id?: string
+          logo_dark_path?: string | null
+          logo_light_path?: string | null
+          primary_color?: string | null
+          secondary_color?: string | null
+          tagline?: string | null
+          updated_at?: string | null
+          website?: string | null
+        }
+        Update: {
+          accent_color?: string | null
+          company_id?: string | null
+          font_body?: string | null
+          font_heading?: string | null
+          guidelines_content?: Json | null
+          id?: string
+          logo_dark_path?: string | null
+          logo_light_path?: string | null
+          primary_color?: string | null
+          secondary_color?: string | null
+          tagline?: string | null
+          updated_at?: string | null
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brand_settings_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: true
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      companies: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          name: string
+          slug: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          slug: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          slug?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "companies_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      company_members: {
+        Row: {
+          company_id: string | null
+          created_at: string | null
+          id: string
+          role: string
+          user_id: string | null
+        }
+        Insert: {
+          company_id?: string | null
+          created_at?: string | null
+          id?: string
+          role?: string
+          user_id?: string | null
+        }
+        Update: {
+          company_id?: string | null
+          created_at?: string | null
+          id?: string
+          role?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_members_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "company_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       content_overrides: {
         Row: {
           created_at: string
@@ -42,6 +380,137 @@ export type Database = {
         }
         Relationships: []
       }
+      document_templates: {
+        Row: {
+          category: string | null
+          company_id: string | null
+          content: Json | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          is_global: boolean | null
+          name: string
+          sort_order: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          category?: string | null
+          company_id?: string | null
+          content?: Json | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_global?: boolean | null
+          name: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string | null
+          company_id?: string | null
+          content?: Json | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_global?: boolean | null
+          name?: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_templates_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      documents: {
+        Row: {
+          board_meeting_id: string | null
+          category: string | null
+          company_id: string | null
+          content: Json | null
+          created_at: string | null
+          created_by: string | null
+          folder_id: string | null
+          id: string
+          status: string | null
+          template_id: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          board_meeting_id?: string | null
+          category?: string | null
+          company_id?: string | null
+          content?: Json | null
+          created_at?: string | null
+          created_by?: string | null
+          folder_id?: string | null
+          id?: string
+          status?: string | null
+          template_id?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          board_meeting_id?: string | null
+          category?: string | null
+          company_id?: string | null
+          content?: Json | null
+          created_at?: string | null
+          created_by?: string | null
+          folder_id?: string | null
+          id?: string
+          status?: string | null
+          template_id?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documents_board_meeting_id_fkey"
+            columns: ["board_meeting_id"]
+            isOneToOne: false
+            referencedRelation: "board_meetings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_folder_id_fkey"
+            columns: ["folder_id"]
+            isOneToOne: false
+            referencedRelation: "asset_folders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       image_overrides: {
         Row: {
           created_at: string
@@ -69,6 +538,66 @@ export type Database = {
         }
         Relationships: []
       }
+      pitchdecks: {
+        Row: {
+          company_id: string | null
+          created_at: string | null
+          created_by: string | null
+          hidden_slides: string[] | null
+          id: string
+          is_default: boolean | null
+          name: string
+          overrides_key: string | null
+          slide_order: string[] | null
+          style_overrides: Json | null
+          template: string
+          updated_at: string | null
+        }
+        Insert: {
+          company_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          hidden_slides?: string[] | null
+          id?: string
+          is_default?: boolean | null
+          name: string
+          overrides_key?: string | null
+          slide_order?: string[] | null
+          style_overrides?: Json | null
+          template?: string
+          updated_at?: string | null
+        }
+        Update: {
+          company_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          hidden_slides?: string[] | null
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          overrides_key?: string | null
+          slide_order?: string[] | null
+          style_overrides?: Json | null
+          template?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pitchdecks_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pitchdecks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       presenter_notes: {
         Row: {
           content: string
@@ -95,460 +624,123 @@ export type Database = {
       }
       profiles: {
         Row: {
-          id: string
+          created_at: string | null
           email: string
           full_name: string | null
-          role: 'admin' | 'viewer'
-          created_at: string
-          updated_at: string
+          id: string
+          role: string
+          updated_at: string | null
         }
         Insert: {
-          id: string
+          created_at?: string | null
           email: string
           full_name?: string | null
-          role?: 'admin' | 'viewer'
-          created_at?: string
-          updated_at?: string
+          id: string
+          role?: string
+          updated_at?: string | null
         }
         Update: {
-          id?: string
+          created_at?: string | null
           email?: string
           full_name?: string | null
-          role?: 'admin' | 'viewer'
-          created_at?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      asset_folders: {
-        Row: {
-          id: string
-          name: string
-          slug: string
-          description: string | null
-          parent_id: string | null
-          access_level: 'public' | 'link' | 'private'
-          icon: string | null
-          sort_order: number
-          created_by: string | null
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
           id?: string
-          name: string
-          slug: string
-          description?: string | null
-          parent_id?: string | null
-          access_level?: 'public' | 'link' | 'private'
-          icon?: string | null
-          sort_order?: number
-          created_by?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          name?: string
-          slug?: string
-          description?: string | null
-          parent_id?: string | null
-          access_level?: 'public' | 'link' | 'private'
-          icon?: string | null
-          sort_order?: number
-          created_by?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      assets: {
-        Row: {
-          id: string
-          folder_id: string | null
-          name: string
-          description: string | null
-          file_path: string
-          file_name: string
-          file_type: string
-          file_size: number
-          mime_type: string | null
-          thumbnail_url: string | null
-          tags: string[]
-          metadata: Json
-          created_by: string | null
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          folder_id?: string | null
-          name: string
-          description?: string | null
-          file_path: string
-          file_name: string
-          file_type: string
-          file_size?: number
-          mime_type?: string | null
-          thumbnail_url?: string | null
-          tags?: string[]
-          metadata?: Json
-          created_by?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          folder_id?: string | null
-          name?: string
-          description?: string | null
-          file_path?: string
-          file_name?: string
-          file_type?: string
-          file_size?: number
-          mime_type?: string | null
-          thumbnail_url?: string | null
-          tags?: string[]
-          metadata?: Json
-          created_by?: string | null
-          created_at?: string
-          updated_at?: string
+          role?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
       share_links: {
         Row: {
-          id: string
-          token: string
-          title: string
-          description: string | null
-          folder_id: string | null
           asset_id: string | null
-          pitchdeck_id: string | null
-          password_hash: string | null
-          expires_at: string | null
-          view_count: number
-          last_viewed_at: string | null
-          is_active: boolean
-          created_by: string | null
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          token?: string
-          title: string
-          description?: string | null
-          folder_id?: string | null
-          asset_id?: string | null
-          pitchdeck_id?: string | null
-          password_hash?: string | null
-          expires_at?: string | null
-          view_count?: number
-          last_viewed_at?: string | null
-          is_active?: boolean
-          created_by?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          token?: string
-          title?: string
-          description?: string | null
-          folder_id?: string | null
-          asset_id?: string | null
-          pitchdeck_id?: string | null
-          password_hash?: string | null
-          expires_at?: string | null
-          view_count?: number
-          last_viewed_at?: string | null
-          is_active?: boolean
-          created_by?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      companies: {
-        Row: {
-          id: string
-          name: string
-          slug: string
-          description: string | null
-          created_by: string | null
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          name: string
-          slug: string
-          description?: string | null
-          created_by?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          name?: string
-          slug?: string
-          description?: string | null
-          created_by?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      company_members: {
-        Row: {
-          id: string
-          company_id: string
-          user_id: string
-          role: 'admin' | 'viewer'
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          company_id: string
-          user_id: string
-          role?: 'admin' | 'viewer'
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          company_id?: string
-          user_id?: string
-          role?: 'admin' | 'viewer'
-          created_at?: string
-        }
-        Relationships: []
-      }
-      brand_settings: {
-        Row: {
-          id: string
-          company_id: string
-          primary_color: string
-          secondary_color: string
-          accent_color: string
-          font_heading: string
-          font_body: string
-          tagline: string | null
-          website: string | null
-          logo_light_path: string | null
-          logo_dark_path: string | null
-          guidelines_content: Json
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          company_id: string
-          primary_color?: string
-          secondary_color?: string
-          accent_color?: string
-          font_heading?: string
-          font_body?: string
-          tagline?: string | null
-          website?: string | null
-          logo_light_path?: string | null
-          logo_dark_path?: string | null
-          guidelines_content?: Json
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          company_id?: string
-          primary_color?: string
-          secondary_color?: string
-          accent_color?: string
-          font_heading?: string
-          font_body?: string
-          tagline?: string | null
-          website?: string | null
-          logo_light_path?: string | null
-          logo_dark_path?: string | null
-          guidelines_content?: Json
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      board_meetings: {
-        Row: {
-          id: string
-          company_id: string
-          title: string
-          meeting_date: string
-          location: string | null
-          status: 'draft' | 'published' | 'archived'
-          attendees: Json
-          agenda: Json
-          created_by: string | null
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          company_id: string
-          title: string
-          meeting_date: string
-          location?: string | null
-          status?: 'draft' | 'published' | 'archived'
-          attendees?: Json
-          agenda?: Json
-          created_by?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          company_id?: string
-          title?: string
-          meeting_date?: string
-          location?: string | null
-          status?: 'draft' | 'published' | 'archived'
-          attendees?: Json
-          agenda?: Json
-          created_by?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      documents: {
-        Row: {
-          id: string
-          company_id: string
-          folder_id: string | null
-          board_meeting_id: string | null
-          template_id: string | null
-          title: string
-          category: 'board_minutes' | 'contract' | 'nda' | 'brand_guidelines' | 'general' | 'other'
-          content: Json
-          status: 'draft' | 'published' | 'archived'
-          created_by: string | null
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          company_id: string
-          folder_id?: string | null
-          board_meeting_id?: string | null
-          template_id?: string | null
-          title: string
-          category?: 'board_minutes' | 'contract' | 'nda' | 'brand_guidelines' | 'general' | 'other'
-          content?: Json
-          status?: 'draft' | 'published' | 'archived'
-          created_by?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          company_id?: string
-          folder_id?: string | null
-          board_meeting_id?: string | null
-          template_id?: string | null
-          title?: string
-          category?: 'board_minutes' | 'contract' | 'nda' | 'brand_guidelines' | 'general' | 'other'
-          content?: Json
-          status?: 'draft' | 'published' | 'archived'
-          created_by?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      document_templates: {
-        Row: {
-          id: string
           company_id: string | null
-          name: string
+          created_at: string | null
+          created_by: string | null
           description: string | null
-          category: 'board_minutes' | 'contract' | 'nda' | 'brand_guidelines' | 'general' | 'other'
-          content: Json
-          is_global: boolean
-          sort_order: number
-          created_by: string | null
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          company_id?: string | null
-          name: string
-          description?: string | null
-          category?: 'board_minutes' | 'contract' | 'nda' | 'brand_guidelines' | 'general' | 'other'
-          content?: Json
-          is_global?: boolean
-          sort_order?: number
-          created_by?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          company_id?: string | null
-          name?: string
-          description?: string | null
-          category?: 'board_minutes' | 'contract' | 'nda' | 'brand_guidelines' | 'general' | 'other'
-          content?: Json
-          is_global?: boolean
-          sort_order?: number
-          created_by?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      pitchdecks: {
-        Row: {
+          expires_at: string | null
+          folder_id: string | null
           id: string
-          name: string
-          template: string
-          slide_order: string[]
-          hidden_slides: string[]
-          style_overrides: Json
-          overrides_key: string | null
-          is_default: boolean
-          created_by: string | null
-          created_at: string
-          updated_at: string
+          is_active: boolean | null
+          last_viewed_at: string | null
+          password_hash: string | null
+          pitchdeck_id: string | null
+          title: string
+          token: string
+          updated_at: string | null
+          view_count: number | null
         }
         Insert: {
-          id?: string
-          name: string
-          template?: string
-          slide_order?: string[]
-          hidden_slides?: string[]
-          style_overrides?: Json
-          overrides_key?: string | null
-          is_default?: boolean
+          asset_id?: string | null
+          company_id?: string | null
+          created_at?: string | null
           created_by?: string | null
-          created_at?: string
-          updated_at?: string
+          description?: string | null
+          expires_at?: string | null
+          folder_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_viewed_at?: string | null
+          password_hash?: string | null
+          pitchdeck_id?: string | null
+          title: string
+          token?: string
+          updated_at?: string | null
+          view_count?: number | null
         }
         Update: {
-          id?: string
-          name?: string
-          template?: string
-          slide_order?: string[]
-          hidden_slides?: string[]
-          style_overrides?: Json
-          overrides_key?: string | null
-          is_default?: boolean
+          asset_id?: string | null
+          company_id?: string | null
+          created_at?: string | null
           created_by?: string | null
-          created_at?: string
-          updated_at?: string
+          description?: string | null
+          expires_at?: string | null
+          folder_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_viewed_at?: string | null
+          password_hash?: string | null
+          pitchdeck_id?: string | null
+          title?: string
+          token?: string
+          updated_at?: string | null
+          view_count?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "share_links_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: false
+            referencedRelation: "assets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "share_links_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "share_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "share_links_folder_id_fkey"
+            columns: ["folder_id"]
+            isOneToOne: false
+            referencedRelation: "asset_folders"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_company_admin: { Args: { p_company_id: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
@@ -560,6 +752,7 @@ export type Database = {
 }
 
 type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
 type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
@@ -656,6 +849,23 @@ export type Enums<
   ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
 
 export const Constants = {
