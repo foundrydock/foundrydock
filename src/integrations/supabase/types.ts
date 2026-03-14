@@ -740,7 +740,9 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_my_company_ids: { Args: never; Returns: string[] }
       is_company_admin: { Args: { p_company_id: string }; Returns: boolean }
+      is_global_admin: { Args: never; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
