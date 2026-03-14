@@ -1,15 +1,38 @@
 import { useEffect, useState, useRef } from 'react';
 import { RefreshCw, X } from 'lucide-react';
 
-const POLL_INTERVAL = 2 * 60 * 1000; // 2 minuuttia
+// Kuinka usein tarkistetaan (ms)
+const POLL_INTERVAL = 30 * 1000; // 30 sekuntia
 
-async function fetchPageHash(): Promise<string | null> {
+async function getDeployVersion(): Promise<string | null> {
   try {
-    const res = await fetch('/', { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } });
+    const url = `${window.location.origin}/?_cb=${Date.now()}`;
+    const res = await fetch(url, {
+      cache: 'no-store',
+      headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate', 'Pragma': 'no-cache' },
+    });
+
+    // 1. Kokeile ETag tai Last-Modified headerista
+    const etag = res.headers.get('etag');
+    const lastMod = res.headers.get('last-modified');
+    if (etag) return etag;
+    if (lastMod) return lastMod;
+
+    // 2. Fallback: parsitaan JS-tiedoston hash HTML:stä
     const html = await res.text();
-    // Poimitaan main JS-tiedoston nimi joka muuttuu joka deployssa
-    const match = html.match(/src="\/assets\/index-([^"]+)\.js"/);
-    return match?.[1] ?? null;
+    // Kokeillaan eri muotoja
+    const patterns = [
+      /\/assets\/index-([A-Za-z0-9_-]+)\.js/,
+      /src="[^"]*\/index-([A-Za-z0-9_-]+)\.js"/,
+      /<script[^>]+src="([^"]*\.js)"/,
+    ];
+    for (const p of patterns) {
+      const m = html.match(p);
+      if (m?.[1]) return m[1];
+    }
+
+    // 3. Viimeinen fallback: koko HTML:n pituus + sisällön alku
+    return `${res.status}-${html.length}-${html.slice(100, 200)}`;
   } catch {
     return null;
   }
@@ -17,41 +40,53 @@ async function fetchPageHash(): Promise<string | null> {
 
 export default function UpdatePrompt() {
   const [showBanner, setShowBanner] = useState(false);
-  const initialHash = useRef<string | null>(null);
+  const initialVersion = useRef<string | null>(null);
+  const checking = useRef(false);
 
-  useEffect(() => {
-    // Tallennetaan nykyinen versio muistiin
-    fetchPageHash().then(hash => {
-      initialHash.current = hash;
-    });
+  async function checkForUpdate() {
+    if (checking.current) return;
+    checking.current = true;
+    try {
+      const current = await getDeployVersion();
+      if (!current) return;
 
-    // Pollataan säännöllisesti
-    const interval = setInterval(async () => {
-      const current = await fetchPageHash();
-      if (
-        current &&
-        initialHash.current &&
-        current !== initialHash.current
-      ) {
+      if (!initialVersion.current) {
+        // Ensimmäinen tarkistus — tallennetaan versio
+        initialVersion.current = current;
+        console.debug('[UpdatePrompt] Versio tallennettu:', current.slice(0, 30));
+        return;
+      }
+
+      if (current !== initialVersion.current) {
+        console.debug('[UpdatePrompt] Uusi versio havaittu:', current.slice(0, 30));
         setShowBanner(true);
       }
-    }, POLL_INTERVAL);
+    } finally {
+      checking.current = false;
+    }
+  }
 
-    // Tarkistetaan myös kun käyttäjä palaa välilehdelle
+  useEffect(() => {
+    // Tarkistetaan heti käynnistyessä
+    checkForUpdate();
+
+    // Pollaus
+    const interval = setInterval(checkForUpdate, POLL_INTERVAL);
+
+    // Kun käyttäjä palaa välilehdelle
     const onVisibility = () => {
-      if (document.visibilityState === 'visible') {
-        fetchPageHash().then(current => {
-          if (current && initialHash.current && current !== initialHash.current) {
-            setShowBanner(true);
-          }
-        });
-      }
+      if (document.visibilityState === 'visible') checkForUpdate();
     };
     document.addEventListener('visibilitychange', onVisibility);
+
+    // Kun verkko palaa
+    const onOnline = () => checkForUpdate();
+    window.addEventListener('online', onOnline);
 
     return () => {
       clearInterval(interval);
       document.removeEventListener('visibilitychange', onVisibility);
+      window.removeEventListener('online', onOnline);
     };
   }, []);
 
@@ -62,7 +97,7 @@ export default function UpdatePrompt() {
       <div className="flex items-center gap-3 bg-white text-black px-5 py-3.5 rounded-xl shadow-2xl border border-neutral-200 max-w-sm">
         <div className="flex-1 min-w-0">
           <div className="font-semibold text-sm">Päivitys saatavilla</div>
-          <div className="text-neutral-600 text-xs mt-0.5">Uusi versio on valmis.</div>
+          <div className="text-neutral-600 text-xs mt-0.5">Uusi versio on valmis ladattavaksi.</div>
         </div>
         <button
           onClick={() => window.location.reload()}
@@ -74,7 +109,7 @@ export default function UpdatePrompt() {
         <button
           onClick={() => setShowBanner(false)}
           className="p-1 text-neutral-400 hover:text-black rounded transition-colors shrink-0"
-          title="Sulje"
+          title="Myöhemmin"
         >
           <X size={14} />
         </button>
