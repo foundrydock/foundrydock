@@ -65,10 +65,10 @@ export default function Documents() {
     queryFn: async () => {
       const { data } = await supabase
         .from('assets')
-        .select('*, asset_folders(name, slug)')
+        .select('*, asset_folders(name, slug)' as any)
         .eq('company_id', activeCompany!.id)
         .order('created_at', { ascending: false });
-      return (data ?? []) as (Asset & { asset_folders: { name: string; slug: string } | null })[];
+      return (data ?? []) as unknown as (Asset & { asset_folders: { name: string; slug: string } | null })[];
     },
     enabled: !!activeCompany?.id,
   });

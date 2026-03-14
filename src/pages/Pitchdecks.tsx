@@ -39,7 +39,7 @@ export default function Pitchdecks() {
   const { data: decks, isLoading } = useQuery({
     queryKey: ['pitchdecks', activeCompany?.id],
     queryFn: async () => {
-      let q = supabase.from('pitchdecks').select('*').order('updated_at', { ascending: false });
+      let q = supabase.from('pitchdecks').select('*').order('updated_at', { ascending: false } as any);
       if (activeCompany?.id) q = q.eq('company_id', activeCompany.id);
       const { data } = await q;
       return (data ?? []) as Pitchdeck[];
