@@ -270,6 +270,237 @@ export type Database = {
         }
         Relationships: []
       }
+      companies: {
+        Row: {
+          id: string
+          name: string
+          slug: string
+          description: string | null
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          slug: string
+          description?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          slug?: string
+          description?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      company_members: {
+        Row: {
+          id: string
+          company_id: string
+          user_id: string
+          role: 'admin' | 'viewer'
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          company_id: string
+          user_id: string
+          role?: 'admin' | 'viewer'
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          company_id?: string
+          user_id?: string
+          role?: 'admin' | 'viewer'
+          created_at?: string
+        }
+        Relationships: []
+      }
+      brand_settings: {
+        Row: {
+          id: string
+          company_id: string
+          primary_color: string
+          secondary_color: string
+          accent_color: string
+          font_heading: string
+          font_body: string
+          tagline: string | null
+          website: string | null
+          logo_light_path: string | null
+          logo_dark_path: string | null
+          guidelines_content: Json
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          company_id: string
+          primary_color?: string
+          secondary_color?: string
+          accent_color?: string
+          font_heading?: string
+          font_body?: string
+          tagline?: string | null
+          website?: string | null
+          logo_light_path?: string | null
+          logo_dark_path?: string | null
+          guidelines_content?: Json
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          company_id?: string
+          primary_color?: string
+          secondary_color?: string
+          accent_color?: string
+          font_heading?: string
+          font_body?: string
+          tagline?: string | null
+          website?: string | null
+          logo_light_path?: string | null
+          logo_dark_path?: string | null
+          guidelines_content?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      board_meetings: {
+        Row: {
+          id: string
+          company_id: string
+          title: string
+          meeting_date: string
+          location: string | null
+          status: 'draft' | 'published' | 'archived'
+          attendees: Json
+          agenda: Json
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          company_id: string
+          title: string
+          meeting_date: string
+          location?: string | null
+          status?: 'draft' | 'published' | 'archived'
+          attendees?: Json
+          agenda?: Json
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          company_id?: string
+          title?: string
+          meeting_date?: string
+          location?: string | null
+          status?: 'draft' | 'published' | 'archived'
+          attendees?: Json
+          agenda?: Json
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      documents: {
+        Row: {
+          id: string
+          company_id: string
+          folder_id: string | null
+          board_meeting_id: string | null
+          template_id: string | null
+          title: string
+          category: 'board_minutes' | 'contract' | 'nda' | 'brand_guidelines' | 'general' | 'other'
+          content: Json
+          status: 'draft' | 'published' | 'archived'
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          company_id: string
+          folder_id?: string | null
+          board_meeting_id?: string | null
+          template_id?: string | null
+          title: string
+          category?: 'board_minutes' | 'contract' | 'nda' | 'brand_guidelines' | 'general' | 'other'
+          content?: Json
+          status?: 'draft' | 'published' | 'archived'
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          company_id?: string
+          folder_id?: string | null
+          board_meeting_id?: string | null
+          template_id?: string | null
+          title?: string
+          category?: 'board_minutes' | 'contract' | 'nda' | 'brand_guidelines' | 'general' | 'other'
+          content?: Json
+          status?: 'draft' | 'published' | 'archived'
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      document_templates: {
+        Row: {
+          id: string
+          company_id: string | null
+          name: string
+          description: string | null
+          category: 'board_minutes' | 'contract' | 'nda' | 'brand_guidelines' | 'general' | 'other'
+          content: Json
+          is_global: boolean
+          sort_order: number
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          company_id?: string | null
+          name: string
+          description?: string | null
+          category?: 'board_minutes' | 'contract' | 'nda' | 'brand_guidelines' | 'general' | 'other'
+          content?: Json
+          is_global?: boolean
+          sort_order?: number
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          company_id?: string | null
+          name?: string
+          description?: string | null
+          category?: 'board_minutes' | 'contract' | 'nda' | 'brand_guidelines' | 'general' | 'other'
+          content?: Json
+          is_global?: boolean
+          sort_order?: number
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       pitchdecks: {
         Row: {
           id: string
