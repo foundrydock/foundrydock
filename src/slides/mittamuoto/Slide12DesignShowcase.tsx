@@ -31,7 +31,7 @@ export default function Slide12DesignShowcase() {
         </div>
 
         <div className="w-[55%] relative">
-          <img src={designImage} alt="3D CAD design - wireframe to solid model" className="w-full h-full object-cover" />
+          <EditableImage src={designImage} alt="3D CAD design - wireframe to solid model" className="w-full h-full object-cover" imageKey="slide12-design" />
           <div className="absolute inset-0 bg-gradient-to-r from-slide-primary via-transparent to-transparent" />
         </div>
       </div>
