@@ -13,7 +13,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { useDeckManager } from '@/hooks/useDeckManager';
-import { getAccessRole } from '@/components/PasswordGate';
+import { useAuth } from '@/auth/AuthContext';
 import { mittamuotoSlides } from '@/slides/mittamuoto';
 import { showcaseSlides } from '@/slides/showcase';
 import { demoSlides } from '@/slides/demo';
@@ -37,7 +37,8 @@ export default function Index() {
   const { setOverridesKey, overridesKey } = useLanguage();
   const deckManager = useDeckManager();
   const { activeDeck, activeDeckId } = deckManager;
-  const isEditor = getAccessRole() === 'editor';
+  const { isAdmin } = useAuth();
+  const isEditor = isAdmin;
 
   useStyleOverrides();
 

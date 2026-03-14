@@ -7,8 +7,6 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "14.4"
   }
@@ -95,6 +93,225 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          id: string
+          email: string
+          full_name: string | null
+          role: 'admin' | 'viewer'
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id: string
+          email: string
+          full_name?: string | null
+          role?: 'admin' | 'viewer'
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          email?: string
+          full_name?: string | null
+          role?: 'admin' | 'viewer'
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      asset_folders: {
+        Row: {
+          id: string
+          name: string
+          slug: string
+          description: string | null
+          parent_id: string | null
+          access_level: 'public' | 'link' | 'private'
+          icon: string | null
+          sort_order: number
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          slug: string
+          description?: string | null
+          parent_id?: string | null
+          access_level?: 'public' | 'link' | 'private'
+          icon?: string | null
+          sort_order?: number
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          slug?: string
+          description?: string | null
+          parent_id?: string | null
+          access_level?: 'public' | 'link' | 'private'
+          icon?: string | null
+          sort_order?: number
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      assets: {
+        Row: {
+          id: string
+          folder_id: string | null
+          name: string
+          description: string | null
+          file_path: string
+          file_name: string
+          file_type: string
+          file_size: number
+          mime_type: string | null
+          thumbnail_url: string | null
+          tags: string[]
+          metadata: Json
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          folder_id?: string | null
+          name: string
+          description?: string | null
+          file_path: string
+          file_name: string
+          file_type: string
+          file_size?: number
+          mime_type?: string | null
+          thumbnail_url?: string | null
+          tags?: string[]
+          metadata?: Json
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          folder_id?: string | null
+          name?: string
+          description?: string | null
+          file_path?: string
+          file_name?: string
+          file_type?: string
+          file_size?: number
+          mime_type?: string | null
+          thumbnail_url?: string | null
+          tags?: string[]
+          metadata?: Json
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      share_links: {
+        Row: {
+          id: string
+          token: string
+          title: string
+          description: string | null
+          folder_id: string | null
+          asset_id: string | null
+          pitchdeck_id: string | null
+          password_hash: string | null
+          expires_at: string | null
+          view_count: number
+          last_viewed_at: string | null
+          is_active: boolean
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          token?: string
+          title: string
+          description?: string | null
+          folder_id?: string | null
+          asset_id?: string | null
+          pitchdeck_id?: string | null
+          password_hash?: string | null
+          expires_at?: string | null
+          view_count?: number
+          last_viewed_at?: string | null
+          is_active?: boolean
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          token?: string
+          title?: string
+          description?: string | null
+          folder_id?: string | null
+          asset_id?: string | null
+          pitchdeck_id?: string | null
+          password_hash?: string | null
+          expires_at?: string | null
+          view_count?: number
+          last_viewed_at?: string | null
+          is_active?: boolean
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      pitchdecks: {
+        Row: {
+          id: string
+          name: string
+          template: string
+          slide_order: string[]
+          hidden_slides: string[]
+          style_overrides: Json
+          overrides_key: string | null
+          is_default: boolean
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          template?: string
+          slide_order?: string[]
+          hidden_slides?: string[]
+          style_overrides?: Json
+          overrides_key?: string | null
+          is_default?: boolean
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          template?: string
+          slide_order?: string[]
+          hidden_slides?: string[]
+          style_overrides?: Json
+          overrides_key?: string | null
+          is_default?: boolean
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -112,7 +329,6 @@ export type Database = {
 }
 
 type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
-
 type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
@@ -209,23 +425,6 @@ export type Enums<
   ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
-    : never
-
-export type CompositeTypes<
-  PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema["CompositeTypes"]
-    | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
-> = PublicCompositeTypeNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
-    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
 
 export const Constants = {
