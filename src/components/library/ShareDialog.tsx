@@ -30,7 +30,7 @@ export default function ShareDialog({ open, onClose, target }: ShareDialogProps)
   async function handleCreate() {
     setCreating(true);
     try {
-      const payload: Record<string, unknown> & { title: string } = {
+      const payload: TablesInsert<'share_links'> = {
         title,
         created_by: user?.id,
         is_active: true,
@@ -39,7 +39,7 @@ export default function ShareDialog({ open, onClose, target }: ShareDialogProps)
       if (target.type === 'folder') payload.folder_id = target.id;
       if (target.type === 'asset') payload.asset_id = target.id;
       if (target.type === 'pitchdeck') payload.pitchdeck_id = target.id;
-      if (usePassword && password) payload.password_hash = password; // stored plaintext for now, check on view
+      if (usePassword && password) payload.password_hash = password;
       if (expiresIn) {
         const days = parseInt(expiresIn);
         if (!isNaN(days)) {
