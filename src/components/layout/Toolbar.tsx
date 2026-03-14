@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { Grid3X3, FileText, MoreVertical, Play, Monitor, Moon, Sun, Printer, Pencil, PencilOff } from 'lucide-react';
+import { Grid3X3, FileText, MoreVertical, Play, Monitor, Moon, Sun, Printer, Pencil, PencilOff, Palette, ListOrdered } from 'lucide-react';
 import { getAccessRole } from '@/components/PasswordGate';
 import { useLanguage, Language } from '@/i18n/LanguageContext';
 import { Button } from '@/components/ui/button';
@@ -30,6 +30,10 @@ interface ToolbarProps {
   onPrintPDF?: () => void;
   className?: string;
   deckManager?: DeckManagerApi;
+  onToggleStyleEditor?: () => void;
+  onToggleSlideOrder?: () => void;
+  showStyleEditor?: boolean;
+  showSlideOrder?: boolean;
 }
 
 export function Toolbar({
@@ -44,6 +48,10 @@ export function Toolbar({
   onPrintPDF,
   className,
   deckManager,
+  onToggleStyleEditor,
+  onToggleSlideOrder,
+  showStyleEditor,
+  showSlideOrder,
 }: ToolbarProps) {
   const isEditor = getAccessRole() === 'editor';
 
@@ -70,6 +78,28 @@ export function Toolbar({
       {/* Right section */}
       <div className="flex items-center justify-end flex-shrink-0 px-4 gap-1">
         {isEditor && <EditModeToggle />}
+        {isEditor && onToggleStyleEditor && (
+          <Button
+            variant={showStyleEditor ? 'default' : 'ghost'}
+            size="icon"
+            onClick={onToggleStyleEditor}
+            title="Muokkaa tyylejä"
+            className={cn(showStyleEditor && 'bg-slide-accent text-white hover:bg-slide-accent/90')}
+          >
+            <Palette className="h-4 w-4" />
+          </Button>
+        )}
+        {isEditor && onToggleSlideOrder && (
+          <Button
+            variant={showSlideOrder ? 'default' : 'ghost'}
+            size="icon"
+            onClick={onToggleSlideOrder}
+            title="Järjestä slidet"
+            className={cn(showSlideOrder && 'bg-slide-accent text-white hover:bg-slide-accent/90')}
+          >
+            <ListOrdered className="h-4 w-4" />
+          </Button>
+        )}
         <LanguageSwitcher />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

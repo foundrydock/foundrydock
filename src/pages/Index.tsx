@@ -7,10 +7,13 @@ import { SlideOverviewGrid } from '@/components/slides/SlideOverviewGrid';
 import { PresentationMode } from '@/components/slides/PresentationMode';
 import { PresenterView } from '@/components/slides/PresenterView';
 import { PresenterNotesPanel } from '@/components/slides/PresenterNotesPanel';
+import { StyleEditor, useStyleOverrides } from '@/components/slides/StyleEditor';
+import { SlideOrderEditor, useSlideOrder } from '@/components/slides/SlideOrderEditor';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { useDeckManager } from '@/hooks/useDeckManager';
+import { getAccessRole } from '@/components/PasswordGate';
 import { mittamuotoSlides } from '@/slides/mittamuoto';
 import { showcaseSlides } from '@/slides/showcase';
 import { demoSlides } from '@/slides/demo';
@@ -31,9 +34,12 @@ const templateMap: Record<string, typeof mittamuotoSlides> = {
 
 export default function Index() {
   const isMobile = useIsMobile();
-  const { setOverridesKey } = useLanguage();
+  const { setOverridesKey, overridesKey } = useLanguage();
   const deckManager = useDeckManager();
   const { activeDeck, activeDeckId } = deckManager;
+  const isEditor = getAccessRole() === 'editor';
+
+  useStyleOverrides();
 
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
   const [showGrid, setShowGrid] = useState(false);
@@ -45,6 +51,8 @@ export default function Index() {
   const [isPresenterView, setIsPresenterView] = useState(false);
   const [sidebarWidth, setSidebarWidth] = useState(256);
   const [isResizing, setIsResizing] = useState(false);
+  const [showStyleEditor, setShowStyleEditor] = useState(false);
+  const [showSlideOrder, setShowSlideOrder] = useState(false);
 
   // Sync overrides key with active deck
   useEffect(() => {
@@ -60,7 +68,8 @@ export default function Index() {
     if (isMobile) setShowSidebar(false);
   }, [isMobile]);
 
-  const slides = React.useMemo<SlideData[]>(() => {
+  // All slides from template
+  const allSlides = React.useMemo<SlideData[]>(() => {
     const templateSlides = templateMap[activeDeck.sourceTemplate] || mittamuotoSlides;
     return templateSlides.map((s) => ({
       id: `slide-${s.name.toLowerCase().replace(/\s+/g, '-')}`,
@@ -70,6 +79,20 @@ export default function Index() {
       description: undefined,
     }));
   }, [activeDeck.sourceTemplate]);
+
+  const defaultSlideIds = React.useMemo(() => allSlides.map(s => s.id), [allSlides]);
+
+  const { slideOrder, hiddenSlides, reorder, toggleVisibility } = useSlideOrder(overridesKey, defaultSlideIds);
+
+  // Ordered and filtered slides
+  const slides = React.useMemo<SlideData[]>(() => {
+    const ordered = slideOrder
+      .map(id => allSlides.find(s => s.id === id))
+      .filter(Boolean) as SlideData[];
+    // Add any slides not in order (new slides)
+    const missing = allSlides.filter(s => !slideOrder.includes(s.id));
+    return [...ordered, ...missing].filter(s => !hiddenSlides.has(s.id));
+  }, [allSlides, slideOrder, hiddenSlides]);
 
   const currentSlideId = slides[activeSlideIndex]?.id ?? null;
 
@@ -164,7 +187,25 @@ export default function Index() {
           onStartPresenterView={() => setIsPresenterView(true)}
           onPrintPDF={handlePrintPDF}
           deckManager={deckManager}
+          onToggleStyleEditor={isEditor ? () => setShowStyleEditor(p => !p) : undefined}
+          onToggleSlideOrder={isEditor ? () => setShowSlideOrder(p => !p) : undefined}
+          showStyleEditor={showStyleEditor}
+          showSlideOrder={showSlideOrder}
         />
+
+        {/* Editor panels */}
+        {isEditor && <StyleEditor open={showStyleEditor} onClose={() => setShowStyleEditor(false)} />}
+        {isEditor && (
+          <SlideOrderEditor
+            open={showSlideOrder}
+            onClose={() => setShowSlideOrder(false)}
+            slides={allSlides.map(s => ({ id: s.id, name: s.name }))}
+            slideOrder={slideOrder}
+            hiddenSlides={hiddenSlides}
+            onReorder={reorder}
+            onToggleVisibility={toggleVisibility}
+          />
+        )}
 
         <div className="flex-1 flex overflow-hidden relative">
           {!isMobile && (
