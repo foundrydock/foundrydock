@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
+import { TablesInsert } from '@/integrations/supabase/types';
 import { useAuth } from '@/auth/AuthContext';
 import { Copy, Check, Link2, Lock, Globe } from 'lucide-react';
 import { toast } from 'sonner';
@@ -30,7 +31,7 @@ export default function ShareDialog({ open, onClose, target }: ShareDialogProps)
   async function handleCreate() {
     setCreating(true);
     try {
-      const payload: Record<string, unknown> = {
+      const payload: TablesInsert<'share_links'> = {
         title,
         created_by: user?.id,
         is_active: true,
@@ -39,7 +40,7 @@ export default function ShareDialog({ open, onClose, target }: ShareDialogProps)
       if (target.type === 'folder') payload.folder_id = target.id;
       if (target.type === 'asset') payload.asset_id = target.id;
       if (target.type === 'pitchdeck') payload.pitchdeck_id = target.id;
-      if (usePassword && password) payload.password_hash = password; // stored plaintext for now, check on view
+      if (usePassword && password) payload.password_hash = password;
       if (expiresIn) {
         const days = parseInt(expiresIn);
         if (!isNaN(days)) {
