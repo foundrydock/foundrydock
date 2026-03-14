@@ -5,7 +5,7 @@ export type AccessRole = 'editor' | 'viewer';
 
 const PASSWORDS: Record<string, AccessRole> = {
   'mittamuoto2024': 'editor',
-  'mittamuoto2026': 'viewer',
+  'mittamuoto2026': 'editor',
 };
 
 interface PasswordGateProps {
