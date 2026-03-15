@@ -133,7 +133,7 @@ export default function DocumentEditor() {
   );
 
   return (
-    <div className="flex flex-col min-h-screen h-screen bg-neutral-900 overflow-hidden">
+    <div className="flex flex-col min-h-screen h-screen bg-neutral-900 overflow-hidden print:h-auto print:overflow-visible print:bg-white">
       {/* Top bar */}
       <div className="flex items-center gap-3 px-5 py-3 border-b border-neutral-800 bg-neutral-950 print:hidden">
         <Link to="/documents" className="text-neutral-500 hover:text-white transition-colors shrink-0">
@@ -214,7 +214,7 @@ export default function DocumentEditor() {
       </div>
 
       {/* Editor – mountataan vasta kun content on alustettu doc.content:sta */}
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-hidden print:overflow-visible print:flex-none">
         {contentReady && (
           <RichEditor
             key={docId}

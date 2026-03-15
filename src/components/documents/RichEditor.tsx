@@ -81,7 +81,7 @@ export default function RichEditor({ content, onChange, readOnly = false, brandD
     <div className="flex flex-col h-full">
       {!readOnly && <EditorToolbar editor={editor} brandData={brandData} />}
       {/* Page canvas — light gray outer bg, white A4-like page */}
-      <div className="flex-1 overflow-auto bg-[#e8e8e8] print:bg-white">
+      <div className="flex-1 overflow-auto bg-[#e8e8e8] print:bg-white print:overflow-visible">
         <div className="max-w-[800px] mx-auto py-10 px-6 print:p-0 print:max-w-none">
           <style>{`
             /* ── A4 page card ─────────────────────────────── */
@@ -117,10 +117,39 @@ export default function RichEditor({ content, onChange, readOnly = false, brandD
             /* ── Placeholder ──────────────────────────────── */
             .ProseMirror .is-editor-empty:first-child::before { content: attr(data-placeholder); color: #9ca3af; pointer-events: none; float: left; height: 0; }
             /* ── Print ────────────────────────────────────── */
+            @page {
+              size: A4;
+              margin: 2cm 2.5cm;
+            }
             @media print {
               .editor-toolbar { display: none !important; }
-              .doc-page { box-shadow: none !important; padding: 0 !important; min-height: unset !important; }
+              .doc-page {
+                box-shadow: none !important;
+                padding: 0 !important;
+                min-height: unset !important;
+                border-radius: 0 !important;
+              }
               .ProseMirror { min-height: unset !important; }
+              /* Estä sivunvaihto otsikoiden sisällä tai juuri ennen kappaletta */
+              .ProseMirror h1,
+              .ProseMirror h2,
+              .ProseMirror h3 {
+                page-break-after: avoid;
+                break-after: avoid;
+              }
+              /* Älä leikkaa taulukkoja tai kuvia sivunvaihdolla */
+              .ProseMirror table,
+              .ProseMirror figure,
+              .ProseMirror img,
+              .ProseMirror blockquote {
+                page-break-inside: avoid;
+                break-inside: avoid;
+              }
+              /* Orpokontrolli */
+              .ProseMirror p {
+                orphans: 3;
+                widows: 3;
+              }
             }
           `}</style>
           <div className="doc-page print:p-0">
