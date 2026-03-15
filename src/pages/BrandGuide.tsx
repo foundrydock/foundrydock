@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { Upload, Save, Palette, Type, Image as ImageIcon, Globe, Link2, FileText, Info } from 'lucide-react';
+import { Upload, Save, Palette, Type, Image as ImageIcon, Globe, Link2, FileText, Layers } from 'lucide-react';
 import ShareDialog from '@/components/library/ShareDialog';
 
 type BrandSettings = Tables<'brand_settings'>;
@@ -20,6 +20,12 @@ interface GuidelinesContent {
 }
 
 const FONTS = ['Inter', 'Helvetica Neue', 'Arial', 'Georgia', 'Times New Roman', 'Roboto', 'Lato', 'Montserrat', 'Playfair Display'];
+
+const BRAND_PALETTE = [
+  { name: 'Pääväri', hsl: '0 0% 12%', hex: '#1F1F1F', desc: 'Lähes musta — otsikot, painikkeet, pääelementit' },
+  { name: 'Tausta', hsl: '0 0% 100%', hex: '#FFFFFF', desc: 'Valkoinen — sivujen ja dokumenttien tausta' },
+  { name: 'Toissijainen', hsl: '0 0% 96%', hex: '#F5F5F5', desc: 'Vaalea harmaa — kortit, muted-alueet, taustat' },
+];
 
 export default function BrandGuide() {
   const { activeCompany, isCompanyAdmin } = useCompany();
@@ -143,6 +149,38 @@ export default function BrandGuide() {
       </div>
 
       <div className="space-y-8">
+        {/* Ikoni / Favicon */}
+        <Section title="Ikoni & Favicon" icon={Layers}>
+          <div className="flex flex-wrap items-start gap-6">
+            {/* Vaalea tausta */}
+            <div className="space-y-2">
+              <p className="text-neutral-500 text-xs">Vaalea tausta</p>
+              <div className="w-24 h-24 bg-white rounded-xl border border-neutral-200 flex items-center justify-center p-3">
+                <img src="/favicon.png" alt="Mittamuoto ikoni" className="w-full h-full object-contain" />
+              </div>
+            </div>
+            {/* Tumma tausta */}
+            <div className="space-y-2">
+              <p className="text-neutral-500 text-xs">Tumma tausta</p>
+              <div className="w-24 h-24 bg-neutral-950 rounded-xl border border-neutral-800 flex items-center justify-center p-3">
+                <img src="/favicon.png" alt="Mittamuoto ikoni" className="w-full h-full object-contain invert" />
+              </div>
+            </div>
+            {/* Koot */}
+            <div className="space-y-2">
+              <p className="text-neutral-500 text-xs">Kokoskaala</p>
+              <div className="flex items-end gap-3 bg-neutral-800/30 rounded-xl p-4 border border-neutral-800">
+                {[64, 48, 32, 16].map(size => (
+                  <div key={size} className="flex flex-col items-center gap-1.5">
+                    <img src="/favicon.png" alt="" style={{ width: size, height: size }} className="object-contain" />
+                    <span className="text-neutral-600 text-xs">{size}px</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </Section>
+
         {/* Logot */}
         <Section title="Logot" icon={ImageIcon}>
           {/* Logo käyttöohjeet */}
@@ -238,6 +276,26 @@ export default function BrandGuide() {
 
         {/* Värit */}
         <Section title="Värit" icon={Palette}>
+          {/* Kiinteä brändipaletti */}
+          <div className="grid grid-cols-3 gap-4 mb-6">
+            {BRAND_PALETTE.map(c => (
+              <div key={c.name} className="space-y-2">
+                <div
+                  className="h-16 rounded-lg border border-neutral-700"
+                  style={{ backgroundColor: `hsl(${c.hsl})` }}
+                />
+                <div>
+                  <div className="text-white text-sm font-medium">{c.name}</div>
+                  <div className="text-neutral-400 text-xs font-mono">{c.hex}</div>
+                  <div className="text-neutral-500 text-xs font-mono">HSL {c.hsl}</div>
+                  <div className="text-neutral-500 text-xs mt-1">{c.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="border-t border-neutral-800 pt-5 mb-2">
+            <p className="text-neutral-500 text-xs mb-4">Lisävärit (muokattavissa)</p>
+          </div>
           <div className="grid grid-cols-3 gap-4">
             {colorFields.map(({ key, label }) => {
               const colorValue = (settings as any)?.[key] ?? '#000000';
