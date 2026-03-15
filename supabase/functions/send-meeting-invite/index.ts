@@ -35,7 +35,7 @@ serve(async (req) => {
             'Authorization': `Bearer ${RESEND_API_KEY}`,
           },
           body: JSON.stringify({
-            from: `${senderName} <noreply@mittamuoto.fi>`,
+            from: `${senderName} <jani@measureshape.com>`,
             to: [r.email],
             subject,
             text: personalizedBody,
