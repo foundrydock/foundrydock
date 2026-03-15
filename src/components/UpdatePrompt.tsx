@@ -1,37 +1,57 @@
 import { useEffect, useState, useRef } from 'react';
 import { RefreshCw, X } from 'lucide-react';
 
-// Kuinka usein tarkistetaan (ms)
-const POLL_INTERVAL = 30 * 1000; // 30 sekuntia
+const POLL_INTERVAL = 30 * 1000;
 
-async function getDeployVersion(): Promise<string | null> {
+/**
+ * Hakee nykyisen JS-bundlen tunnisteen DOM:sta (ei fetchaa mitään).
+ */
+function getCurrentVersionFromDOM(): string | null {
+  // Etsitään <script> tag jossa on Vite-generoitu hash
+  const scripts = document.querySelectorAll('script[src]');
+  for (const s of scripts) {
+    const src = s.getAttribute('src') || '';
+    const m = src.match(/\/assets\/index-([A-Za-z0-9_-]+)\.js/);
+    if (m?.[1]) return m[1];
+  }
+  // Fallback: mikä tahansa moduuli-skripti
+  for (const s of scripts) {
+    const src = s.getAttribute('src') || '';
+    if (src.includes('.js')) return src;
+  }
+  return null;
+}
+
+/**
+ * Hakee uusimman version palvelimelta.
+ */
+async function fetchLatestVersion(): Promise<string | null> {
   try {
-    const url = `${window.location.origin}/?_cb=${Date.now()}`;
-    const res = await fetch(url, {
+    // Haetaan index.html cache-buusterilla
+    const res = await fetch(`${window.location.origin}/index.html?_t=${Date.now()}`, {
       cache: 'no-store',
-      headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate', 'Pragma': 'no-cache' },
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+      },
     });
+    if (!res.ok) return null;
 
-    // 1. Parsitaan JS-tiedoston hash HTML:stä (luotettavin tapa)
     const html = await res.text();
-    const patterns = [
-      /\/assets\/index-([A-Za-z0-9_-]+)\.js/,
-      /src="[^"]*\/index-([A-Za-z0-9_-]+)\.js"/,
-      /src="([^"]*\.js)"/,
-    ];
-    for (const p of patterns) {
-      const m = html.match(p);
-      if (m?.[1]) return m[1];
-    }
 
-    // 2. ETag tai Last-Modified headerista
+    // Etsitään JS-bundlen hash
+    const m = html.match(/\/assets\/index-([A-Za-z0-9_-]+)\.js/);
+    if (m?.[1]) return m[1];
+
+    // Fallback: mikä tahansa .js src
+    const m2 = html.match(/src="([^"]*\.js[^"]*)"/);
+    if (m2?.[1]) return m2[1];
+
+    // ETag
     const etag = res.headers.get('etag');
     if (etag) return etag;
-    const lastMod = res.headers.get('last-modified');
-    if (lastMod) return lastMod;
 
-    // 3. Viimeinen fallback: HTML-sisällön hash
-    return `len-${html.length}`;
+    return null;
   } catch {
     return null;
   }
@@ -39,53 +59,49 @@ async function getDeployVersion(): Promise<string | null> {
 
 export default function UpdatePrompt() {
   const [showBanner, setShowBanner] = useState(false);
-  const initialVersion = useRef<string | null>(null);
+  const baselineVersion = useRef<string | null>(null);
   const checking = useRef(false);
 
-  async function checkForUpdate() {
-    if (checking.current) return;
-    checking.current = true;
-    try {
-      const current = await getDeployVersion();
-      if (!current) return;
-
-      if (!initialVersion.current) {
-        // Ensimmäinen tarkistus — tallennetaan versio
-        initialVersion.current = current;
-        console.debug('[UpdatePrompt] Versio tallennettu:', current.slice(0, 30));
-        return;
-      }
-
-      if (current !== initialVersion.current) {
-        console.debug('[UpdatePrompt] Uusi versio havaittu:', current.slice(0, 30));
-        setShowBanner(true);
-      }
-    } finally {
-      checking.current = false;
-    }
-  }
-
   useEffect(() => {
-    // Tarkistetaan heti käynnistyessä
-    checkForUpdate();
+    // Tallennetaan baseline DOM:sta heti mountissa
+    baselineVersion.current = getCurrentVersionFromDOM();
+    console.debug('[UpdatePrompt] Baseline:', baselineVersion.current?.slice(0, 40));
+
+    async function check() {
+      if (checking.current || !baselineVersion.current) return;
+      checking.current = true;
+      try {
+        const latest = await fetchLatestVersion();
+        if (!latest) return;
+        if (latest !== baselineVersion.current) {
+          console.debug('[UpdatePrompt] Uusi versio:', latest.slice(0, 40), '(oli:', baselineVersion.current?.slice(0, 40), ')');
+          setShowBanner(true);
+        }
+      } finally {
+        checking.current = false;
+      }
+    }
+
+    // Ensimmäinen tarkistus pienen viiveen jälkeen
+    const timeout = setTimeout(check, 5000);
 
     // Pollaus
-    const interval = setInterval(checkForUpdate, POLL_INTERVAL);
+    const interval = setInterval(check, POLL_INTERVAL);
 
     // Kun käyttäjä palaa välilehdelle
     const onVisibility = () => {
-      if (document.visibilityState === 'visible') checkForUpdate();
+      if (document.visibilityState === 'visible') check();
     };
     document.addEventListener('visibilitychange', onVisibility);
 
     // Kun verkko palaa
-    const onOnline = () => checkForUpdate();
-    window.addEventListener('online', onOnline);
+    window.addEventListener('online', check);
 
     return () => {
+      clearTimeout(timeout);
       clearInterval(interval);
       document.removeEventListener('visibilitychange', onVisibility);
-      window.removeEventListener('online', onOnline);
+      window.removeEventListener('online', check);
     };
   }, []);
 
