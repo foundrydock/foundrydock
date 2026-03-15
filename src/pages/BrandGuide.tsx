@@ -76,7 +76,7 @@ export default function BrandGuide() {
     const { error: saveError } = await supabase
       .from('brand_settings')
       .upsert({ ...currentSettings, ...field, company_id: activeCompany.id, updated_at: new Date().toISOString() });
-    if (saveError) toast.error('Logon tallennus epäonnistui');
+    if (saveError) { console.error('Logo save error:', saveError); toast.error(`Logon tallennus epäonnistui: ${saveError.message}`); }
     else {
       qc.invalidateQueries({ queryKey: ['brand', activeCompany.id] });
       toast.success(`Logo (${variant === 'light' ? 'vaalea' : 'tumma'} tausta) ladattu`);
