@@ -196,7 +196,7 @@ export default function BoardMeetingDetail() {
       agendaLines ? `ESITYSLISTA\n${agendaLines}` : null,
       ``,
       `Ystävällisin terveisin,`,
-      `${profile?.full_name ?? user?.email ?? ''}  —  ${activeCompany?.name ?? ''}`,
+      `${profile?.full_name || user?.email || ''}  —  ${activeCompany?.name ?? ''}`,
     ].filter(l => l !== null).join('\n');
   }
 
@@ -216,7 +216,7 @@ export default function BoardMeetingDetail() {
           recipients: withEmail.map(a => ({ name: a.name, email: a.email })),
           subject,
           textBody: buildInviteText(meeting),
-          senderName: profile?.full_name ?? activeCompany?.name ?? 'Mittamuoto',
+          senderName: [profile?.full_name, activeCompany?.name].filter(Boolean).join(' — ') || 'Mittamuoto',
           replyTo: user?.email ?? undefined,
         },
       });
