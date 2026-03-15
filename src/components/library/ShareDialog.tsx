@@ -88,7 +88,7 @@ export default function ShareDialog({ open, onClose, target }: ShareDialogProps)
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-white">
             <Link2 size={18} />
-            Luo jakölinkki
+            Luo jakolinkki
           </DialogTitle>
         </DialogHeader>
 
@@ -170,7 +170,7 @@ export default function ShareDialog({ open, onClose, target }: ShareDialogProps)
               Linkki luotu onnistuneesti!
             </div>
             <div className="space-y-1.5">
-              <Label className="text-neutral-300 text-sm">Jakölinkki</Label>
+              <Label className="text-neutral-300 text-sm">Jakolinkki</Label>
               <div className="flex gap-2">
                 <Input
                   readOnly

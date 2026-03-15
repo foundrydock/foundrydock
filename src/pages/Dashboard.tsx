@@ -114,7 +114,7 @@ export default function Dashboard() {
             className="flex items-center gap-2 px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-white text-sm rounded-lg transition-colors"
           >
             <Link2 size={15} />
-            Luo jakölinkki
+            Luo jakolinkki
           </Link>
         </div>
       </div>

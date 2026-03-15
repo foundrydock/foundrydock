@@ -32,7 +32,7 @@ export default function ShareLinks() {
   }
 
   async function deleteLink(id: string) {
-    if (!confirm('Poistetaanko jakölinkki pysyvästi?')) return;
+    if (!confirm('Poistetaanko jakolinkki pysyvästi?')) return;
     await supabase.from('share_links').delete().eq('id', id);
     qc.invalidateQueries({ queryKey: ['share-links'] });
     toast.success('Linkki poistettu');
