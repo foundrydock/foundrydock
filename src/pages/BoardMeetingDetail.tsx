@@ -52,6 +52,7 @@ export default function BoardMeetingDetail() {
   const [newAgendaItem, setNewAgendaItem] = useState('');
   const [templatePickerOpen, setTemplatePickerOpen] = useState(false);
   const [inviteOpen, setInviteOpen] = useState(false);
+  const [sending, setSending] = useState(false);
 
   const { data: meeting, isLoading } = useQuery({
     queryKey: ['board-meeting', meetingId],
@@ -199,19 +200,41 @@ export default function BoardMeetingDetail() {
     ].filter(l => l !== null).join('\n');
   }
 
-  function sendByEmail(attendees: Attendee[], meeting: BoardMeeting) {
+  async function sendByEmail(attendees: Attendee[], meeting: BoardMeeting) {
     const withEmail = attendees.filter(a => a.email);
     if (withEmail.length === 0) {
       toast.error('Lisää osallistujille sähköpostiosoite ensin');
       return;
     }
     const dateStr = format(parseISO(meeting.meeting_date), 'd. MMMM yyyy', { locale: fi });
-    const subject = encodeURIComponent(`Kokouskutsu: ${meeting.title} — ${dateStr}`);
-    const body = encodeURIComponent(buildInviteText(meeting));
-    const to = withEmail.map(a => a.email).join(',');
-    const link = document.createElement('a');
-    link.href = `mailto:${to}?subject=${subject}&body=${body}`;
-    link.click();
+    const subject = `Kokouskutsu: ${meeting.title} — ${dateStr}`;
+
+    setSending(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('send-meeting-invite', {
+        body: {
+          recipients: withEmail.map(a => ({ name: a.name, email: a.email })),
+          subject,
+          textBody: buildInviteText(meeting),
+          senderName: profile?.full_name ?? activeCompany?.name ?? 'Mittamuoto',
+          replyTo: user?.email ?? undefined,
+        },
+      });
+
+      if (error) throw error;
+
+      if (data.succeeded > 0) {
+        toast.success(`Kokouskutsu lähetetty ${data.succeeded} henkilölle`);
+        setInviteOpen(false);
+      }
+      if (data.failed?.length > 0) {
+        toast.error(`Epäonnistui: ${data.failed.join(', ')}`);
+      }
+    } catch (err: any) {
+      toast.error(`Lähetys epäonnistui: ${err.message ?? 'Tuntematon virhe'}`);
+    } finally {
+      setSending(false);
+    }
   }
 
   function copyInviteText(meeting: BoardMeeting) {
@@ -442,11 +465,15 @@ export default function BoardMeetingDetail() {
                 <Copy size={14} />Kopioi teksti
               </Button>
               <Button
-                onClick={() => { sendByEmail(attendees, meeting); setInviteOpen(false); }}
-                disabled={!hasEmails}
+                onClick={() => sendByEmail(attendees, meeting)}
+                disabled={!hasEmails || sending}
                 className="flex-1 bg-white text-black hover:bg-neutral-100 gap-2"
               >
-                <Mail size={14} />Avaa sähköposti
+                {sending ? (
+                  <><div className="w-3.5 h-3.5 border-2 border-neutral-400 border-t-black rounded-full animate-spin" />Lähetetään...</>
+                ) : (
+                  <><Mail size={14} />Lähetä Resendillä</>
+                )}
               </Button>
             </div>
           </div>
