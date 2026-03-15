@@ -307,14 +307,26 @@ function NewDocumentDialog({
     if (!title.trim() || !companyId) return;
     setCreating(true);
 
-    // Replace template placeholders
-    let content = selectedTemplate?.content ?? { type: 'doc', content: [{ type: 'paragraph' }] };
-    if (typeof content === 'string') {
-      content = content
-        .replace(/\{\{company_name\}\}/g, companyName)
-        .replace(/\{\{date\}\}/g, new Date().toLocaleDateString('fi-FI'));
-      try { content = JSON.parse(content); } catch {}
+    // Replace template placeholders recursively through JSON tree
+    const replacements: Record<string, string> = {
+      company_name: companyName,
+      date: new Date().toLocaleDateString('fi-FI'),
+    };
+    function replaceInJson(obj: unknown): unknown {
+      if (typeof obj === 'string') {
+        return Object.entries(replacements).reduce(
+          (s, [k, v]) => s.replace(new RegExp(`\\{\\{${k}\\}\\}`, 'g'), v), obj
+        );
+      }
+      if (Array.isArray(obj)) return obj.map(replaceInJson);
+      if (obj && typeof obj === 'object') {
+        return Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, replaceInJson(v)]));
+      }
+      return obj;
     }
+    let content = replaceInJson(
+      selectedTemplate?.content ?? { type: 'doc', content: [{ type: 'paragraph' }] }
+    );
 
     const { data, error } = await supabase.from('documents').insert({
       company_id: companyId,
