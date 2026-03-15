@@ -60,8 +60,13 @@ export default function BrandGuide() {
     setUploadingLogo(variant);
     const ext = file.name.split('.').pop();
     const path = `${activeCompany.id}/brand/logo-${variant}-${Date.now()}.${ext}`;
-    const { error: uploadError } = await supabase.storage.from('assets').upload(path, file, { contentType: file.type, upsert: true });
-    if (uploadError) { toast.error('Logo-lataus epäonnistui'); setUploadingLogo(null); return; }
+    const { error: uploadError } = await supabase.storage.from('assets').upload(path, file, { contentType: file.type });
+    if (uploadError) { 
+      console.error('Logo upload error:', uploadError);
+      toast.error(`Logo-lataus epäonnistui: ${uploadError.message}`); 
+      setUploadingLogo(null); 
+      return; 
+    }
 
     const field = variant === 'light' ? { logo_light_path: path } : { logo_dark_path: path };
     update(field);
