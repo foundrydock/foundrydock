@@ -40,7 +40,7 @@ const STATUS_OPTIONS = [
 
 export default function BoardMeetingDetail() {
   const { meetingId } = useParams<{ meetingId: string }>();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const { activeCompany, isCompanyAdmin } = useCompany();
   const qc = useQueryClient();
   const navigate = useNavigate();
@@ -195,7 +195,7 @@ export default function BoardMeetingDetail() {
       agendaLines ? `ESITYSLISTA\n${agendaLines}` : null,
       ``,
       `Ystävällisin terveisin,`,
-      `${activeCompany?.name ?? ''}`,
+      `${profile?.full_name ?? user?.email ?? ''}  —  ${activeCompany?.name ?? ''}`,
     ].filter(l => l !== null).join('\n');
   }
 
