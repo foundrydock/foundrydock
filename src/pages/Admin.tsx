@@ -48,8 +48,8 @@ export default function Admin() {
   }
 
   return (
-    <div className="p-8 max-w-4xl">
-      <div className="flex items-center justify-between mb-8">
+    <div className="p-4 sm:p-8 max-w-4xl">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-8">
         <div>
           <h1 className="text-2xl font-semibold text-white">Hallinta</h1>
           <p className="text-neutral-500 text-sm mt-1">Käyttäjät ja oikeudet</p>

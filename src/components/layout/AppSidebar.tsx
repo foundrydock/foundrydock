@@ -1,7 +1,7 @@
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, FolderOpen, Presentation, Users, Link2, LogOut,
-  FileText, CalendarDays, Palette, Building2, ChevronDown, Check, Plus, Files
+  FileText, CalendarDays, Palette, Building2, ChevronDown, Check, Plus, Files, X
 } from 'lucide-react';
 import { useAuth } from '@/auth/AuthContext';
 import { useCompany } from '@/auth/CompanyContext';
@@ -26,14 +26,25 @@ const adminNav = [
   { to: '/companies', label: 'Yritykset', icon: Building2 },
 ];
 
-export default function AppSidebar() {
+export default function AppSidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const { profile, signOut } = useAuth();
   const { companies, activeCompany, setActiveCompanyId } = useCompany();
   const location = useLocation();
   const navigate = useNavigate();
 
   return (
-    <aside className="w-56 min-h-screen bg-neutral-950 border-r border-neutral-800 flex flex-col shrink-0">
+    <aside className={cn(
+      "w-56 bg-neutral-950 border-r border-neutral-800 flex flex-col shrink-0",
+      "fixed inset-y-0 left-0 z-40 transition-transform duration-200",
+      "md:relative md:translate-x-0",
+      isOpen ? "translate-x-0" : "-translate-x-full"
+    )}>
+      <button
+        onClick={onClose}
+        className="md:hidden absolute top-3 right-3 p-1 rounded text-neutral-500 hover:text-white"
+      >
+        <X size={18} />
+      </button>
       {/* Company switcher */}
       <div className="px-3 py-4 border-b border-neutral-800">
         <DropdownMenu>
@@ -72,7 +83,7 @@ export default function AppSidebar() {
                 <DropdownMenuSeparator className="bg-neutral-700" />
                 <DropdownMenuItem
                   className="gap-2 hover:bg-neutral-800 cursor-pointer text-neutral-400"
-                  onClick={() => navigate('/companies')}
+                  onClick={() => { navigate('/companies'); onClose(); }}
                 >
                   <Plus size={14} />
                   <span className="text-sm">Uusi yritys</span>
@@ -93,6 +104,7 @@ export default function AppSidebar() {
             <NavLink
               key={item.to}
               to={item.to}
+              onClick={onClose}
               className={cn(
                 'flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors',
                 active ? 'bg-neutral-800 text-white' : 'text-neutral-400 hover:text-white hover:bg-neutral-900'
@@ -115,6 +127,7 @@ export default function AppSidebar() {
                 <NavLink
                   key={item.to}
                   to={item.to}
+                  onClick={onClose}
                   className={cn(
                     'flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors',
                     active ? 'bg-neutral-800 text-white' : 'text-neutral-400 hover:text-white hover:bg-neutral-900'

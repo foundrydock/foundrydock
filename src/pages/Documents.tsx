@@ -115,8 +115,8 @@ export default function Documents() {
   }
 
   return (
-    <div className="p-8 max-w-5xl">
-      <div className="flex items-center justify-between mb-6">
+    <div className="p-4 sm:p-8 max-w-5xl">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <div>
           <h1 className="text-2xl font-semibold text-white">Dokumentit</h1>
           <p className="text-neutral-500 text-sm mt-1">{activeCompany?.name}</p>

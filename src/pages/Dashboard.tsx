@@ -61,7 +61,7 @@ export default function Dashboard() {
   const firstName = profile?.full_name?.split(' ')[0] || profile?.email?.split('@')[0] || '';
 
   return (
-    <div className="p-8 max-w-5xl">
+    <div className="p-4 sm:p-8 max-w-5xl">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-semibold text-white">{greeting()}, {firstName}</h1>
