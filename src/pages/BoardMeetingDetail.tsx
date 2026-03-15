@@ -7,16 +7,18 @@ import { useCompany } from '@/auth/CompanyContext';
 import { Tables, Json } from '@/integrations/supabase/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { format, parseISO } from 'date-fns';
 import { fi } from 'date-fns/locale';
 import {
   ArrowLeft, CalendarDays, MapPin, Users, Plus, FileText,
-  Pencil, Check, X, Trash2, ChevronRight
+  Pencil, Check, X, Trash2, ChevronRight, BookOpen
 } from 'lucide-react';
 
 type BoardMeeting = Tables<'board_meetings'>;
 type Document = Tables<'documents'>;
+type Template = Tables<'document_templates'>;
 
 const STATUS_OPTIONS = [
   { value: 'draft', label: 'Luonnos' },
@@ -35,6 +37,7 @@ export default function BoardMeetingDetail() {
   const [titleDraft, setTitleDraft] = useState('');
   const [newAttendee, setNewAttendee] = useState('');
   const [newAgendaItem, setNewAgendaItem] = useState('');
+  const [templatePickerOpen, setTemplatePickerOpen] = useState(false);
 
   const { data: meeting, isLoading } = useQuery({
     queryKey: ['board-meeting', meetingId],
@@ -43,6 +46,19 @@ export default function BoardMeetingDetail() {
       return data as BoardMeeting;
     },
     enabled: !!meetingId,
+  });
+
+  const { data: minutesTemplates } = useQuery({
+    queryKey: ['board-minutes-templates'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('document_templates')
+        .select('*')
+        .eq('category', 'board_minutes')
+        .eq('is_global', true)
+        .order('sort_order');
+      return (data ?? []) as Template[];
+    },
   });
 
   const { data: documents } = useQuery({
@@ -96,29 +112,51 @@ export default function BoardMeetingDetail() {
     await updateField({ agenda: current.filter(a => a !== item) as unknown as Json });
   }
 
-  async function createDocument() {
+  async function createDocumentFromTemplate(template: Template | null) {
     if (!meeting || !activeCompany) return;
+    const replacements: Record<string, string> = {
+      company_name: activeCompany.name,
+      date: format(parseISO(meeting.meeting_date), 'd.M.yyyy'),
+    };
+    function replaceInJson(obj: unknown): unknown {
+      if (typeof obj === 'string') {
+        return Object.entries(replacements).reduce(
+          (s, [k, v]) => s.replace(new RegExp(`\\{\\{${k}\\}\\}`, 'g'), v), obj
+        );
+      }
+      if (Array.isArray(obj)) return obj.map(replaceInJson);
+      if (obj && typeof obj === 'object') {
+        return Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, replaceInJson(v)]));
+      }
+      return obj;
+    }
+    const defaultContent = {
+      type: 'doc', content: [
+        { type: 'heading', attrs: { level: 1 }, content: [{ type: 'text', text: 'HALLITUKSEN KOKOUS — PÖYTÄKIRJA' }] },
+        { type: 'paragraph', content: [{ type: 'text', marks: [{ type: 'bold' }], text: 'Yhtiö: ' }, { type: 'text', text: activeCompany.name }] },
+        { type: 'paragraph', content: [{ type: 'text', marks: [{ type: 'bold' }], text: 'Päivämäärä: ' }, { type: 'text', text: format(parseISO(meeting.meeting_date), 'd.M.yyyy') }] },
+        { type: 'paragraph', content: [{ type: 'text', marks: [{ type: 'bold' }], text: 'Paikka: ' }, { type: 'text', text: meeting.location ?? '' }] },
+        { type: 'paragraph', content: [{ type: 'text', marks: [{ type: 'bold' }], text: 'Läsnä: ' }, { type: 'text', text: (Array.isArray(meeting.attendees) ? (meeting.attendees as string[]).join(', ') : '') }] },
+        { type: 'heading', attrs: { level: 2 }, content: [{ type: 'text', text: '§ 1  Kokouksen avaaminen' }] },
+        { type: 'paragraph', content: [{ type: 'text', text: '' }] },
+      ]
+    };
+    const content = replaceInJson(template?.content ?? defaultContent);
     const { data, error } = await supabase.from('documents').insert({
       company_id: activeCompany.id,
       board_meeting_id: meeting.id,
-      title: `Pöytäkirja — ${meeting.title}`,
+      title: template ? `${template.name} — ${format(parseISO(meeting.meeting_date), 'd.M.yyyy')}` : `Pöytäkirja — ${meeting.title}`,
       category: 'board_minutes',
-      content: {
-        type: 'doc', content: [
-          { type: 'heading', attrs: { level: 1 }, content: [{ type: 'text', text: 'HALLITUKSEN KOKOUS — PÖYTÄKIRJA' }] },
-          { type: 'paragraph', content: [{ type: 'text', marks: [{ type: 'bold' }], text: 'Yhtiö: ' }, { type: 'text', text: activeCompany.name }] },
-          { type: 'paragraph', content: [{ type: 'text', marks: [{ type: 'bold' }], text: 'Päivämäärä: ' }, { type: 'text', text: format(parseISO(meeting.meeting_date), 'd.M.yyyy') }] },
-          { type: 'paragraph', content: [{ type: 'text', marks: [{ type: 'bold' }], text: 'Paikka: ' }, { type: 'text', text: meeting.location ?? '' }] },
-          { type: 'paragraph', content: [{ type: 'text', marks: [{ type: 'bold' }], text: 'Läsnä: ' }, { type: 'text', text: (Array.isArray(meeting.attendees) ? (meeting.attendees as string[]).join(', ') : '') }] },
-          { type: 'heading', attrs: { level: 2 }, content: [{ type: 'text', text: '1. Kokouksen avaus' }] },
-          { type: 'paragraph', content: [{ type: 'text', text: '' }] },
-        ]
-      } as Json,
+      content: content as Json,
+      template_id: template?.id ?? null,
       created_by: user?.id,
     }).select().single();
     if (!error && data) {
       qc.invalidateQueries({ queryKey: ['board-meeting-docs', meetingId] });
+      setTemplatePickerOpen(false);
       navigate(`/documents/${data.id}`);
+    } else {
+      toast.error('Luominen epäonnistui');
     }
   }
 
@@ -262,6 +300,42 @@ export default function BoardMeetingDetail() {
         </div>
       </div>
 
+      {/* Template picker dialog */}
+      <Dialog open={templatePickerOpen} onOpenChange={setTemplatePickerOpen}>
+        <DialogContent className="bg-neutral-900 border-neutral-800 text-white max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-white flex items-center gap-2">
+              <BookOpen size={18} />Valitse pöytäkirjapohja
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2 mt-2">
+            {minutesTemplates?.map(t => (
+              <button
+                key={t.id}
+                onClick={() => createDocumentFromTemplate(t)}
+                className="w-full flex items-start gap-3 px-4 py-3.5 rounded-xl border border-neutral-700 hover:border-neutral-400 hover:bg-neutral-800/60 transition-colors text-left"
+              >
+                <FileText size={18} className="text-purple-400 shrink-0 mt-0.5" />
+                <div>
+                  <div className="text-white text-sm font-medium">{t.name}</div>
+                  {t.description && <div className="text-neutral-500 text-xs mt-0.5">{t.description}</div>}
+                </div>
+              </button>
+            ))}
+            <button
+              onClick={() => createDocumentFromTemplate(null)}
+              className="w-full flex items-start gap-3 px-4 py-3.5 rounded-xl border border-dashed border-neutral-700 hover:border-neutral-500 transition-colors text-left"
+            >
+              <Plus size={18} className="text-neutral-500 shrink-0 mt-0.5" />
+              <div>
+                <div className="text-neutral-300 text-sm font-medium">Tyhjä pöytäkirja</div>
+                <div className="text-neutral-600 text-xs mt-0.5">Aloita puhtaalta pöydältä</div>
+              </div>
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Dokumentit */}
       <div>
         <div className="flex items-center justify-between mb-4">
@@ -270,7 +344,7 @@ export default function BoardMeetingDetail() {
             Dokumentit
           </h2>
           {isCompanyAdmin && (
-            <Button size="sm" onClick={createDocument} className="h-8 bg-white text-black hover:bg-neutral-100 gap-1.5">
+            <Button size="sm" onClick={() => setTemplatePickerOpen(true)} className="h-8 bg-white text-black hover:bg-neutral-100 gap-1.5">
               <Plus size={14} />Uusi pöytäkirja
             </Button>
           )}
@@ -281,7 +355,7 @@ export default function BoardMeetingDetail() {
             <FileText size={24} className="mx-auto mb-2 text-neutral-700" />
             <p className="text-neutral-600 text-sm">Ei dokumentteja vielä</p>
             {isCompanyAdmin && (
-              <Button size="sm" onClick={createDocument} className="mt-3 bg-white text-black hover:bg-neutral-100">
+              <Button size="sm" onClick={() => setTemplatePickerOpen(true)} className="mt-3 bg-white text-black hover:bg-neutral-100">
                 Luo pöytäkirja
               </Button>
             )}
