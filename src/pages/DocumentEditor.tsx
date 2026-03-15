@@ -1,10 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useCompany } from '@/auth/CompanyContext';
 import { Tables, Json } from '@/integrations/supabase/types';
-import RichEditor from '@/components/documents/RichEditor';
+import RichEditor, { BrandData } from '@/components/documents/RichEditor';
 import ShareDialog from '@/components/library/ShareDialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -55,6 +55,24 @@ export default function DocumentEditor() {
     },
     enabled: !!activeCompany?.id,
   });
+
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  useEffect(() => {
+    const path = brand?.logo_light_path ?? brand?.logo_dark_path;
+    if (!path) { setLogoUrl(null); return; }
+    supabase.storage.from('assets').createSignedUrl(path, 7200).then(({ data }) => {
+      if (data?.signedUrl) setLogoUrl(data.signedUrl);
+    });
+  }, [brand?.logo_light_path, brand?.logo_dark_path]);
+
+  const brandData: BrandData | undefined = brand ? {
+    primary:     brand.primary_color,
+    secondary:   brand.secondary_color,
+    accent:      brand.accent_color,
+    logoUrl,
+    companyName: activeCompany?.name,
+    tagline:     brand.tagline,
+  } : undefined;
 
   useEffect(() => {
     if (doc) {
@@ -203,7 +221,7 @@ export default function DocumentEditor() {
             content={content}
             onChange={isCompanyAdmin ? handleContentChange : undefined}
             readOnly={!isCompanyAdmin}
-            brandColors={brand ? { primary: brand.primary_color, accent: brand.accent_color } : undefined}
+            brandData={brandData}
           />
         )}
       </div>

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import { StarterKit } from '@tiptap/starter-kit';
 import { TextAlign } from '@tiptap/extension-text-align';
@@ -16,21 +16,35 @@ import {
   Bold, Italic, Strikethrough, AlignLeft, AlignCenter, AlignRight,
   List, ListOrdered, Heading1, Heading2, Heading3, Undo, Redo,
   Table as TableIcon, Image as ImageIcon, Minus, Quote, Printer,
-  Code, Code2, Baseline, Type
+  Code, Code2, Baseline, LayoutTemplate
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+
+export interface BrandData {
+  primary?:     string | null;
+  secondary?:   string | null;
+  accent?:      string | null;
+  logoUrl?:     string | null;
+  companyName?: string;
+  tagline?:     string | null;
+}
 
 interface RichEditorProps {
   content: Json;
   onChange?: (content: Json) => void;
   readOnly?: boolean;
-  brandColors?: { primary: string; accent: string };
+  brandData?: BrandData;
 }
 
 const EDITOR_FONTS = ['Inter', 'Helvetica Neue', 'Arial', 'Georgia', 'Times New Roman', 'Roboto', 'Lato', 'Montserrat'];
 
-export default function RichEditor({ content, onChange, readOnly = false, brandColors }: RichEditorProps) {
-  // Use ref to always have latest onChange callback available to TipTap
+const STANDARD_COLORS = [
+  '#ffffff', '#f5f5f5', '#d4d4d4', '#737373', '#404040', '#171717',
+  '#ef4444', '#f97316', '#eab308', '#22c55e', '#06b6d4', '#3b82f6',
+  '#8b5cf6', '#ec4899',
+];
+
+export default function RichEditor({ content, onChange, readOnly = false, brandData }: RichEditorProps) {
   const onChangeRef = useRef(onChange);
   useEffect(() => { onChangeRef.current = onChange; }, [onChange]);
 
@@ -41,7 +55,7 @@ export default function RichEditor({ content, onChange, readOnly = false, brandC
       TextStyle,
       Color,
       FontFamily,
-      TipTapImage,
+      TipTapImage.configure({ allowBase64: true }),
       Table.configure({ resizable: true }),
       TableRow,
       TableHeader,
@@ -57,18 +71,15 @@ export default function RichEditor({ content, onChange, readOnly = false, brandC
     },
   });
 
-  // Päivitä editoitavuus kun readOnly-prop muuttuu (esim. yritys latautuu jälkijunassa)
   useEffect(() => {
-    if (editor) {
-      editor.setEditable(!readOnly);
-    }
+    if (editor) editor.setEditable(!readOnly);
   }, [editor, readOnly]);
 
   if (!editor) return null;
 
   return (
     <div className="flex flex-col h-full">
-      {!readOnly && <EditorToolbar editor={editor} />}
+      {!readOnly && <EditorToolbar editor={editor} brandData={brandData} />}
       <div className="flex-1 overflow-auto">
         <div className="max-w-3xl mx-auto py-10 px-12">
           <style>{`
@@ -85,6 +96,7 @@ export default function RichEditor({ content, onChange, readOnly = false, brandC
             .ProseMirror td, .ProseMirror th { border: 1px solid #404040; padding: 0.5rem 0.75rem; }
             .ProseMirror th { background: #1a1a1a; font-weight: 600; }
             .ProseMirror img { max-width: 100%; height: auto; border-radius: 0.5rem; margin: 0.5rem 0; }
+            .ProseMirror img.doc-footer-logo { max-height: 56px; width: auto; border-radius: 0; display: block; margin: 0.5rem auto; }
             .ProseMirror code { background: #1e1e1e; border: 1px solid #333; border-radius: 0.25rem; padding: 0.1em 0.35em; font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.875em; color: #e2e8f0; }
             .ProseMirror pre { background: #1e1e1e; border: 1px solid #333; border-radius: 0.5rem; padding: 1rem; margin: 1rem 0; overflow-x: auto; }
             .ProseMirror pre code { background: none; border: none; padding: 0; font-size: 0.875rem; line-height: 1.6; }
@@ -92,6 +104,7 @@ export default function RichEditor({ content, onChange, readOnly = false, brandC
             @media print {
               .editor-toolbar { display: none !important; }
               .ProseMirror { min-height: unset !important; }
+              .ProseMirror img.doc-footer-logo { max-height: 48px; }
             }
           `}</style>
           <EditorContent editor={editor} className="text-white" />
@@ -101,8 +114,9 @@ export default function RichEditor({ content, onChange, readOnly = false, brandC
   );
 }
 
-function EditorToolbar({ editor }: { editor: ReturnType<typeof useEditor> }) {
-  const colorInputRef = useRef<HTMLInputElement>(null);
+// ─── Toolbar ────────────────────────────────────────────────────────────────
+
+function EditorToolbar({ editor, brandData }: { editor: ReturnType<typeof useEditor>; brandData?: BrandData }) {
   if (!editor) return null;
 
   function insertTable() {
@@ -112,6 +126,43 @@ function EditorToolbar({ editor }: { editor: ReturnType<typeof useEditor> }) {
   function insertImage() {
     const url = window.prompt('Kuvan URL:');
     if (url) editor?.chain().focus().setImage({ src: url }).run();
+  }
+
+  function insertFooter() {
+    if (!editor) return;
+    const primary = brandData?.primary ?? '#404040';
+
+    const parts: string[] = [];
+
+    // Decorative line with brand primary color
+    parts.push(`<p style="border-top: 2px solid ${primary}; margin: 2rem 0 1.25rem;"></p>`);
+
+    // Logo if available
+    if (brandData?.logoUrl) {
+      parts.push(
+        `<p style="text-align: center; margin: 0.5rem 0;">` +
+        `<img src="${brandData.logoUrl}" alt="${brandData.companyName ?? 'Logo'}" class="doc-footer-logo" style="max-height:56px;display:inline-block;" />` +
+        `</p>`
+      );
+    }
+
+    // Company name
+    if (brandData?.companyName) {
+      parts.push(
+        `<p style="text-align: center; font-weight: bold; letter-spacing: 0.06em; text-transform: uppercase; font-size: 0.8rem; margin: 0.25rem 0;">` +
+        `${brandData.companyName}</p>`
+      );
+    }
+
+    // Tagline
+    if (brandData?.tagline) {
+      parts.push(
+        `<p style="text-align: center; color: #888; font-size: 0.75rem; font-style: italic; margin: 0;">` +
+        `${brandData.tagline}</p>`
+      );
+    }
+
+    editor.chain().focus().insertContent(parts.join('')).run();
   }
 
   return (
@@ -130,11 +181,8 @@ function EditorToolbar({ editor }: { editor: ReturnType<typeof useEditor> }) {
       <select
         value={editor.getAttributes('textStyle').fontFamily ?? ''}
         onChange={e => {
-          if (e.target.value) {
-            editor.chain().focus().setFontFamily(e.target.value).run();
-          } else {
-            editor.chain().focus().unsetFontFamily().run();
-          }
+          if (e.target.value) editor.chain().focus().setFontFamily(e.target.value).run();
+          else editor.chain().focus().unsetFontFamily().run();
         }}
         title="Fontti"
         className="text-xs bg-neutral-800 border border-neutral-700 text-neutral-300 rounded px-2 py-1 h-7 outline-none hover:border-neutral-500 max-w-[110px]"
@@ -169,25 +217,8 @@ function EditorToolbar({ editor }: { editor: ReturnType<typeof useEditor> }) {
         <Strikethrough size={14} />
       </ToolBtn>
 
-      {/* Text color */}
-      <div className="relative" title="Tekstin väri">
-        <ToolBtn onClick={() => colorInputRef.current?.click()} title="Tekstin väri">
-          <div className="flex flex-col items-center gap-0.5">
-            <Baseline size={13} />
-            <div
-              className="w-3.5 h-1 rounded-sm"
-              style={{ backgroundColor: editor.getAttributes('textStyle').color ?? '#ffffff' }}
-            />
-          </div>
-        </ToolBtn>
-        <input
-          ref={colorInputRef}
-          type="color"
-          value={editor.getAttributes('textStyle').color ?? '#ffffff'}
-          onChange={e => editor.chain().focus().setColor(e.target.value).run()}
-          className="absolute opacity-0 w-0 h-0 pointer-events-none"
-        />
-      </div>
+      {/* Text color swatch picker */}
+      <ColorSwatchPicker editor={editor} brandData={brandData} />
 
       <Divider />
 
@@ -240,13 +271,112 @@ function EditorToolbar({ editor }: { editor: ReturnType<typeof useEditor> }) {
 
       <Divider />
 
-      {/* Print/PDF */}
+      {/* Footer */}
+      <ToolBtn onClick={insertFooter} title="Lisää alatunniste (logo + koristeviva)">
+        <LayoutTemplate size={14} />
+      </ToolBtn>
+
+      <Divider />
+
+      {/* Print */}
       <ToolBtn onClick={() => window.print()} title="Tulosta / Tallenna PDF">
         <Printer size={14} />
       </ToolBtn>
     </div>
   );
 }
+
+// ─── Color Swatch Picker ─────────────────────────────────────────────────────
+
+function ColorSwatchPicker({ editor, brandData }: { editor: ReturnType<typeof useEditor>; brandData?: BrandData }) {
+  const [open, setOpen] = useState(false);
+  const wrapRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    function onClickOutside(e: MouseEvent) {
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener('mousedown', onClickOutside);
+    return () => document.removeEventListener('mousedown', onClickOutside);
+  }, [open]);
+
+  if (!editor) return null;
+
+  const currentColor = editor.getAttributes('textStyle').color ?? '#ffffff';
+
+  const brandSwatches = [
+    { color: brandData?.primary,   label: 'Pääväri' },
+    { color: brandData?.secondary, label: 'Toissijainen' },
+    { color: brandData?.accent,    label: 'Korostus' },
+  ].filter((s): s is { color: string; label: string } => !!s.color);
+
+  function pick(color: string) {
+    editor?.chain().focus().setColor(color).run();
+    setOpen(false);
+  }
+
+  return (
+    <div ref={wrapRef} className="relative">
+      <ToolBtn onClick={() => setOpen(v => !v)} active={open} title="Tekstin väri">
+        <div className="flex flex-col items-center gap-0.5">
+          <Baseline size={13} />
+          <div className="w-3.5 h-1 rounded-sm" style={{ backgroundColor: currentColor }} />
+        </div>
+      </ToolBtn>
+
+      {open && (
+        <div className="absolute top-full left-0 mt-1.5 bg-neutral-900 border border-neutral-700 rounded-xl p-3 shadow-2xl z-50 w-[196px]">
+          {brandSwatches.length > 0 && (
+            <>
+              <p className="text-[10px] text-neutral-500 uppercase tracking-wider mb-2">Brändivärit</p>
+              <div className="flex gap-2 mb-3">
+                {brandSwatches.map(({ color, label }) => (
+                  <button
+                    key={color}
+                    title={label}
+                    onClick={() => pick(color)}
+                    className="group relative w-8 h-8 rounded-lg border-2 border-neutral-600 hover:border-white transition-colors shrink-0"
+                    style={{ backgroundColor: color }}
+                  >
+                    <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[9px] text-neutral-500 group-hover:text-neutral-300 whitespace-nowrap hidden group-hover:block">
+                      {label}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+
+          <p className="text-[10px] text-neutral-500 uppercase tracking-wider mb-2">Perusvärit</p>
+          <div className="grid grid-cols-7 gap-1 mb-2">
+            {STANDARD_COLORS.map(color => (
+              <button
+                key={color}
+                title={color}
+                onClick={() => pick(color)}
+                className={cn(
+                  'w-6 h-6 rounded-md transition-transform hover:scale-110',
+                  color === '#ffffff' ? 'border border-neutral-500' : ''
+                )}
+                style={{ backgroundColor: color }}
+              />
+            ))}
+          </div>
+
+          <button
+            onClick={() => { editor?.chain().focus().unsetColor().run(); setOpen(false); }}
+            className="w-full text-[10px] text-neutral-500 hover:text-white transition-colors py-1 border-t border-neutral-800 mt-1"
+          >
+            Poista värimääritys
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Shared helpers ──────────────────────────────────────────────────────────
 
 function ToolBtn({
   onClick, active, disabled, title, children
