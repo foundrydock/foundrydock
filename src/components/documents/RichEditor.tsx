@@ -18,8 +18,16 @@ const TipTapImage = TipTapImageBase.extend({
 });
 import { Table } from '@tiptap/extension-table';
 import { TableRow } from '@tiptap/extension-table-row';
-import { TableCell } from '@tiptap/extension-table-cell';
-import { TableHeader } from '@tiptap/extension-table-header';
+import { TableCell as TableCellBase } from '@tiptap/extension-table-cell';
+import { TableHeader as TableHeaderBase } from '@tiptap/extension-table-header';
+
+// Laajennettu TableCell/Header jotka säilyttävät style-attribuutin
+const TableCell = TableCellBase.extend({
+  addAttributes() { return { ...this.parent?.(), style: { default: null } }; },
+});
+const TableHeader = TableHeaderBase.extend({
+  addAttributes() { return { ...this.parent?.(), style: { default: null } }; },
+});
 import { Placeholder } from '@tiptap/extension-placeholder';
 import { Json } from '@/integrations/supabase/types';
 import {
@@ -121,6 +129,9 @@ export default function RichEditor({ content, onChange, readOnly = false, brandD
             .ProseMirror img { max-width: 100%; height: auto; border-radius: 0.5rem; margin: 0.5rem 0; }
             /* Inline style-attribuutti saa ylikirjoittaa oletukset */
             .ProseMirror img[style] { max-width: unset; border-radius: 0; margin: 0; }
+            /* Footer-taulukon solut — ei reunuksia, ei lisätilaa */
+            .ProseMirror td[style], .ProseMirror th[style] { border: none !important; padding: 0.1rem 0 !important; }
+            .ProseMirror td[style] p, .ProseMirror th[style] p { margin: 0 !important; }
             /* ── Code ─────────────────────────────────────── */
             .ProseMirror code { background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 0.25rem; padding: 0.1em 0.35em; font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.875em; color: #374151; }
             .ProseMirror pre { background: #f8f9fa; border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 1rem; margin: 1rem 0; overflow-x: auto; }
@@ -197,33 +208,27 @@ function EditorToolbar({ editor, brandData }: { editor: ReturnType<typeof useEdi
   function insertFooter() {
     if (!editor) return;
     const primary = brandData?.primary ?? '#cccccc';
-    // Always insert at end of document
     const endPos = editor.state.doc.content.size - 1;
 
-    const parts: string[] = [
-      // Decorative line — brand primary colour, generous top margin
-      `<p style="border-top:2px solid ${primary};margin:3.5rem 0 0.6rem;padding:0;line-height:0;"> </p>`,
-    ];
+    // Decorative line above footer
+    const decorLine = `<p style="border-top:2px solid ${primary};margin:3.5rem 0 0.5rem;padding:0;line-height:0;"> </p>`;
 
-    // Logo — small, right-aligned
-    if (brandData?.logoUrl) {
-      parts.push(
-        `<p style="text-align:right;margin:0 0 0.15rem 0;">` +
-        `<img src="${brandData.logoUrl}" alt="${brandData.companyName ?? 'Logo'}" style="max-height:26px;width:auto;display:inline-block;" />` +
-        `</p>`
-      );
-    }
-
-    // Company name + tagline — small, right-aligned, muted
+    // Build left cell (logo or empty) and right cell (company + tagline)
+    const logoHtml = brandData?.logoUrl
+      ? `<img src="${brandData.logoUrl}" alt="${brandData.companyName ?? 'Logo'}" style="max-height:26px;width:auto;display:block;" />`
+      : '';
     const infoLine = [brandData?.companyName, brandData?.tagline].filter(Boolean).join(' · ');
-    if (infoLine) {
-      parts.push(
-        `<p style="text-align:right;font-size:0.65rem;color:#888888;letter-spacing:0.04em;margin:0;">` +
-        `${infoLine}</p>`
-      );
-    }
 
-    editor.chain().focus().insertContentAt(endPos, parts.join('')).run();
+    // Two-column table: logo left, info right — no visible borders
+    const footerTable =
+      `<table style="width:100%;border-collapse:collapse;margin:0;">` +
+        `<tbody><tr>` +
+          `<td style="border:none;padding:0.1rem 0;vertical-align:middle;width:50%;">${logoHtml}</td>` +
+          `<td style="border:none;padding:0.1rem 0;text-align:right;vertical-align:middle;font-size:0.65rem;color:#888888;letter-spacing:0.04em;">${infoLine}</td>` +
+        `</tr></tbody>` +
+      `</table>`;
+
+    editor.chain().focus().insertContentAt(endPos, decorLine + footerTable).run();
   }
 
   return (
