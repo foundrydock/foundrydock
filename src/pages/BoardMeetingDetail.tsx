@@ -13,12 +13,24 @@ import { format, parseISO } from 'date-fns';
 import { fi } from 'date-fns/locale';
 import {
   ArrowLeft, CalendarDays, MapPin, Users, Plus, FileText,
-  Pencil, Check, X, Trash2, ChevronRight, BookOpen
+  Pencil, Check, X, Trash2, ChevronRight, BookOpen, Mail, Copy, Send
 } from 'lucide-react';
 
 type BoardMeeting = Tables<'board_meetings'>;
 type Document = Tables<'documents'>;
 type Template = Tables<'document_templates'>;
+
+type Attendee = { name: string; email: string };
+
+function parseAttendees(raw: unknown): Attendee[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.map(a => {
+    if (typeof a === 'string') return { name: a, email: '' };
+    if (a && typeof a === 'object' && 'name' in a)
+      return { name: String((a as any).name ?? ''), email: String((a as any).email ?? '') };
+    return { name: String(a), email: '' };
+  });
+}
 
 const STATUS_OPTIONS = [
   { value: 'draft', label: 'Luonnos' },
@@ -35,9 +47,11 @@ export default function BoardMeetingDetail() {
 
   const [editingTitle, setEditingTitle] = useState(false);
   const [titleDraft, setTitleDraft] = useState('');
-  const [newAttendee, setNewAttendee] = useState('');
+  const [newName, setNewName] = useState('');
+  const [newEmail, setNewEmail] = useState('');
   const [newAgendaItem, setNewAgendaItem] = useState('');
   const [templatePickerOpen, setTemplatePickerOpen] = useState(false);
+  const [inviteOpen, setInviteOpen] = useState(false);
 
   const { data: meeting, isLoading } = useQuery({
     queryKey: ['board-meeting', meetingId],
@@ -87,16 +101,18 @@ export default function BoardMeetingDetail() {
   }
 
   async function addAttendee() {
-    if (!newAttendee.trim() || !meeting) return;
-    const current = Array.isArray(meeting.attendees) ? meeting.attendees as string[] : [];
-    await updateField({ attendees: [...current, newAttendee.trim()] as unknown as Json });
-    setNewAttendee('');
+    if (!newName.trim() || !meeting) return;
+    const current = parseAttendees(meeting.attendees);
+    const entry: Attendee = { name: newName.trim(), email: newEmail.trim() };
+    await updateField({ attendees: [...current, entry] as unknown as Json });
+    setNewName('');
+    setNewEmail('');
   }
 
-  async function removeAttendee(name: string) {
+  async function removeAttendee(idx: number) {
     if (!meeting) return;
-    const current = Array.isArray(meeting.attendees) ? meeting.attendees as string[] : [];
-    await updateField({ attendees: current.filter(a => a !== name) as unknown as Json });
+    const current = parseAttendees(meeting.attendees);
+    await updateField({ attendees: current.filter((_, i) => i !== idx) as unknown as Json });
   }
 
   async function addAgendaItem() {
@@ -136,7 +152,7 @@ export default function BoardMeetingDetail() {
         { type: 'paragraph', content: [{ type: 'text', marks: [{ type: 'bold' }], text: 'Yhtiö: ' }, { type: 'text', text: activeCompany.name }] },
         { type: 'paragraph', content: [{ type: 'text', marks: [{ type: 'bold' }], text: 'Päivämäärä: ' }, { type: 'text', text: format(parseISO(meeting.meeting_date), 'd.M.yyyy') }] },
         { type: 'paragraph', content: [{ type: 'text', marks: [{ type: 'bold' }], text: 'Paikka: ' }, { type: 'text', text: meeting.location ?? '' }] },
-        { type: 'paragraph', content: [{ type: 'text', marks: [{ type: 'bold' }], text: 'Läsnä: ' }, { type: 'text', text: (Array.isArray(meeting.attendees) ? (meeting.attendees as string[]).join(', ') : '') }] },
+        { type: 'paragraph', content: [{ type: 'text', marks: [{ type: 'bold' }], text: 'Läsnä: ' }, { type: 'text', text: parseAttendees(meeting.attendees).map(a => a.name).join(', ') }] },
         { type: 'heading', attrs: { level: 2 }, content: [{ type: 'text', text: '§ 1  Kokouksen avaaminen' }] },
         { type: 'paragraph', content: [{ type: 'text', text: '' }] },
       ]
@@ -160,6 +176,49 @@ export default function BoardMeetingDetail() {
     }
   }
 
+  // Build invitation text
+  function buildInviteText(meeting: BoardMeeting): string {
+    const dateStr = format(parseISO(meeting.meeting_date), "EEEE d. MMMM yyyy 'klo' ___", { locale: fi });
+    const agendaLines = (Array.isArray(meeting.agenda) ? meeting.agenda as string[] : [])
+      .map((item, i) => `  ${i + 1}. ${item}`).join('\n');
+    return [
+      `KOKOUSKUTSU`,
+      ``,
+      `Arvoisa vastaanottaja,`,
+      ``,
+      `Sinut on kutsuttu ${activeCompany?.name ?? ''} hallituksen kokoukseen.`,
+      ``,
+      `Kokous:        ${meeting.title}`,
+      `Päivämäärä:    ${dateStr}`,
+      meeting.location ? `Paikka:        ${meeting.location}` : null,
+      ``,
+      agendaLines ? `ESITYSLISTA\n${agendaLines}` : null,
+      ``,
+      `Ystävällisin terveisin,`,
+      `${activeCompany?.name ?? ''}`,
+    ].filter(l => l !== null).join('\n');
+  }
+
+  function sendByEmail(attendees: Attendee[], meeting: BoardMeeting) {
+    const withEmail = attendees.filter(a => a.email);
+    if (withEmail.length === 0) {
+      toast.error('Lisää osallistujille sähköpostiosoite ensin');
+      return;
+    }
+    const dateStr = format(parseISO(meeting.meeting_date), 'd. MMMM yyyy', { locale: fi });
+    const subject = encodeURIComponent(`Kokouskutsu: ${meeting.title} — ${dateStr}`);
+    const body = encodeURIComponent(buildInviteText(meeting));
+    const to = withEmail.map(a => a.email).join(',');
+    const link = document.createElement('a');
+    link.href = `mailto:${to}?subject=${subject}&body=${body}`;
+    link.click();
+  }
+
+  function copyInviteText(meeting: BoardMeeting) {
+    navigator.clipboard.writeText(buildInviteText(meeting));
+    toast.success('Kokouskutsu kopioitu leikepöydälle');
+  }
+
   if (isLoading) return (
     <div className="flex-1 flex items-center justify-center p-8">
       <div className="w-5 h-5 border-2 border-neutral-600 border-t-white rounded-full animate-spin" />
@@ -167,8 +226,9 @@ export default function BoardMeetingDetail() {
   );
   if (!meeting) return <div className="p-8 text-neutral-500">Kokousta ei löydy</div>;
 
-  const attendees = Array.isArray(meeting.attendees) ? meeting.attendees as string[] : [];
+  const attendees = parseAttendees(meeting.attendees);
   const agenda = Array.isArray(meeting.agenda) ? meeting.agenda as string[] : [];
+  const hasEmails = attendees.some(a => a.email);
 
   return (
     <div className="p-4 sm:p-8 max-w-4xl">
@@ -178,8 +238,8 @@ export default function BoardMeetingDetail() {
       </Link>
 
       {/* Title */}
-      <div className="flex items-start gap-3 mb-6">
-        <div className="flex-1">
+      <div className="flex flex-wrap items-start gap-3 mb-6">
+        <div className="flex-1 min-w-0">
           {editingTitle && isCompanyAdmin ? (
             <div className="flex items-center gap-2">
               <Input
@@ -202,7 +262,6 @@ export default function BoardMeetingDetail() {
               )}
             </div>
           )}
-
           <div className="flex items-center gap-4 mt-2">
             <span className="flex items-center gap-1.5 text-neutral-500 text-sm">
               <CalendarDays size={14} />
@@ -216,31 +275,52 @@ export default function BoardMeetingDetail() {
           </div>
         </div>
 
-        {isCompanyAdmin && (
-          <select
-            value={meeting.status}
-            onChange={e => updateField({ status: e.target.value as any })}
-            className="bg-neutral-800 border border-neutral-700 text-white text-sm rounded-lg px-3 py-1.5 outline-none"
-          >
-            {STATUS_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-          </select>
-        )}
+        <div className="flex items-center gap-2 shrink-0">
+          {isCompanyAdmin && (
+            <Button
+              size="sm"
+              onClick={() => setInviteOpen(true)}
+              className="h-8 gap-1.5 bg-neutral-800 hover:bg-neutral-700 text-white border border-neutral-700"
+            >
+              <Send size={13} />
+              <span className="hidden sm:inline">Lähetä kokouskutsu</span>
+              <span className="sm:hidden">Kutsu</span>
+            </Button>
+          )}
+          {isCompanyAdmin && (
+            <select
+              value={meeting.status}
+              onChange={e => updateField({ status: e.target.value as any })}
+              className="bg-neutral-800 border border-neutral-700 text-white text-sm rounded-lg px-3 py-1.5 outline-none"
+            >
+              {STATUS_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+            </select>
+          )}
+        </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
         {/* Osallistujat */}
         <div className="bg-neutral-800/30 border border-neutral-800 rounded-xl p-5">
           <div className="flex items-center gap-2 mb-4">
             <Users size={16} className="text-neutral-400" />
             <h2 className="text-white text-sm font-medium">Osallistujat</h2>
+            {hasEmails && (
+              <span className="ml-auto text-xs text-green-500 flex items-center gap-1">
+                <Mail size={11} />sähköposti lisätty
+              </span>
+            )}
           </div>
           <div className="space-y-2 mb-3">
             {attendees.length === 0 && <p className="text-neutral-600 text-xs">Ei osallistujia</p>}
             {attendees.map((a, i) => (
-              <div key={i} className="flex items-center justify-between group">
-                <span className="text-neutral-300 text-sm">{a}</span>
+              <div key={i} className="flex items-center justify-between group gap-2">
+                <div className="min-w-0">
+                  <div className="text-neutral-300 text-sm leading-tight">{a.name}</div>
+                  {a.email && <div className="text-neutral-600 text-xs truncate">{a.email}</div>}
+                </div>
                 {isCompanyAdmin && (
-                  <button onClick={() => removeAttendee(a)} className="p-1 text-neutral-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all rounded">
+                  <button onClick={() => removeAttendee(i)} className="p-1 text-neutral-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all rounded shrink-0">
                     <X size={12} />
                   </button>
                 )}
@@ -248,17 +328,28 @@ export default function BoardMeetingDetail() {
             ))}
           </div>
           {isCompanyAdmin && (
-            <div className="flex gap-2">
+            <div className="space-y-1.5">
               <Input
-                value={newAttendee}
-                onChange={e => setNewAttendee(e.target.value)}
-                onKeyDown={e => { if (e.key === 'Enter') addAttendee(); }}
-                placeholder="Lisää osallistuja"
+                value={newName}
+                onChange={e => setNewName(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter') { if (newName.trim()) document.getElementById('email-input')?.focus(); } }}
+                placeholder="Nimi"
                 className="bg-neutral-900 border-neutral-700 text-white text-xs h-8 placeholder:text-neutral-600"
               />
-              <Button size="sm" onClick={addAttendee} disabled={!newAttendee.trim()} className="h-8 w-8 p-0 bg-neutral-700 hover:bg-neutral-600">
-                <Plus size={14} />
-              </Button>
+              <div className="flex gap-2">
+                <Input
+                  id="email-input"
+                  value={newEmail}
+                  onChange={e => setNewEmail(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') addAttendee(); }}
+                  placeholder="Sähköposti (valinnainen)"
+                  type="email"
+                  className="bg-neutral-900 border-neutral-700 text-white text-xs h-8 placeholder:text-neutral-600"
+                />
+                <Button size="sm" onClick={addAttendee} disabled={!newName.trim()} className="h-8 w-8 p-0 bg-neutral-700 hover:bg-neutral-600 shrink-0">
+                  <Plus size={14} />
+                </Button>
+              </div>
             </div>
           )}
         </div>
@@ -289,16 +380,78 @@ export default function BoardMeetingDetail() {
                 value={newAgendaItem}
                 onChange={e => setNewAgendaItem(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter') addAgendaItem(); }}
-                placeholder="Lisää asia"
+                placeholder="Lisää asia esityslistalle"
                 className="bg-neutral-900 border-neutral-700 text-white text-xs h-8 placeholder:text-neutral-600"
               />
-              <Button size="sm" onClick={addAgendaItem} disabled={!newAgendaItem.trim()} className="h-8 w-8 p-0 bg-neutral-700 hover:bg-neutral-600">
+              <Button size="sm" onClick={addAgendaItem} disabled={!newAgendaItem.trim()} className="h-8 w-8 p-0 bg-neutral-700 hover:bg-neutral-600 shrink-0">
                 <Plus size={14} />
               </Button>
             </div>
           )}
         </div>
       </div>
+
+      {/* Kokouskutsu-dialogi */}
+      <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
+        <DialogContent className="bg-neutral-900 border-neutral-800 text-white max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-white flex items-center gap-2">
+              <Send size={18} />Lähetä kokouskutsu
+            </DialogTitle>
+          </DialogHeader>
+          <div className="mt-2 space-y-4">
+            {/* Preview */}
+            <div className="bg-neutral-950 border border-neutral-800 rounded-lg p-4">
+              <pre className="text-neutral-300 text-xs whitespace-pre-wrap font-mono leading-relaxed">
+                {buildInviteText(meeting)}
+              </pre>
+            </div>
+
+            {/* Vastaanottajat */}
+            <div>
+              <div className="text-neutral-400 text-xs mb-2">Vastaanottajat:</div>
+              {attendees.length === 0 ? (
+                <p className="text-neutral-600 text-xs">Ei osallistujia — lisää ensin osallistujat.</p>
+              ) : (
+                <div className="space-y-1">
+                  {attendees.map((a, i) => (
+                    <div key={i} className="flex items-center gap-2 text-xs">
+                      <span className="text-neutral-300">{a.name}</span>
+                      {a.email
+                        ? <span className="text-green-500">— {a.email}</span>
+                        : <span className="text-neutral-600 italic">— ei sähköpostia</span>
+                      }
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {!hasEmails && attendees.length > 0 && (
+              <p className="text-amber-500 text-xs bg-amber-950/30 border border-amber-800/30 rounded-lg px-3 py-2">
+                Lisää osallistujille sähköpostiosoitteet lähettääksesi kutsun sähköpostilla.
+              </p>
+            )}
+
+            <div className="flex gap-2">
+              <Button
+                onClick={() => copyInviteText(meeting)}
+                variant="outline"
+                className="flex-1 border-neutral-700 text-neutral-300 hover:text-white hover:bg-neutral-800 gap-2"
+              >
+                <Copy size={14} />Kopioi teksti
+              </Button>
+              <Button
+                onClick={() => { sendByEmail(attendees, meeting); setInviteOpen(false); }}
+                disabled={!hasEmails}
+                className="flex-1 bg-white text-black hover:bg-neutral-100 gap-2"
+              >
+                <Mail size={14} />Avaa sähköposti
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Template picker dialog */}
       <Dialog open={templatePickerOpen} onOpenChange={setTemplatePickerOpen}>
