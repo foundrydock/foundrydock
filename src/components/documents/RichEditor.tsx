@@ -218,7 +218,7 @@ function EditorToolbar({ editor, brandData }: { editor: ReturnType<typeof useEdi
 
     // Table with brand-color top border = decorative line; logo left, info right
     const footerTable =
-      `<table style="width:100%;border-collapse:collapse;margin:10rem 0 0;border-top:2px solid ${primary};">` +
+      `<table style="width:100%;border-collapse:collapse;margin:10rem 0 0;border-top:1px solid ${primary};">` +
         `<tbody><tr>` +
           `<td style="border:none;padding:0.6rem 0 0.1rem;vertical-align:middle;width:50%;">${logoHtml}</td>` +
           `<td style="border:none;padding:0.6rem 0 0.1rem;text-align:right;vertical-align:middle;font-size:0.65rem;color:#888888;letter-spacing:0.04em;">${infoLine}</td>` +
