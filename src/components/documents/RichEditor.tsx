@@ -5,7 +5,17 @@ import { TextAlign } from '@tiptap/extension-text-align';
 import { TextStyle } from '@tiptap/extension-text-style';
 import { Color } from '@tiptap/extension-color';
 import { FontFamily } from '@tiptap/extension-font-family';
-import { Image as TipTapImage } from '@tiptap/extension-image';
+import { Image as TipTapImageBase } from '@tiptap/extension-image';
+
+// Laajennettu Image-extensioni joka säilyttää style-attribuutin
+const TipTapImage = TipTapImageBase.extend({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      style: { default: null },
+    };
+  },
+});
 import { Table } from '@tiptap/extension-table';
 import { TableRow } from '@tiptap/extension-table-row';
 import { TableCell } from '@tiptap/extension-table-cell';
@@ -109,7 +119,8 @@ export default function RichEditor({ content, onChange, readOnly = false, brandD
             .ProseMirror th { background: #f3f4f6; font-weight: 600; color: #111; }
             /* ── Media ────────────────────────────────────── */
             .ProseMirror img { max-width: 100%; height: auto; border-radius: 0.5rem; margin: 0.5rem 0; }
-            .ProseMirror img.doc-footer-logo { max-height: 56px; width: auto; border-radius: 0; display: block; margin: 0.5rem auto; }
+            /* Inline style-attribuutti saa ylikirjoittaa oletukset */
+            .ProseMirror img[style] { max-width: unset; border-radius: 0; margin: 0; }
             /* ── Code ─────────────────────────────────────── */
             .ProseMirror code { background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 0.25rem; padding: 0.1em 0.35em; font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.875em; color: #374151; }
             .ProseMirror pre { background: #f8f9fa; border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 1rem; margin: 1rem 0; overflow-x: auto; }
