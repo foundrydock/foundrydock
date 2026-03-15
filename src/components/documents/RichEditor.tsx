@@ -6,22 +6,22 @@ import { TextStyle } from '@tiptap/extension-text-style';
 import { Color } from '@tiptap/extension-color';
 import { FontFamily } from '@tiptap/extension-font-family';
 import { Image as TipTapImageBase } from '@tiptap/extension-image';
-
-// Laajennettu Image-extensioni joka säilyttää style-attribuutin
-const TipTapImage = TipTapImageBase.extend({
-  addAttributes() {
-    return {
-      ...this.parent?.(),
-      style: { default: null },
-    };
-  },
-});
-import { Table } from '@tiptap/extension-table';
+import { Paragraph as ParagraphBase } from '@tiptap/extension-paragraph';
+import { Table as TableBase } from '@tiptap/extension-table';
 import { TableRow } from '@tiptap/extension-table-row';
 import { TableCell as TableCellBase } from '@tiptap/extension-table-cell';
 import { TableHeader as TableHeaderBase } from '@tiptap/extension-table-header';
 
-// Laajennettu TableCell/Header jotka säilyttävät style-attribuutin
+// Laajennetut extensionit jotka säilyttävät style-attribuutin
+const TipTapImage = TipTapImageBase.extend({
+  addAttributes() { return { ...this.parent?.(), style: { default: null } }; },
+});
+const Paragraph = ParagraphBase.extend({
+  addAttributes() { return { ...this.parent?.(), style: { default: null } }; },
+});
+const Table = TableBase.extend({
+  addAttributes() { return { ...this.parent?.(), style: { default: null } }; },
+}).configure({ resizable: true });
 const TableCell = TableCellBase.extend({
   addAttributes() { return { ...this.parent?.(), style: { default: null } }; },
 });
@@ -68,13 +68,14 @@ export default function RichEditor({ content, onChange, readOnly = false, brandD
 
   const editor = useEditor({
     extensions: [
-      StarterKit,
+      StarterKit.configure({ paragraph: false }),
+      Paragraph,
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
       TextStyle,
       Color,
       FontFamily,
       TipTapImage.configure({ allowBase64: true }),
-      Table.configure({ resizable: true }),
+      Table,
       TableRow,
       TableHeader,
       TableCell,
@@ -210,25 +211,21 @@ function EditorToolbar({ editor, brandData }: { editor: ReturnType<typeof useEdi
     const primary = brandData?.primary ?? '#cccccc';
     const endPos = editor.state.doc.content.size - 1;
 
-    // Decorative line above footer
-    const decorLine = `<p style="border-top:2px solid ${primary};margin:3.5rem 0 0.5rem;padding:0;line-height:0;"> </p>`;
-
-    // Build left cell (logo or empty) and right cell (company + tagline)
     const logoHtml = brandData?.logoUrl
       ? `<img src="${brandData.logoUrl}" alt="${brandData.companyName ?? 'Logo'}" style="max-height:26px;width:auto;display:block;" />`
       : '';
     const infoLine = [brandData?.companyName, brandData?.tagline].filter(Boolean).join(' · ');
 
-    // Two-column table: logo left, info right — no visible borders
+    // Table with brand-color top border = decorative line; logo left, info right
     const footerTable =
-      `<table style="width:100%;border-collapse:collapse;margin:0;">` +
+      `<table style="width:100%;border-collapse:collapse;margin:5rem 0 0;border-top:2px solid ${primary};">` +
         `<tbody><tr>` +
-          `<td style="border:none;padding:0.1rem 0;vertical-align:middle;width:50%;">${logoHtml}</td>` +
-          `<td style="border:none;padding:0.1rem 0;text-align:right;vertical-align:middle;font-size:0.65rem;color:#888888;letter-spacing:0.04em;">${infoLine}</td>` +
+          `<td style="border:none;padding:0.6rem 0 0.1rem;vertical-align:middle;width:50%;">${logoHtml}</td>` +
+          `<td style="border:none;padding:0.6rem 0 0.1rem;text-align:right;vertical-align:middle;font-size:0.65rem;color:#888888;letter-spacing:0.04em;">${infoLine}</td>` +
         `</tr></tbody>` +
       `</table>`;
 
-    editor.chain().focus().insertContentAt(endPos, decorLine + footerTable).run();
+    editor.chain().focus().insertContentAt(endPos, footerTable).run();
   }
 
   return (
