@@ -164,52 +164,55 @@ export default function RichEditor({ content, onChange, readOnly = false, brandD
 // ─── Toolbar ────────────────────────────────────────────────────────────────
 
 function EditorToolbar({ editor, brandData }: { editor: ReturnType<typeof useEditor>; brandData?: BrandData }) {
+  const imageInputRef = useRef<HTMLInputElement>(null);
   if (!editor) return null;
 
   function insertTable() {
     editor?.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
   }
 
-  function insertImage() {
-    const url = window.prompt('Kuvan URL:');
-    if (url) editor?.chain().focus().setImage({ src: url }).run();
+  function handleImageFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const src = ev.target?.result as string;
+      if (src) editor?.chain().focus().setImage({ src }).run();
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
   }
 
   function insertFooter() {
     if (!editor) return;
-    const primary = brandData?.primary ?? '#404040';
+    const primary = brandData?.primary ?? '#cccccc';
+    // Always insert at end of document
+    const endPos = editor.state.doc.content.size - 1;
 
-    const parts: string[] = [];
+    const parts: string[] = [
+      // Decorative line — brand primary colour, generous top margin
+      `<p style="border-top:2px solid ${primary};margin:3.5rem 0 0.6rem;padding:0;line-height:0;"> </p>`,
+    ];
 
-    // Decorative line with brand primary color
-    parts.push(`<p style="border-top: 2px solid ${primary}; margin: 2rem 0 1.25rem;"></p>`);
-
-    // Logo if available
+    // Logo — small, right-aligned
     if (brandData?.logoUrl) {
       parts.push(
-        `<p style="text-align: center; margin: 0.5rem 0;">` +
-        `<img src="${brandData.logoUrl}" alt="${brandData.companyName ?? 'Logo'}" class="doc-footer-logo" style="max-height:56px;display:inline-block;" />` +
+        `<p style="text-align:right;margin:0 0 0.15rem 0;">` +
+        `<img src="${brandData.logoUrl}" alt="${brandData.companyName ?? 'Logo'}" style="max-height:26px;width:auto;display:inline-block;" />` +
         `</p>`
       );
     }
 
-    // Company name
-    if (brandData?.companyName) {
+    // Company name + tagline — small, right-aligned, muted
+    const infoLine = [brandData?.companyName, brandData?.tagline].filter(Boolean).join(' · ');
+    if (infoLine) {
       parts.push(
-        `<p style="text-align: center; font-weight: bold; letter-spacing: 0.06em; text-transform: uppercase; font-size: 0.8rem; margin: 0.25rem 0;">` +
-        `${brandData.companyName}</p>`
+        `<p style="text-align:right;font-size:0.65rem;color:#888888;letter-spacing:0.04em;margin:0;">` +
+        `${infoLine}</p>`
       );
     }
 
-    // Tagline
-    if (brandData?.tagline) {
-      parts.push(
-        `<p style="text-align: center; color: #888; font-size: 0.75rem; font-style: italic; margin: 0;">` +
-        `${brandData.tagline}</p>`
-      );
-    }
-
-    editor.chain().focus().insertContent(parts.join('')).run();
+    editor.chain().focus().insertContentAt(endPos, parts.join('')).run();
   }
 
   return (
@@ -312,9 +315,10 @@ function EditorToolbar({ editor, brandData }: { editor: ReturnType<typeof useEdi
       <ToolBtn onClick={insertTable} title="Lisää taulukko">
         <TableIcon size={14} />
       </ToolBtn>
-      <ToolBtn onClick={insertImage} title="Lisää kuva URL:lla">
+      <ToolBtn onClick={() => imageInputRef.current?.click()} title="Lisää kuva koneelta">
         <ImageIcon size={14} />
       </ToolBtn>
+      <input ref={imageInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageFile} />
 
       <Divider />
 
