@@ -4,6 +4,7 @@ import { StarterKit } from '@tiptap/starter-kit';
 import { TextAlign } from '@tiptap/extension-text-align';
 import { TextStyle } from '@tiptap/extension-text-style';
 import { Color } from '@tiptap/extension-color';
+import { FontFamily } from '@tiptap/extension-font-family';
 import { Image as TipTapImage } from '@tiptap/extension-image';
 import { Table } from '@tiptap/extension-table';
 import { TableRow } from '@tiptap/extension-table-row';
@@ -14,7 +15,8 @@ import { Json } from '@/integrations/supabase/types';
 import {
   Bold, Italic, Strikethrough, AlignLeft, AlignCenter, AlignRight,
   List, ListOrdered, Heading1, Heading2, Heading3, Undo, Redo,
-  Table as TableIcon, Image as ImageIcon, Minus, Quote, Printer
+  Table as TableIcon, Image as ImageIcon, Minus, Quote, Printer,
+  Code, Code2, Baseline, Type
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -24,6 +26,8 @@ interface RichEditorProps {
   readOnly?: boolean;
   brandColors?: { primary: string; accent: string };
 }
+
+const EDITOR_FONTS = ['Inter', 'Helvetica Neue', 'Arial', 'Georgia', 'Times New Roman', 'Roboto', 'Lato', 'Montserrat'];
 
 export default function RichEditor({ content, onChange, readOnly = false, brandColors }: RichEditorProps) {
   // Use ref to always have latest onChange callback available to TipTap
@@ -36,6 +40,7 @@ export default function RichEditor({ content, onChange, readOnly = false, brandC
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
       TextStyle,
       Color,
+      FontFamily,
       TipTapImage,
       Table.configure({ resizable: true }),
       TableRow,
@@ -80,6 +85,9 @@ export default function RichEditor({ content, onChange, readOnly = false, brandC
             .ProseMirror td, .ProseMirror th { border: 1px solid #404040; padding: 0.5rem 0.75rem; }
             .ProseMirror th { background: #1a1a1a; font-weight: 600; }
             .ProseMirror img { max-width: 100%; height: auto; border-radius: 0.5rem; margin: 0.5rem 0; }
+            .ProseMirror code { background: #1e1e1e; border: 1px solid #333; border-radius: 0.25rem; padding: 0.1em 0.35em; font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.875em; color: #e2e8f0; }
+            .ProseMirror pre { background: #1e1e1e; border: 1px solid #333; border-radius: 0.5rem; padding: 1rem; margin: 1rem 0; overflow-x: auto; }
+            .ProseMirror pre code { background: none; border: none; padding: 0; font-size: 0.875rem; line-height: 1.6; }
             .ProseMirror .is-editor-empty:first-child::before { content: attr(data-placeholder); color: #4b5563; pointer-events: none; float: left; height: 0; }
             @media print {
               .editor-toolbar { display: none !important; }
@@ -94,6 +102,7 @@ export default function RichEditor({ content, onChange, readOnly = false, brandC
 }
 
 function EditorToolbar({ editor }: { editor: ReturnType<typeof useEditor> }) {
+  const colorInputRef = useRef<HTMLInputElement>(null);
   if (!editor) return null;
 
   function insertTable() {
@@ -114,6 +123,25 @@ function EditorToolbar({ editor }: { editor: ReturnType<typeof useEditor> }) {
       <ToolBtn onClick={() => editor.chain().focus().redo().run()} disabled={!editor.can().redo()} title="Tee uudelleen">
         <Redo size={14} />
       </ToolBtn>
+
+      <Divider />
+
+      {/* Font family */}
+      <select
+        value={editor.getAttributes('textStyle').fontFamily ?? ''}
+        onChange={e => {
+          if (e.target.value) {
+            editor.chain().focus().setFontFamily(e.target.value).run();
+          } else {
+            editor.chain().focus().unsetFontFamily().run();
+          }
+        }}
+        title="Fontti"
+        className="text-xs bg-neutral-800 border border-neutral-700 text-neutral-300 rounded px-2 py-1 h-7 outline-none hover:border-neutral-500 max-w-[110px]"
+      >
+        <option value="">Oletusfontti</option>
+        {EDITOR_FONTS.map(f => <option key={f} value={f}>{f}</option>)}
+      </select>
 
       <Divider />
 
@@ -140,6 +168,26 @@ function EditorToolbar({ editor }: { editor: ReturnType<typeof useEditor> }) {
       <ToolBtn onClick={() => editor.chain().focus().toggleStrike().run()} active={editor.isActive('strike')} title="Yliviivaus">
         <Strikethrough size={14} />
       </ToolBtn>
+
+      {/* Text color */}
+      <div className="relative" title="Tekstin väri">
+        <ToolBtn onClick={() => colorInputRef.current?.click()} title="Tekstin väri">
+          <div className="flex flex-col items-center gap-0.5">
+            <Baseline size={13} />
+            <div
+              className="w-3.5 h-1 rounded-sm"
+              style={{ backgroundColor: editor.getAttributes('textStyle').color ?? '#ffffff' }}
+            />
+          </div>
+        </ToolBtn>
+        <input
+          ref={colorInputRef}
+          type="color"
+          value={editor.getAttributes('textStyle').color ?? '#ffffff'}
+          onChange={e => editor.chain().focus().setColor(e.target.value).run()}
+          className="absolute opacity-0 w-0 h-0 pointer-events-none"
+        />
+      </div>
 
       <Divider />
 
@@ -168,6 +216,16 @@ function EditorToolbar({ editor }: { editor: ReturnType<typeof useEditor> }) {
       </ToolBtn>
       <ToolBtn onClick={() => editor.chain().focus().setHorizontalRule().run()} title="Vaakaviiva">
         <Minus size={14} />
+      </ToolBtn>
+
+      <Divider />
+
+      {/* Code */}
+      <ToolBtn onClick={() => editor.chain().focus().toggleCode().run()} active={editor.isActive('code')} title="Koodi (inline)">
+        <Code size={14} />
+      </ToolBtn>
+      <ToolBtn onClick={() => editor.chain().focus().toggleCodeBlock().run()} active={editor.isActive('codeBlock')} title="Koodilohko">
+        <Code2 size={14} />
       </ToolBtn>
 
       <Divider />

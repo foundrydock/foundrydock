@@ -7,10 +7,17 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { Upload, Save, Palette, Type, Image as ImageIcon, Globe, Link2 } from 'lucide-react';
+import { Upload, Save, Palette, Type, Image as ImageIcon, Globe, Link2, FileText, Info } from 'lucide-react';
 import ShareDialog from '@/components/library/ShareDialog';
 
 type BrandSettings = Tables<'brand_settings'>;
+
+interface GuidelinesContent {
+  logo_light_notes?: string;
+  logo_dark_path_notes?: string;
+  logo_usage_rules?: string;
+  color_descriptions?: Record<string, string>;
+}
 
 const FONTS = ['Inter', 'Helvetica Neue', 'Arial', 'Georgia', 'Times New Roman', 'Roboto', 'Lato', 'Montserrat', 'Playfair Display'];
 
@@ -40,8 +47,25 @@ export default function BrandGuide() {
 
   const settings = { ...brand, ...localSettings } as BrandSettings;
 
+  const guidelines: GuidelinesContent = (settings?.guidelines_content as GuidelinesContent) ?? {};
+
   function update(field: Partial<BrandSettings>) {
     setLocalSettings(prev => ({ ...prev, ...field }));
+  }
+
+  function updateGuidelines(field: Partial<GuidelinesContent>) {
+    const current = ((localSettings?.guidelines_content ?? brand?.guidelines_content ?? {}) as GuidelinesContent);
+    update({ guidelines_content: { ...current, ...field } });
+  }
+
+  function updateColorDescription(color: string, desc: string) {
+    const current = ((localSettings?.guidelines_content ?? brand?.guidelines_content ?? {}) as GuidelinesContent);
+    update({
+      guidelines_content: {
+        ...current,
+        color_descriptions: { ...(current.color_descriptions ?? {}), [color]: desc },
+      },
+    });
   }
 
   async function save() {
@@ -71,7 +95,6 @@ export default function BrandGuide() {
     const field = variant === 'light' ? { logo_light_path: path } : { logo_dark_path: path };
     update(field);
 
-    // Persist immediately to Supabase so it survives page refresh
     const currentSettings = { ...brand, ...localSettings } as BrandSettings;
     const { error: saveError } = await supabase
       .from('brand_settings')
@@ -84,36 +107,20 @@ export default function BrandGuide() {
     setUploadingLogo(null);
   }
 
-  function LogoPreview({ path, label, dark = false }: { path: string | null | undefined; label: string; dark?: boolean }) {
-    const [url, setUrl] = useState<string | null>(null);
-    useEffect(() => {
-      if (!path) { setUrl(null); return; }
-      supabase.storage.from('assets').createSignedUrl(path, 3600).then(({ data }) => {
-        if (data?.signedUrl) setUrl(data.signedUrl);
-      });
-    }, [path]);
-    return (
-      <div className={`aspect-video rounded-xl flex items-center justify-center overflow-hidden ${dark ? 'bg-neutral-950 border border-neutral-800' : 'bg-neutral-800'}`}>
-        {url ? (
-          <img src={url} alt={label} className="max-w-full max-h-full object-contain p-4" />
-        ) : (
-          <div className="text-center">
-            <ImageIcon size={24} className="text-neutral-700 mx-auto mb-1" />
-            <span className="text-neutral-600 text-xs">{label}</span>
-          </div>
-        )}
-      </div>
-    );
-  }
-
   if (isLoading) return (
     <div className="p-8 flex items-center justify-center">
       <div className="w-5 h-5 border-2 border-neutral-600 border-t-white rounded-full animate-spin" />
     </div>
   );
 
+  const colorFields = [
+    { key: 'primary_color', label: 'Pääväri' },
+    { key: 'secondary_color', label: 'Toissijainen' },
+    { key: 'accent_color', label: 'Korostusväri' },
+  ];
+
   return (
-    <div className="p-8 max-w-4xl">
+    <div className="p-8 max-w-5xl">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-semibold text-white">Brand Guidelines</h1>
@@ -138,9 +145,28 @@ export default function BrandGuide() {
       <div className="space-y-8">
         {/* Logot */}
         <Section title="Logot" icon={ImageIcon}>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label className="text-neutral-400 text-xs mb-2 block">Vaalean taustan logo</Label>
+          {/* Logo käyttöohjeet */}
+          <div className="mb-6">
+            <Label className="text-neutral-400 text-xs mb-2 block">Logon käyttöohjeet ja rajoitukset</Label>
+            {isCompanyAdmin ? (
+              <textarea
+                value={guidelines.logo_usage_rules ?? ''}
+                onChange={e => updateGuidelines({ logo_usage_rules: e.target.value })}
+                placeholder="Esim: Logoa ei saa venyttää tai muokata värejä. Säilytä aina vähintään X px tyhjä tila logon ympärillä..."
+                rows={3}
+                className="w-full bg-neutral-800 border border-neutral-700 text-white text-sm rounded-lg px-3 py-2.5 outline-none resize-none placeholder:text-neutral-600 focus:border-neutral-500"
+              />
+            ) : guidelines.logo_usage_rules ? (
+              <div className="bg-neutral-800/50 border border-neutral-800 rounded-lg px-3 py-2.5 text-neutral-300 text-sm whitespace-pre-wrap">
+                {guidelines.logo_usage_rules}
+              </div>
+            ) : null}
+          </div>
+
+          <div className="grid grid-cols-2 gap-6">
+            {/* Vaalea logo */}
+            <div className="space-y-3">
+              <Label className="text-neutral-400 text-xs block">Vaalean taustan logo</Label>
               <LogoPreview path={settings?.logo_light_path} label="Vaalea tausta" />
               {isCompanyAdmin && (
                 <>
@@ -151,15 +177,31 @@ export default function BrandGuide() {
                     variant="outline"
                     onClick={() => logoLightRef.current?.click()}
                     disabled={uploadingLogo === 'light'}
-                    className="mt-2 w-full border-neutral-700 text-neutral-400 hover:text-white hover:bg-neutral-800 gap-2"
+                    className="w-full border-neutral-700 text-neutral-400 hover:text-white hover:bg-neutral-800 gap-2"
                   >
                     <Upload size={13} />{uploadingLogo === 'light' ? 'Ladataan...' : 'Lataa logo'}
                   </Button>
                 </>
               )}
+              <div>
+                <Label className="text-neutral-500 text-xs mb-1.5 block">Kuvaus / käyttötarkoitus</Label>
+                {isCompanyAdmin ? (
+                  <textarea
+                    value={guidelines.logo_light_notes ?? ''}
+                    onChange={e => updateGuidelines({ logo_light_notes: e.target.value })}
+                    placeholder="Esim: Käytä valkoisilla ja vaaleilla taustoilla, printtimateriaaleissa..."
+                    rows={2}
+                    className="w-full bg-neutral-800/60 border border-neutral-700/60 text-neutral-300 text-xs rounded-lg px-3 py-2 outline-none resize-none placeholder:text-neutral-600 focus:border-neutral-500"
+                  />
+                ) : guidelines.logo_light_notes ? (
+                  <p className="text-neutral-400 text-xs leading-relaxed">{guidelines.logo_light_notes}</p>
+                ) : null}
+              </div>
             </div>
-            <div>
-              <Label className="text-neutral-400 text-xs mb-2 block">Tumman taustan logo</Label>
+
+            {/* Tumma logo */}
+            <div className="space-y-3">
+              <Label className="text-neutral-400 text-xs block">Tumman taustan logo</Label>
               <LogoPreview path={settings?.logo_dark_path} label="Tumma tausta" dark={true} />
               {isCompanyAdmin && (
                 <>
@@ -170,12 +212,26 @@ export default function BrandGuide() {
                     variant="outline"
                     onClick={() => logoDarkRef.current?.click()}
                     disabled={uploadingLogo === 'dark'}
-                    className="mt-2 w-full border-neutral-700 text-neutral-400 hover:text-white hover:bg-neutral-800 gap-2"
+                    className="w-full border-neutral-700 text-neutral-400 hover:text-white hover:bg-neutral-800 gap-2"
                   >
                     <Upload size={13} />{uploadingLogo === 'dark' ? 'Ladataan...' : 'Lataa logo'}
                   </Button>
                 </>
               )}
+              <div>
+                <Label className="text-neutral-500 text-xs mb-1.5 block">Kuvaus / käyttötarkoitus</Label>
+                {isCompanyAdmin ? (
+                  <textarea
+                    value={guidelines.logo_dark_path_notes ?? ''}
+                    onChange={e => updateGuidelines({ logo_dark_path_notes: e.target.value })}
+                    placeholder="Esim: Käytä tummilla taustoilla, digitaalisissa kanavissa, sosiaalisessa mediassa..."
+                    rows={2}
+                    className="w-full bg-neutral-800/60 border border-neutral-700/60 text-neutral-300 text-xs rounded-lg px-3 py-2 outline-none resize-none placeholder:text-neutral-600 focus:border-neutral-500"
+                  />
+                ) : guidelines.logo_dark_path_notes ? (
+                  <p className="text-neutral-400 text-xs leading-relaxed">{guidelines.logo_dark_path_notes}</p>
+                ) : null}
+              </div>
             </div>
           </div>
         </Section>
@@ -183,53 +239,60 @@ export default function BrandGuide() {
         {/* Värit */}
         <Section title="Värit" icon={Palette}>
           <div className="grid grid-cols-3 gap-4">
-            {[
-              { key: 'primary_color', label: 'Pääväri' },
-              { key: 'secondary_color', label: 'Toissijainen' },
-              { key: 'accent_color', label: 'Korostusväri' },
-            ].map(({ key, label }) => (
-              <div key={key}>
-                <Label className="text-neutral-400 text-xs mb-2 block">{label}</Label>
-                <div className="flex items-center gap-3 bg-neutral-800 border border-neutral-700 rounded-lg px-3 py-2.5">
-                  <div
-                    className="w-8 h-8 rounded-md shrink-0 border border-neutral-600"
-                    style={{ backgroundColor: (settings as any)?.[key] ?? '#000' }}
-                  />
-                  <div className="flex-1 min-w-0">
-                    <input
-                      type="color"
-                      value={(settings as any)?.[key] ?? '#000000'}
-                      onChange={e => update({ [key]: e.target.value } as any)}
-                      disabled={!isCompanyAdmin}
-                      className="opacity-0 absolute"
-                      id={`color-${key}`}
+            {colorFields.map(({ key, label }) => {
+              const colorValue = (settings as any)?.[key] ?? '#000000';
+              const colorDesc = guidelines.color_descriptions?.[key] ?? '';
+              return (
+                <div key={key} className="space-y-2">
+                  <Label className="text-neutral-400 text-xs block">{label}</Label>
+                  <div className="flex items-center gap-3 bg-neutral-800 border border-neutral-700 rounded-lg px-3 py-2.5">
+                    <div
+                      className="w-8 h-8 rounded-md shrink-0 border border-neutral-600"
+                      style={{ backgroundColor: colorValue }}
                     />
-                    <label htmlFor={`color-${key}`} className="cursor-pointer">
-                      <div className="text-white text-sm font-mono">{(settings as any)?.[key] ?? '#000000'}</div>
-                    </label>
+                    <div className="flex-1 min-w-0">
+                      <input
+                        type="color"
+                        value={colorValue}
+                        onChange={e => update({ [key]: e.target.value } as any)}
+                        disabled={!isCompanyAdmin}
+                        className="opacity-0 absolute"
+                        id={`color-${key}`}
+                      />
+                      <label htmlFor={`color-${key}`} className="cursor-pointer">
+                        <div className="text-white text-sm font-mono">{colorValue}</div>
+                      </label>
+                    </div>
+                    {isCompanyAdmin && (
+                      <label htmlFor={`color-${key}`} className="cursor-pointer">
+                        <Palette size={14} className="text-neutral-500 hover:text-white transition-colors" />
+                      </label>
+                    )}
                   </div>
-                  {isCompanyAdmin && (
-                    <label htmlFor={`color-${key}`} className="cursor-pointer">
-                      <Palette size={14} className="text-neutral-500 hover:text-white transition-colors" />
-                    </label>
-                  )}
+                  <div className="h-6 rounded-md w-full" style={{ backgroundColor: colorValue }} />
+                  {isCompanyAdmin ? (
+                    <input
+                      type="text"
+                      value={colorDesc}
+                      onChange={e => updateColorDescription(key, e.target.value)}
+                      placeholder="Käyttötarkoitus, esim. CTA-painikkeet..."
+                      className="w-full bg-neutral-800/60 border border-neutral-700/60 text-neutral-300 text-xs rounded-lg px-3 py-2 outline-none placeholder:text-neutral-600 focus:border-neutral-500"
+                    />
+                  ) : colorDesc ? (
+                    <p className="text-neutral-500 text-xs">{colorDesc}</p>
+                  ) : null}
                 </div>
-                {/* Color swatch display */}
-                <div
-                  className="h-8 rounded-lg mt-2 w-full"
-                  style={{ backgroundColor: (settings as any)?.[key] ?? '#000' }}
-                />
-              </div>
-            ))}
+              );
+            })}
           </div>
         </Section>
 
         {/* Typografia */}
         <Section title="Typografia" icon={Type}>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-6">
             {[
-              { key: 'font_heading', label: 'Otsikkofont', preview: 'Aa Bb Cc' },
-              { key: 'font_body', label: 'Leipätekstifontti', preview: 'Lorem ipsum dolor sit amet' },
+              { key: 'font_heading', label: 'Otsikkofontti', preview: 'Aa Bb Cc — Otsikko' },
+              { key: 'font_body', label: 'Leipätekstifontti', preview: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.' },
             ].map(({ key, label, preview }) => (
               <div key={key}>
                 <Label className="text-neutral-400 text-xs mb-2 block">{label}</Label>
@@ -247,17 +310,20 @@ export default function BrandGuide() {
                   </div>
                 )}
                 <div
-                  className="bg-neutral-800/50 rounded-lg px-4 py-4 text-white text-lg"
+                  className="bg-neutral-800/50 rounded-lg px-4 py-4 text-white"
                   style={{ fontFamily: (settings as any)?.[key] ?? 'Inter' }}
                 >
-                  {preview}
+                  <div className="text-2xl font-bold mb-1" style={{ fontFamily: key === 'font_heading' ? ((settings as any)?.[key] ?? 'Inter') : undefined }}>
+                    {key === 'font_heading' ? preview : 'Otsikko'}
+                  </div>
+                  {key === 'font_body' && <div className="text-sm text-neutral-300">{preview}</div>}
                 </div>
               </div>
             ))}
           </div>
         </Section>
 
-        {/* Tiedot */}
+        {/* Yleistiedot */}
         <Section title="Yleistiedot" icon={Globe}>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
@@ -282,6 +348,28 @@ export default function BrandGuide() {
             </div>
           </div>
         </Section>
+
+        {/* Muistiinpanot / vapaa sisältö */}
+        <Section title="Lisäohjeet ja muistiinpanot" icon={FileText}>
+          <div className="space-y-2">
+            <p className="text-neutral-500 text-xs">Vapaa tekstikenttä brändiohjeille, äänensävylle, kuvallisille periaatteille jne.</p>
+            {isCompanyAdmin ? (
+              <textarea
+                value={(guidelines as any).extra_notes ?? ''}
+                onChange={e => updateGuidelines({ ...(guidelines as any), extra_notes: e.target.value })}
+                placeholder="Esim: Brändin äänensävy on asiantunteva mutta lähestyttävä. Vältä liian teknistä kieltä..."
+                rows={5}
+                className="w-full bg-neutral-800 border border-neutral-700 text-white text-sm rounded-lg px-3 py-2.5 outline-none resize-y placeholder:text-neutral-600 focus:border-neutral-500"
+              />
+            ) : (guidelines as any).extra_notes ? (
+              <div className="bg-neutral-800/50 border border-neutral-800 rounded-lg px-3 py-2.5 text-neutral-300 text-sm whitespace-pre-wrap">
+                {(guidelines as any).extra_notes}
+              </div>
+            ) : (
+              <p className="text-neutral-600 text-sm italic">Ei lisäohjeita.</p>
+            )}
+          </div>
+        </Section>
       </div>
 
       {activeCompany && (
@@ -290,6 +378,28 @@ export default function BrandGuide() {
           onClose={() => setShareOpen(false)}
           target={{ type: 'folder', id: activeCompany.id, name: `${activeCompany.name} — Brand Guidelines` }}
         />
+      )}
+    </div>
+  );
+}
+
+function LogoPreview({ path, label, dark = false }: { path: string | null | undefined; label: string; dark?: boolean }) {
+  const [url, setUrl] = useState<string | null>(null);
+  useEffect(() => {
+    if (!path) { setUrl(null); return; }
+    supabase.storage.from('assets').createSignedUrl(path, 3600).then(({ data }) => {
+      if (data?.signedUrl) setUrl(data.signedUrl);
+    });
+  }, [path]);
+  return (
+    <div className={`aspect-video rounded-xl flex items-center justify-center overflow-hidden ${dark ? 'bg-neutral-950 border border-neutral-800' : 'bg-neutral-100'}`}>
+      {url ? (
+        <img src={url} alt={label} className="max-w-full max-h-full object-contain p-4" />
+      ) : (
+        <div className="text-center">
+          <ImageIcon size={24} className={dark ? 'text-neutral-700 mx-auto mb-1' : 'text-neutral-400 mx-auto mb-1'} />
+          <span className={dark ? 'text-neutral-600 text-xs' : 'text-neutral-400 text-xs'}>{label}</span>
+        </div>
       )}
     </div>
   );
