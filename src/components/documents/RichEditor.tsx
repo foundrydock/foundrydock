@@ -39,9 +39,9 @@ interface RichEditorProps {
 const EDITOR_FONTS = ['Inter', 'Helvetica Neue', 'Arial', 'Georgia', 'Times New Roman', 'Roboto', 'Lato', 'Montserrat'];
 
 const STANDARD_COLORS = [
-  '#ffffff', '#f5f5f5', '#d4d4d4', '#737373', '#404040', '#171717',
-  '#ef4444', '#f97316', '#eab308', '#22c55e', '#06b6d4', '#3b82f6',
-  '#8b5cf6', '#ec4899',
+  '#111111', '#374151', '#6b7280', '#9ca3af', '#d1d5db', '#f9fafb',
+  '#dc2626', '#ea580c', '#ca8a04', '#16a34a', '#0891b2', '#2563eb',
+  '#7c3aed', '#db2777',
 ];
 
 export default function RichEditor({ content, onChange, readOnly = false, brandData }: RichEditorProps) {
@@ -80,34 +80,52 @@ export default function RichEditor({ content, onChange, readOnly = false, brandD
   return (
     <div className="flex flex-col h-full">
       {!readOnly && <EditorToolbar editor={editor} brandData={brandData} />}
-      <div className="flex-1 overflow-auto">
-        <div className="max-w-3xl mx-auto py-10 px-12">
+      {/* Page canvas — light gray outer bg, white A4-like page */}
+      <div className="flex-1 overflow-auto bg-[#e8e8e8] print:bg-white">
+        <div className="max-w-[800px] mx-auto py-10 px-6 print:p-0 print:max-w-none">
           <style>{`
-            .ProseMirror { outline: none; min-height: 600px; }
-            .ProseMirror h1 { font-size: 2rem; font-weight: 700; margin: 1.5rem 0 0.75rem; line-height: 1.2; }
-            .ProseMirror h2 { font-size: 1.4rem; font-weight: 600; margin: 1.25rem 0 0.5rem; }
-            .ProseMirror h3 { font-size: 1.1rem; font-weight: 600; margin: 1rem 0 0.4rem; }
-            .ProseMirror p { margin: 0.5rem 0; line-height: 1.7; }
-            .ProseMirror ul, .ProseMirror ol { padding-left: 1.5rem; margin: 0.5rem 0; }
+            /* ── A4 page card ─────────────────────────────── */
+            .doc-page {
+              background: #fff;
+              color: #111;
+              box-shadow: 0 2px 16px rgba(0,0,0,0.18);
+              border-radius: 2px;
+              padding: 60px 72px;
+              min-height: 1040px;
+            }
+            /* ── Typography ───────────────────────────────── */
+            .ProseMirror { outline: none; min-height: 600px; color: #111; }
+            .ProseMirror h1 { font-size: 2rem; font-weight: 700; margin: 1.5rem 0 0.75rem; line-height: 1.2; color: #111; }
+            .ProseMirror h2 { font-size: 1.4rem; font-weight: 600; margin: 1.25rem 0 0.5rem; color: #1a1a1a; }
+            .ProseMirror h3 { font-size: 1.1rem; font-weight: 600; margin: 1rem 0 0.4rem; color: #1a1a1a; }
+            .ProseMirror p { margin: 0.5rem 0; line-height: 1.75; color: #222; }
+            .ProseMirror ul, .ProseMirror ol { padding-left: 1.5rem; margin: 0.5rem 0; color: #222; }
             .ProseMirror li { margin: 0.25rem 0; }
-            .ProseMirror blockquote { border-left: 3px solid #404040; padding-left: 1rem; color: #9ca3af; margin: 1rem 0; }
-            .ProseMirror hr { border: none; border-top: 1px solid #404040; margin: 1.5rem 0; }
+            .ProseMirror blockquote { border-left: 3px solid #d1d5db; padding-left: 1rem; color: #6b7280; margin: 1rem 0; font-style: italic; }
+            .ProseMirror hr { border: none; border-top: 1px solid #e5e7eb; margin: 1.5rem 0; }
+            /* ── Tables ───────────────────────────────────── */
             .ProseMirror table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
-            .ProseMirror td, .ProseMirror th { border: 1px solid #404040; padding: 0.5rem 0.75rem; }
-            .ProseMirror th { background: #1a1a1a; font-weight: 600; }
+            .ProseMirror td, .ProseMirror th { border: 1px solid #d1d5db; padding: 0.5rem 0.75rem; color: #222; }
+            .ProseMirror th { background: #f3f4f6; font-weight: 600; color: #111; }
+            /* ── Media ────────────────────────────────────── */
             .ProseMirror img { max-width: 100%; height: auto; border-radius: 0.5rem; margin: 0.5rem 0; }
             .ProseMirror img.doc-footer-logo { max-height: 56px; width: auto; border-radius: 0; display: block; margin: 0.5rem auto; }
-            .ProseMirror code { background: #1e1e1e; border: 1px solid #333; border-radius: 0.25rem; padding: 0.1em 0.35em; font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.875em; color: #e2e8f0; }
-            .ProseMirror pre { background: #1e1e1e; border: 1px solid #333; border-radius: 0.5rem; padding: 1rem; margin: 1rem 0; overflow-x: auto; }
-            .ProseMirror pre code { background: none; border: none; padding: 0; font-size: 0.875rem; line-height: 1.6; }
-            .ProseMirror .is-editor-empty:first-child::before { content: attr(data-placeholder); color: #4b5563; pointer-events: none; float: left; height: 0; }
+            /* ── Code ─────────────────────────────────────── */
+            .ProseMirror code { background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 0.25rem; padding: 0.1em 0.35em; font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.875em; color: #374151; }
+            .ProseMirror pre { background: #f8f9fa; border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 1rem; margin: 1rem 0; overflow-x: auto; }
+            .ProseMirror pre code { background: none; border: none; padding: 0; font-size: 0.875rem; line-height: 1.6; color: #374151; }
+            /* ── Placeholder ──────────────────────────────── */
+            .ProseMirror .is-editor-empty:first-child::before { content: attr(data-placeholder); color: #9ca3af; pointer-events: none; float: left; height: 0; }
+            /* ── Print ────────────────────────────────────── */
             @media print {
               .editor-toolbar { display: none !important; }
+              .doc-page { box-shadow: none !important; padding: 0 !important; min-height: unset !important; }
               .ProseMirror { min-height: unset !important; }
-              .ProseMirror img.doc-footer-logo { max-height: 48px; }
             }
           `}</style>
-          <EditorContent editor={editor} className="text-white" />
+          <div className="doc-page print:p-0">
+            <EditorContent editor={editor} />
+          </div>
         </div>
       </div>
     </div>
@@ -303,7 +321,7 @@ function ColorSwatchPicker({ editor, brandData }: { editor: ReturnType<typeof us
 
   if (!editor) return null;
 
-  const currentColor = editor.getAttributes('textStyle').color ?? '#ffffff';
+  const currentColor = editor.getAttributes('textStyle').color ?? '#111111';
 
   const brandSwatches = [
     { color: brandData?.primary,   label: 'Pääväri' },
