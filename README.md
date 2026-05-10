@@ -1,73 +1,88 @@
-# Welcome to your Lovable project
+# Foundrydock
 
-## Project info
+A lightweight, code-first slide editor built with React. Slides are plain `.tsx` files — no proprietary formats, no lock-in.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## What it does
 
-## How can I edit this code?
+- **16:9 fixed canvas** — slides render at 1920×1080 and scale to any viewport
+- **Code-based slides** — each slide is a React component, giving you full control
+- **10 layout templates** — title, two-column, three-up cards, chart focus, timeline, quote, and more
+- **Presenter mode** — full-screen presentation with keyboard navigation (`Shift+P`)
+- **Presenter notes** — per-slide notes panel (`Shift+N`), optionally persisted via Supabase
+- **Design token system** — consistent colors and typography across all slides
+- **Dark mode** — built in
+- **Drag-and-drop slide ordering** — via dnd-kit
+- **Multiple decks** — switch between decks from the sidebar
 
-There are several ways of editing your application.
+## Tech stack
 
-**Use Lovable**
+- [React 18](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
+- [Vite](https://vitejs.dev/)
+- [Tailwind CSS](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/)
+- [Recharts](https://recharts.org/) for data visualizations
+- [Supabase](https://supabase.com/) (optional — only for presenter notes persistence)
+- [dnd-kit](https://dndkit.com/) for drag-and-drop
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+## Getting started
 
-Changes made via Lovable will be committed automatically to this repo.
+### Prerequisites
 
-**Use your preferred IDE**
+- Node.js 18+ and npm (or [bun](https://bun.sh/))
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Run locally
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+```bash
+git clone https://github.com/janiperho-ai/foundrydock.git
+cd foundrydock
+npm install
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+Open [http://localhost:5173](http://localhost:5173).
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Optional: Supabase (presenter notes)
 
-**Use GitHub Codespaces**
+Presenter notes are stored locally by default. To persist them across sessions:
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+1. Create a free project at [supabase.com](https://supabase.com)
+2. Copy `.env.example` to `.env` and fill in your credentials
+3. Run the migrations in `supabase/migrations/`
 
-## What technologies are used for this project?
+## Creating slides
 
-This project is built with:
+Each slide is a `.tsx` file in `src/slides/demo/`:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+```tsx
+// src/slides/demo/Slide03MySlide.tsx
+import React from 'react';
+import { MSSlideLayout } from '@/components/slides/MSSlideLayout';
 
-## How can I deploy this project?
+export default function Slide03MySlide() {
+  return (
+    <MSSlideLayout variant="default">
+      <div className="flex flex-col h-full px-20 py-16">
+        <h1 className="type-h1 text-slide-gray-900">My slide</h1>
+      </div>
+    </MSSlideLayout>
+  );
+}
+```
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+Then add it to `src/slides/demo/index.ts`.
 
-## Can I connect a custom domain to my Lovable project?
+## Keyboard shortcuts
 
-Yes, you can!
+| Key | Action |
+|-----|--------|
+| `←` / `→` | Previous / next slide |
+| `Shift+P` | Toggle presentation mode |
+| `Shift+N` | Toggle presenter notes |
+| `Escape` | Exit presentation mode |
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## Contributing
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Contributions are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## License
+
+MIT — see [LICENSE](LICENSE).
