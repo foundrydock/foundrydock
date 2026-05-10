@@ -1,7 +1,5 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import logoDark from '@/assets/mittamuoto-logo-dark.png';
-import logoLight from '@/assets/mittamuoto-logo-light.png';
 
 interface MSSlideLayoutProps {
   children: React.ReactNode;
@@ -22,15 +20,6 @@ export function MSSlideLayout({ children, variant = 'default', className }: MSSl
         className
       )}
     >
-      {/* Logo - Top Right */}
-      <div className="absolute top-8 right-10 z-10">
-        <img 
-          src={isDark ? logoLight : logoDark} 
-          alt="Mittamuoto" 
-          className="h-8 w-auto"
-        />
-      </div>
-      
       {/* Content */}
       <div className="w-full h-full">
         {children}

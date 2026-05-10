@@ -17,8 +17,6 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { useDeckManager } from '@/hooks/useDeckManager';
 import { useAuth } from '@/auth/AuthContext';
-import { mittamuotoSlides } from '@/slides/mittamuoto';
-import { showcaseSlides } from '@/slides/showcase';
 import { demoSlides } from '@/slides/demo';
 
 interface SlideData {
@@ -29,9 +27,7 @@ interface SlideData {
   description?: string;
 }
 
-const templateMap: Record<string, typeof mittamuotoSlides> = {
-  mittamuoto: mittamuotoSlides,
-  showcase: showcaseSlides,
+const templateMap: Record<string, typeof demoSlides> = {
   demo: demoSlides,
 };
 
@@ -112,7 +108,7 @@ export default function Index() {
   // All slides from template – Supabase-deck ylikirjoittaa localStoragen
   const activeTemplate = supabaseDeck?.template ?? activeDeck.sourceTemplate;
   const allSlides = React.useMemo<SlideData[]>(() => {
-    const templateSlides = templateMap[activeTemplate] || mittamuotoSlides;
+    const templateSlides = templateMap[activeTemplate] || demoSlides;
     return templateSlides.map((s) => ({
       id: `slide-${s.name.toLowerCase().replace(/\s+/g, '-')}`,
       component: s.component,
@@ -206,7 +202,7 @@ export default function Index() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [slides.length, isPresentationMode, isPresenterView]);
 
-  const ActiveSlideComponent = slides[activeSlideIndex]?.component || mittamuotoSlides[0].component;
+  const ActiveSlideComponent = slides[activeSlideIndex]?.component || demoSlides[0].component;
 
   return (
     <>

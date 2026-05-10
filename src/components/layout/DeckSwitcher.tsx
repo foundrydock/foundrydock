@@ -33,8 +33,6 @@ interface DeckSwitcherProps {
 type ModalMode = 'clone' | 'create' | 'rename' | null;
 
 const TEMPLATES = [
-  { id: 'mittamuoto', label: 'Mittamuoto Pitch' },
-  { id: 'showcase', label: 'Showcase' },
   { id: 'demo', label: 'Demo' },
 ];
 
@@ -49,7 +47,7 @@ export function DeckSwitcher({
 }: DeckSwitcherProps) {
   const [modalMode, setModalMode] = useState<ModalMode>(null);
   const [deckName, setDeckName] = useState('');
-  const [selectedTemplate, setSelectedTemplate] = useState('mittamuoto');
+  const [selectedTemplate, setSelectedTemplate] = useState('demo');
   const [targetDeckId, setTargetDeckId] = useState('');
 
   const openClone = (deckId: string) => {
@@ -68,7 +66,7 @@ export function DeckSwitcher({
 
   const openCreate = () => {
     setDeckName('');
-    setSelectedTemplate('mittamuoto');
+    setSelectedTemplate('demo');
     setModalMode('create');
   };
 

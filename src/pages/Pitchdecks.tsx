@@ -23,9 +23,7 @@ import { fi } from 'date-fns/locale';
 type Pitchdeck = Tables<'pitchdecks'>;
 
 const TEMPLATES = [
-  { id: 'mittamuoto', label: 'Mittamuoto', description: 'Standardi pitchdeck' },
-  { id: 'showcase', label: 'Showcase', description: 'Interaktiivinen demo' },
-  { id: 'demo', label: 'Demo', description: 'Tyhjä template' },
+  { id: 'demo', label: 'Demo', description: 'Blank template' },
 ];
 
 export default function Pitchdecks() {
@@ -233,7 +231,7 @@ function NewDeckDialog({ open, onClose, onCreated, companyId }: {
 }) {
   const { user } = useAuth();
   const [name, setName] = useState('');
-  const [template, setTemplate] = useState('mittamuoto');
+  const [template, setTemplate] = useState('demo');
   const [saving, setSaving] = useState(false);
 
   async function handleCreate() {

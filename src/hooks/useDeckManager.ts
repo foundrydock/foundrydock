@@ -3,7 +3,7 @@ import { useState, useCallback, useEffect } from 'react';
 export interface DeckInfo {
   id: string;
   name: string;
-  sourceTemplate: string; // 'mittamuoto' | 'showcase' | 'demo'
+  sourceTemplate: string; // 'demo'
   createdAt: string;
   updatedAt: string;
 }
@@ -24,8 +24,8 @@ function loadDecks(): DeckInfo[] {
     if (!decks.find((d: DeckInfo) => d.id === 'default')) {
       decks.unshift({
         id: 'default',
-        name: 'Mittamuoto Pitch',
-        sourceTemplate: 'mittamuoto',
+        name: 'Demo Deck',
+        sourceTemplate: 'demo',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       });
@@ -34,8 +34,8 @@ function loadDecks(): DeckInfo[] {
   } catch {
     return [{
       id: 'default',
-      name: 'Mittamuoto Pitch',
-      sourceTemplate: 'mittamuoto',
+      name: 'Demo Deck',
+      sourceTemplate: 'demo',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }];
