@@ -1,0 +1,37 @@
+# Deploys the static marketing site in /website to Cloudflare Pages.
+# Use this when the dashboard Git flow does not offer a "root directory" (common with Workers Builds).
+#
+# Setup (once):
+# 1. Cloudflare: create a Pages project (Workers & Pages → Create → Pages).
+#    Easiest: choose "Direct Upload" / skip Git — this project only receives uploads from this workflow.
+# 2. Name the project the same as PAGES_PROJECT_NAME below (default: foundrydock-www), or change the env.
+# 3. GitHub repo → Settings → Secrets → Actions → add:
+#    CLOUDFLARE_API_TOKEN  (Permissions: Account → Cloudflare Pages → Edit)
+#    CLOUDFLARE_ACCOUNT_ID (Dashboard → any domain → right sidebar "Account ID")
+# 4. Custom domain: attach foundrydock.com to this Pages project (or use a subdomain first).
+
+name: Deploy marketing (website/)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'website/**'
+      - '.github/workflows/deploy-website.yml'
+  workflow_dispatch:
+
+env:
+  PAGES_PROJECT_NAME: foundrydock-www
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy website --project-name=${{ env.PAGES_PROJECT_NAME }}
