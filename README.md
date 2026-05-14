@@ -32,7 +32,7 @@ A lightweight, code-first slide editor built with React. Slides are plain `.tsx`
 ### Run locally
 
 ```bash
-git clone https://github.com/janiperho-ai/foundrydock.git
+git clone https://github.com/foundrydock/foundrydock.git
 cd foundrydock
 npm install
 npm run dev
