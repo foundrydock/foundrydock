@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy — FoundryDock</title>
+  <meta name="description" content="FoundryDock privacy policy. How we handle data on foundrydock.com and what privacy means when you self-host." />
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-N19QPK81BP"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-N19QPK81BP');
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,700;1,9..144,300;1,9..144,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg:      #090a0d;
+      --bg2:     #0e1018;
+      --surface: #13161f;
+      --border:  rgba(255,255,255,0.07);
+      --accent:  #4af0c4;
+      --text:    #e8eaf0;
+      --muted:   #6b7280;
+      --heading: #f4f5f8;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.025; pointer-events: none; z-index: 0;
+    }
+
+    /* NAV */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      border-bottom: 1px solid var(--border);
+      background: rgba(9,10,13,0.85);
+      backdrop-filter: blur(16px);
+    }
+    .nav-inner {
+      max-width: 1120px; margin: 0 auto; padding: 0 24px;
+      display: flex; align-items: center;
+      justify-content: space-between;
+      height: 60px; gap: 12px;
+    }
+    .logo {
+      font-family: 'Fraunces', serif;
+      font-size: 1.25rem; font-weight: 700;
+      color: var(--heading); text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+    .logo span { color: var(--accent); }
+
+    .nav-right { display: flex; align-items: center; gap: 10px; }
+
+    .lang-toggle {
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px; padding: 7px 10px;
+      cursor: pointer; line-height: 1;
+      transition: all 0.2s;
+    }
+    .lang-toggle:hover { border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); }
+    .lang-flag { font-size: 1.25rem; line-height: 1; display: block; }
+
+    .btn-back {
+      display: inline-flex; align-items: center; gap: 6px;
+      color: var(--muted); text-decoration: none;
+      font-size: 0.875rem; font-weight: 500;
+      transition: color 0.2s;
+    }
+    .btn-back:hover { color: var(--text); }
+    .btn-back svg { width: 14px; height: 14px; }
+
+    /* CONTENT */
+    .page {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 80px 24px 120px;
+      position: relative; z-index: 1;
+    }
+
+    .page-label {
+      font-size: 0.75rem; font-weight: 600;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 16px;
+      display: block;
+    }
+
+    .page-title {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(2.2rem, 5vw, 3.5rem);
+      font-weight: 300; letter-spacing: -0.03em;
+      color: var(--heading); line-height: 1.05;
+      margin-bottom: 12px;
+    }
+
+    .page-date {
+      font-size: 0.8rem; color: var(--muted);
+      margin-bottom: 64px; display: block;
+    }
+
+    /* Privacy highlight box */
+    .highlight {
+      background: rgba(74,240,196,0.06);
+      border: 1px solid rgba(74,240,196,0.2);
+      border-radius: 10px;
+      padding: 28px 32px;
+      margin-bottom: 56px;
+    }
+    .highlight p {
+      font-size: 1rem; color: var(--text);
+      line-height: 1.7; font-weight: 300;
+    }
+    .highlight strong { color: var(--accent); font-weight: 600; }
+
+    /* Sections */
+    .policy-section { margin-bottom: 52px; }
+
+    .policy-section h2 {
+      font-family: 'Fraunces', serif;
+      font-size: 1.4rem; font-weight: 400;
+      color: var(--heading); letter-spacing: -0.02em;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .policy-section p {
+      font-size: 0.95rem; color: var(--muted);
+      line-height: 1.75; font-weight: 300;
+      margin-bottom: 14px;
+    }
+    .policy-section p:last-child { margin-bottom: 0; }
+
+    .policy-section a {
+      color: var(--accent); text-decoration: none;
+      border-bottom: 1px solid rgba(74,240,196,0.3);
+      transition: border-color 0.2s;
+    }
+    .policy-section a:hover { border-color: var(--accent); }
+
+    .policy-section ul {
+      list-style: none; padding: 0;
+      display: flex; flex-direction: column; gap: 10px;
+      margin-top: 12px;
+    }
+    .policy-section ul li {
+      display: flex; gap: 12px;
+      font-size: 0.95rem; color: var(--muted);
+      font-weight: 300; line-height: 1.65;
+    }
+    .policy-section ul li::before {
+      content: '—';
+      color: var(--accent); flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* Self-host callout */
+    .selfhost-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 28px 32px;
+      margin-top: 20px;
+    }
+    .selfhost-box p {
+      font-size: 0.9rem; color: var(--muted);
+      line-height: 1.7; font-weight: 300;
+      margin-bottom: 0 !important;
+    }
+    .selfhost-box strong { color: var(--heading); font-weight: 500; }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 0;
+      position: relative; z-index: 1;
+    }
+    .footer-inner {
+      max-width: 1120px; margin: 0 auto; padding: 0 24px;
+      display: flex; align-items: center;
+      justify-content: space-between; flex-wrap: wrap; gap: 16px;
+    }
+    .footer-logo { font-family: 'Fraunces', serif; font-size: 1rem; font-weight: 700; color: var(--heading); }
+    .footer-logo span { color: var(--accent); }
+    .footer-copy { font-size: 0.78rem; color: var(--muted); margin-top: 4px; }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { font-size: 0.8rem; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--text); }
+
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="logo">Foundry<span>Dock</span></a>
+    <div class="nav-right">
+      <button class="lang-toggle" id="langToggle" aria-label="Switch language">
+        <span class="lang-flag" id="langFlag">🇫🇮</span>
+      </button>
+      <a href="index.html" class="btn-back">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+        <span data-i18n="back">Back</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- CONTENT -->
+<main class="page">
+
+  <span class="page-label" data-i18n="label">Privacy Policy</span>
+  <h1 class="page-title" data-i18n="title">How we handle your data.</h1>
+  <span class="page-date" data-i18n="date">Last updated: May 2026</span>
+
+  <!-- Key callout -->
+  <div class="highlight">
+    <p data-i18n="highlight"><strong>The short version:</strong> If you self-host FoundryDock on your own server, we have zero access to your data — zero. What you store stays entirely on your infrastructure. The only data collection described below applies to this marketing website, foundrydock.com.</p>
+  </div>
+
+  <div class="policy-section">
+    <h2 data-i18n="s1_title">1. Scope of this policy</h2>
+    <p data-i18n="s1_p1">This Privacy Policy applies to the marketing website at <strong>foundrydock.com</strong> only. It does not govern any instance of the FoundryDock open source software you install and run on your own infrastructure.</p>
+    <p data-i18n="s1_p2">If you self-host FoundryDock, you are the data controller for everything that happens on your instance. You decide what you collect, how you store it, and who can access it. FoundryDock (the project and its maintainers) has no access whatsoever to data on self-hosted instances.</p>
+  </div>
+
+  <div class="policy-section">
+    <h2 data-i18n="s2_title">2. What we collect on this website</h2>
+    <p data-i18n="s2_intro">This website uses <strong>Google Analytics 4</strong> to understand how visitors discover and navigate foundrydock.com. Google Analytics collects:</p>
+    <ul>
+      <li data-i18n="s2_li1">Pages visited and time spent on each page</li>
+      <li data-i18n="s2_li2">Approximate geographic location (country / city level)</li>
+      <li data-i18n="s2_li3">Device type, browser, and operating system</li>
+      <li data-i18n="s2_li4">Referral source (how you arrived at this site)</li>
+      <li data-i18n="s2_li5">Anonymised interaction events (button clicks, scroll depth)</li>
+    </ul>
+    <p data-i18n="s2_p2" style="margin-top:16px;">We do not collect your name, email address, or any other personally identifying information through this website. No account is required to browse foundrydock.com.</p>
+  </div>
+
+  <div class="policy-section">
+    <h2 data-i18n="s3_title">3. Google Analytics & cookies</h2>
+    <p data-i18n="s3_p1">Google Analytics sets cookies in your browser to distinguish visitors and sessions. The data is processed by Google LLC under their own <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Privacy Policy</a>. Google may transfer this data to servers in the United States or other countries.</p>
+    <p data-i18n="s3_p2">You can opt out of Google Analytics tracking at any time by installing the <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener">Google Analytics Opt-out Browser Add-on</a>, or by using a browser extension that blocks analytics scripts.</p>
+  </div>
+
+  <div class="policy-section">
+    <h2 data-i18n="s4_title">4. Self-hosted instances — full privacy by design</h2>
+    <p data-i18n="s4_p1">When you clone the FoundryDock repository and run it on your own server, the software operates entirely within the environment you control. There are no telemetry calls, no usage pings, and no data transmitted back to us — by design.</p>
+    <div class="selfhost-box">
+      <p data-i18n="s4_box"><strong>Your instance, your data.</strong> Documents, pitch decks, board minutes, access logs, user accounts — everything on a self-hosted FoundryDock instance lives exclusively on your own infrastructure. The project maintainers have no technical means to access it, and we never will. You are the sole data controller.</p>
+    </div>
+  </div>
+
+  <div class="policy-section">
+    <h2 data-i18n="s5_title">5. Third-party links</h2>
+    <p data-i18n="s5_p1">This website links to GitHub (github.com) for the source code and community discussions. GitHub has its own privacy policy. We are not responsible for data practices on third-party websites.</p>
+  </div>
+
+  <div class="policy-section">
+    <h2 data-i18n="s6_title">6. Changes to this policy</h2>
+    <p data-i18n="s6_p1">If we make material changes to this policy, we will update the "Last updated" date above. For significant changes, we will note it in the project's GitHub repository changelog.</p>
+  </div>
+
+  <div class="policy-section">
+    <h2 data-i18n="s7_title">7. Contact</h2>
+    <p data-i18n="s7_p1">Questions about this policy? Open an issue or start a discussion in the <a href="https://github.com/foundrydock/foundrydock" target="_blank" rel="noopener">FoundryDock GitHub repository</a>.</p>
+  </div>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-logo">Foundry<span>Dock</span></div>
+      <div class="footer-copy" data-i18n="footer_copy">© 2026 FoundryDock · MIT License · 100% Open Source.</div>
+    </div>
+    <nav class="footer-links">
+      <a href="privacy.html" data-i18n="footer_privacy">Privacy</a>
+      <a href="https://github.com/foundrydock" target="_blank" rel="noopener">GitHub Org</a>
+      <a href="https://foundrydock.com/docs" target="_blank" rel="noopener" data-i18n="footer_docs">Docs</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+  const translations = {
+    en: {
+      back:        'Back',
+      label:       'Privacy Policy',
+      title:       'How we handle your data.',
+      date:        'Last updated: May 2026',
+      highlight:   '<strong>The short version:</strong> If you self-host FoundryDock on your own server, we have zero access to your data — zero. What you store stays entirely on your infrastructure. The only data collection described below applies to this marketing website, foundrydock.com.',
+      s1_title:    '1. Scope of this policy',
+      s1_p1:       'This Privacy Policy applies to the marketing website at foundrydock.com only. It does not govern any instance of the FoundryDock open source software you install and run on your own infrastructure.',
+      s1_p2:       'If you self-host FoundryDock, you are the data controller for everything that happens on your instance. You decide what you collect, how you store it, and who can access it. FoundryDock (the project and its maintainers) has no access whatsoever to data on self-hosted instances.',
+      s2_title:    '2. What we collect on this website',
+      s2_intro:    'This website uses Google Analytics 4 to understand how visitors discover and navigate foundrydock.com. Google Analytics collects:',
+      s2_li1:      'Pages visited and time spent on each page',
+      s2_li2:      'Approximate geographic location (country / city level)',
+      s2_li3:      'Device type, browser, and operating system',
+      s2_li4:      'Referral source (how you arrived at this site)',
+      s2_li5:      'Anonymised interaction events (button clicks, scroll depth)',
+      s2_p2:       'We do not collect your name, email address, or any other personally identifying information through this website. No account is required to browse foundrydock.com.',
+      s3_title:    '3. Google Analytics & cookies',
+      s3_p1:       'Google Analytics sets cookies in your browser to distinguish visitors and sessions. The data is processed by Google LLC under their own Privacy Policy. Google may transfer this data to servers in the United States or other countries.',
+      s3_p2:       'You can opt out of Google Analytics tracking at any time by installing the Google Analytics Opt-out Browser Add-on, or by using a browser extension that blocks analytics scripts.',
+      s4_title:    '4. Self-hosted instances — full privacy by design',
+      s4_p1:       'When you clone the FoundryDock repository and run it on your own server, the software operates entirely within the environment you control. There are no telemetry calls, no usage pings, and no data transmitted back to us — by design.',
+      s4_box:      '<strong>Your instance, your data.</strong> Documents, pitch decks, board minutes, access logs, user accounts — everything on a self-hosted FoundryDock instance lives exclusively on your own infrastructure. The project maintainers have no technical means to access it, and we never will. You are the sole data controller.',
+      s5_title:    '5. Third-party links',
+      s5_p1:       'This website links to GitHub (github.com) for the source code and community discussions. GitHub has its own privacy policy. We are not responsible for data practices on third-party websites.',
+      s6_title:    '6. Changes to this policy',
+      s6_p1:       'If we make material changes to this policy, we will update the "Last updated" date above. For significant changes, we will note it in the project\'s GitHub repository changelog.',
+      s7_title:    '7. Contact',
+      s7_p1:       'Questions about this policy? Open an issue or start a discussion in the <a href="https://github.com/foundrydock/foundrydock" target="_blank" rel="noopener">FoundryDock GitHub repository</a>.',
+      footer_copy:    '© 2026 FoundryDock · MIT License · 100% Open Source.',
+      footer_privacy: 'Privacy',
+      footer_docs:    'Docs',
+    },
+    fi: {
+      back:        'Takaisin',
+      label:       'Tietosuojaseloste',
+      title:       'Näin käsittelemme tietojasi.',
+      date:        'Päivitetty: toukokuu 2026',
+      highlight:   '<strong>Lyhyesti:</strong> Jos hostaat FoundryDockin omalla palvelimellasi, meillä ei ole minkäänlaista pääsyä tietoihisi — nolla. Tallentamasi data pysyy täysin omalla infrastruktuurillasi. Alla kuvattu tiedonkeruu koskee ainoastaan tätä markkinointisivustoa, foundrydock.com.',
+      s1_title:    '1. Tämän selosteen soveltamisala',
+      s1_p1:       'Tämä tietosuojaseloste koskee ainoastaan markkinointisivustoa osoitteessa foundrydock.com. Se ei koske FoundryDockin avoimen lähdekoodin ohjelmiston asennuksia, joita ajat omalla infrastruktuurillasi.',
+      s1_p2:       'Jos hostaat FoundryDockin itse, olet rekisterinpitäjä kaikelle omalla instanssillasi tapahtuvalle. Sinä päätät mitä keräät, miten tallennat ja kenellä on pääsy. FoundryDock-projektilla tai sen ylläpitäjillä ei ole minkäänlaista pääsyä itse hostattujen instanssien dataan.',
+      s2_title:    '2. Mitä keräämme tällä sivustolla',
+      s2_intro:    'Tämä sivusto käyttää Google Analytics 4:ää ymmärtääksemme miten vierailijat löytävät ja navigoivat foundrydock.com-sivustolla. Google Analytics kerää:',
+      s2_li1:      'Vieraillut sivut ja niillä vietetty aika',
+      s2_li2:      'Likimääräinen maantieteellinen sijainti (maa- ja kaupunkitaso)',
+      s2_li3:      'Laitetyyppi, selain ja käyttöjärjestelmä',
+      s2_li4:      'Lähdetieto (miten saavuit sivustolle)',
+      s2_li5:      'Anonymisoidut vuorovaikutustapahtumat (painikkeiden klikkaukset, vierityssyvyys)',
+      s2_p2:       'Emme kerää nimeäsi, sähköpostiosoitettasi tai muita henkilökohtaisesti tunnistettavia tietoja tämän sivuston kautta. Selailu ei vaadi tilin luomista.',
+      s3_title:    '3. Google Analytics ja evästeet',
+      s3_p1:       'Google Analytics asettaa evästeitä selaimeesi erottaakseen kävijät ja istunnot. Tietoja käsittelee Google LLC omien tietosuojakäytäntöjensä mukaisesti. Google voi siirtää tietoja Yhdysvaltoihin tai muihin maihin.',
+      s3_p2:       'Voit milloin tahansa kieltäytyä Google Analytics -seurannasta asentamalla Google Analytics Opt-out -selainlaajennuksen tai käyttämällä analytiikkaskriptit estävää selainlisäosaa.',
+      s4_title:    '4. Itse hostatut instanssit — täysi yksityisyys jo suunnitteluvaiheessa',
+      s4_p1:       'Kun kloonaat FoundryDock-repositorion ja ajat sen omalla palvelimellasi, ohjelmisto toimii täysin hallitsemassasi ympäristössä. Mitään telemetriadataa, käyttöpingejä tai muita tietoja ei lähetetä takaisin meille — tämä on tarkoituksellinen suunnittelupäätös.',
+      s4_box:      '<strong>Sinun instanssisi, sinun datasi.</strong> Asiakirjat, pitch-deckit, hallituksen pöytäkirjat, käyttölokit, käyttäjätilit — kaikki itse hostatulla FoundryDock-instanssilla sijaitsee yksinomaan omalla infrastruktuurillasi. Projektin ylläpitäjillä ei ole teknistä mahdollisuutta päästä siihen käsiksi, eikä tule olemaan. Olet ainoa rekisterinpitäjä.',
+      s5_title:    '5. Kolmannen osapuolen linkit',
+      s5_p1:       'Tämä sivusto linkittää GitHubiin (github.com) lähdekoodin ja yhteisökeskustelujen osalta. GitHubilla on omat tietosuojakäytäntönsä. Emme ole vastuussa kolmansien osapuolten tietosuojakäytännöistä.',
+      s6_title:    '6. Muutokset tähän selosteeseen',
+      s6_p1:       'Jos teemme olennaisia muutoksia tähän selosteeseen, päivitämme yllä olevan "Päivitetty"-päivämäärän. Merkittävistä muutoksista ilmoitamme projektin GitHub-repositorion muutoslokeissa.',
+      s7_title:    '7. Yhteystiedot',
+      s7_p1:       'Kysymyksiä tästä selosteesta? Avaa issue tai aloita keskustelu <a href="https://github.com/foundrydock/foundrydock" target="_blank" rel="noopener">FoundryDockin GitHub-repositoriossa</a>.',
+      footer_copy:    '© 2026 FoundryDock · MIT-lisenssi · Rakennettu avoimesti.',
+      footer_privacy: 'Tietosuoja',
+      footer_docs:    'Dokumentaatio',
+    }
+  };
+
+  let currentLang = 'en';
+
+  function applyLanguage(lang) {
+    const t = translations[lang];
+    document.documentElement.lang = lang;
+
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (key === 's7_p1') return;
+      if (t[key] !== undefined) el.textContent = t[key];
+    });
+
+    document.querySelectorAll('[data-i18n="s7_p1"]').forEach(el => {
+      if (t.s7_p1 !== undefined) el.innerHTML = t.s7_p1;
+    });
+
+    // HTML nodes (highlight box and selfhost box use innerHTML)
+    document.querySelectorAll('[data-i18n="highlight"], [data-i18n="s4_box"]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (t[key] !== undefined) el.innerHTML = t[key];
+    });
+
+    document.getElementById('langFlag').textContent = lang === 'en' ? '🇫🇮' : '🇬🇧';
+    currentLang = lang;
+  }
+
+  document.getElementById('langToggle').addEventListener('click', () => {
+    applyLanguage(currentLang === 'en' ? 'fi' : 'en');
+  });
+</script>
+
+</body>
+</html>
